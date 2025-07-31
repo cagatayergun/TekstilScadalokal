@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Alarm" xml:space="preserve">
+    <value>Alarm</value>
+  </data>
+  <data name="AlarmDetails" xml:space="preserve">
+    <value>Alarm Detayları</value>
+  </data>
+  <data name="AlarmHistory" xml:space="preserve">
+    <value>Geçmiş Alarmlar</value>
+  </data>
+  <data name="AlarmNo" xml:space="preserve">
+    <value>Alarm No:</value>
+  </data>
+  <data name="AlarmSettings" xml:space="preserve">
+    <value>Alarm Tanımlama</value>
+  </data>
+  <data name="AlarmText" xml:space="preserve">
+    <value>Alarm Metni:</value>
+  </data>
+  <data name="AllMachines" xml:space="preserve">
+    <value>TÜM MAKİNELER</value>
+  </data>
+  <data name="BatchNo" xml:space="preserve">
+    <value>Batch No:</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategori:</value>
+  </data>
+  <data name="Chemical" xml:space="preserve">
+    <value>Kimyasal:</value>
+  </data>
+  <data name="ChemicalConsumption" xml:space="preserve">
+    <value>Kimyasal Tüketimi</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Silme Onayı</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Bağlantı Hatası</value>
+  </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>Bağlantı Kesildi</value>
+  </data>
+  <data name="CoolingTime" xml:space="preserve">
+    <value>Soğutma Süresi (dk):</value>
+  </data>
+  <data name="CustomerNo" xml:space="preserve">
+    <value>Müşteri No:</value>
+  </data>
+  <data name="DatabaseError" xml:space="preserve">
+    <value>Veritabanı Hatası</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="DirectSteam" xml:space="preserve">
+    <value>Direk Buhar</value>
+  </data>
+  <data name="Dosage" xml:space="preserve">
+    <value>DOZAJ</value>
+  </data>
+  <data name="DosageLiter" xml:space="preserve">
+    <value>Dozajda Litre:</value>
+  </data>
+  <data name="DosageTime" xml:space="preserve">
+    <value>Kimyasal Dozaj Süresi:</value>
+  </data>
+  <data name="Drain" xml:space="preserve">
+    <value>BOŞALTMA</value>
+  </data>
+  <data name="DryingRecipeParameters" xml:space="preserve">
+    <value>Kurutma Reçete Parametleri</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Süre (dk):</value>
+  </data>
+  <data name="EndTime" xml:space="preserve">
+    <value>Bitiş Tarihi:</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Hata</value>
+  </data>
+  <data name="ExportToExcel" xml:space="preserve">
+    <value>Excel'e Aktar</value>
+  </data>
+  <data name="GeneralDashboard" xml:space="preserve">
+    <value>Genel Tesis Dashboard'u (KPI Ekranı) (Burası Geliştirilecek)</value>
+  </data>
+  <data name="GeneralOverview" xml:space="preserve">
+    <value>Genel Bakış</value>
+  </data>
+  <data name="Heating" xml:space="preserve">
+    <value>ISITMA</value>
+  </data>
+  <data name="Humidity" xml:space="preserve">
+    <value>Nem (%):</value>
+  </data>
+  <data name="IndirectSteam" xml:space="preserve">
+    <value>Dolaylı Buhar</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Bilgi</value>
+  </data>
+  <data name="InputRequired" xml:space="preserve">
+    <value>Giriş Gerekli</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş Yap</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Kullanıcı adı veya şifre hatalı!</value>
+  </data>
+  <data name="LoginScreen" xml:space="preserve">
+    <value>SCADA Sistemi - Giriş</value>
+  </data>
+  <data name="MachineID" xml:space="preserve">
+    <value>MAKİNA ID:</value>
+  </data>
+  <data name="MachineManagement" xml:space="preserve">
+    <value>Makine Yönetimi</value>
+  </data>
+  <data name="MachineName" xml:space="preserve">
+    <value>MAKİNA ADI:</value>
+  </data>
+  <data name="MachineSelect" xml:space="preserve">
+    <value>Makine Seç</value>
+  </data>
+  <data name="MainTankCleanWater" xml:space="preserve">
+    <value>Ana Tank Temiz Su Al</value>
+  </data>
+  <data name="MainTankWater" xml:space="preserve">
+    <value>Ana Tank Mak. Su Al</value>
+  </data>
+  <data name="MixingTime" xml:space="preserve">
+    <value>Kimyasal Çözme Süresi:</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Yeni</value>
+  </data>
+  <data name="NewRecipe" xml:space="preserve">
+    <value>YENİ REÇETE</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="OeeReport" xml:space="preserve">
+    <value>OEE Raporu</value>
+  </data>
+  <data name="Operator" xml:space="preserve">
+    <value>OPERATOR:</value>
+  </data>
+  <data name="OrderNo" xml:space="preserve">
+    <value>Sipariş No:</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Şifre:</value>
+  </data>
+  <data name="PlcOperatorManagement" xml:space="preserve">
+    <value>PLC Operatör Yönetimi</value>
+  </data>
+  <data name="PleaseSelectMachine" xml:space="preserve">
+    <value>Lütfen işlem yapılacak makineyi seçin:</value>
+  </data>
+  <data name="ProcessAlarms" xml:space="preserve">
+    <value>Proses Alarmları</value>
+  </data>
+  <data name="ProcessControl" xml:space="preserve">
+    <value>Proses Kontrol</value>
+  </data>
+  <data name="ProcessGraph" xml:space="preserve">
+    <value>Proses Grafiği</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>PROSESSING</value>
+  </data>
+  <data name="ProductionReport" xml:space="preserve">
+    <value>Üretim Raporu</value>
+  </data>
+  <data name="ProductionSummary" xml:space="preserve">
+    <value>Üretim Özeti</value>
+  </data>
+  <data name="QuantityLiters" xml:space="preserve">
+    <value>Miktar (Litre):</value>
+  </data>
+  <data name="RecipeName" xml:space="preserve">
+    <value>RECETE ADI:</value>
+  </data>
+  <data name="RecipeOptimization" xml:space="preserve">
+    <value>Reçete Optimizasyon</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Raporlar</value>
+  </data>
+  <data name="RightLeftTime" xml:space="preserve">
+    <value>Sağ-Sol Yön Süre (SN):</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>ÇALIŞMA</value>
+  </data>
+  <data name="RunningSpeed" xml:space="preserve">
+    <value>Çalışma Devri:</value>
+  </data>
+  <data name="RunningTime" xml:space="preserve">
+    <value>Çalışma Süresi (DK):</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="ScadaSystem" xml:space="preserve">
+    <value>Tekstil SCADA Sistemi</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Severity" xml:space="preserve">
+    <value>Önem Derecesi:</value>
+  </data>
+  <data name="SoftWater" xml:space="preserve">
+    <value>Yumuşak Su</value>
+  </data>
+  <data name="Squeezing" xml:space="preserve">
+    <value>SIKMA</value>
+  </data>
+  <data name="SqueezingSpeed" xml:space="preserve">
+    <value>Sıkma Devri:</value>
+  </data>
+  <data name="SqueezingTime" xml:space="preserve">
+    <value>Sıkma Süre (DK):</value>
+  </data>
+  <data name="StartTime" xml:space="preserve">
+    <value>Başlangıç Tarihi:</value>
+  </data>
+  <data name="Step" xml:space="preserve">
+    <value>ADIM:</value>
+  </data>
+  <data name="StepDetails" xml:space="preserve">
+    <value>Adım Detayları</value>
+  </data>
+  <data name="Tank1Dosage" xml:space="preserve">
+    <value>1. Tank Dozaj</value>
+  </data>
+  <data name="Tank1Water" xml:space="preserve">
+    <value>1. Tank Su Al</value>
+  </data>
+  <data name="TankWaterAmount" xml:space="preserve">
+    <value>Tank Alınan Su:</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Isı (°C):</value>
+  </data>
+  <data name="TemperatureControl" xml:space="preserve">
+    <value>Isı Kontrol</value>
+  </data>
+  <data name="TotalTime" xml:space="preserve">
+    <value>Toplam Süre:</value>
+  </data>
+  <data name="TrendAnalysis" xml:space="preserve">
+    <value>Trend Analizi</value>
+  </data>
+  <data name="TrendAnalysisReport" xml:space="preserve">
+    <value>Trend Analiz Raporu (Geliştirilecek)</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Kullanıcı Adı:</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Kullanıcı Yönetimi</value>
+  </data>
+  <data name="VncConnectionTo" xml:space="preserve">
+    <value>VNC Bağlantısı</value>
+  </data>
+  <data name="WaitTime" xml:space="preserve">
+    <value>Bekleme Süresi (SN):</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Uyarı</value>
+  </data>
+  <data name="WaterIntake" xml:space="preserve">
+    <value>SU ALMA</value>
+  </data>
+  <data name="CriticalError" xml:space="preserve">
+    <value>Kritik Hata</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Yetki Reddedildi</value>
+  </data>
+  <data name="DatabaseConnectionFailed" xml:space="preserve">
+    <value>Veritabanı bağlantısı kurulamadı.</value>
+  </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>Bu alana erişim yetkiniz bulunmamaktadır.</value>
+  </data>
+  <data name="ColdWater" xml:space="preserve">
+    <value>Soğuk Su</value>
+  </data>
+  <data name="DrumStop" xml:space="preserve">
+    <value>Tambur Dur</value>
+  </data>
+  <data name="HotWater" xml:space="preserve">
+    <value>Sıcak Su</value>
+  </data>
+  <data name="Cikiseminmisin" xml:space="preserve">
+    <value>Çıkış yapmak istediğinize emin misiniz</value>
+  </data>
+  <data name="Closeandvnc" xml:space="preserve">
+    <value>Program kapanırken VNCViewer formunu kapatma hatası:</value>
+  </data>
+  <data name="Confirim" xml:space="preserve">
+    <value>Onay</value>
+  </data>
+  <data name="EksikBilgi" xml:space="preserve">
+    <value>Eksik Bilgi</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>İngilizce</value>
+  </data>
+  <data name="Kayıt sırasında hata:" xml:space="preserve">
+    <value>Kayıt sırasında hata:</value>
+  </data>
+  <data name="kullanıcısını silmek istediğinizden emin misiniz?" xml:space="preserve">
+    <value>kullanıcısını silmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="Livelogsee" xml:space="preserve">
+    <value>Canlı Olay Akışı Göster</value>
+  </data>
+  <data name="Loggedin" xml:space="preserve">
+    <value>Giriş Yapan</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Çıkış Yap</value>
+  </data>
+  <data name="namesurname" xml:space="preserve">
+    <value>Ad Soyad</value>
+  </data>
+  <data name="Proseswatching" xml:space="preserve">
+    <value>Proses İzleme</value>
+  </data>
+  <data name="roller" xml:space="preserve">
+    <value>Roller</value>
+  </data>
+  <data name="Session" xml:space="preserve">
+    <value>Oturum</value>
+  </data>
+  <data name="Silme sırasında hata:" xml:space="preserve">
+    <value>Silme sırasında hata:</value>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="Useractive" xml:space="preserve">
+    <value>Kullanıcı Aktif</value>
+  </data>
+  <data name="Userdetail" xml:space="preserve">
+    <value>Kullanıcı Detayları</value>
+  </data>
+  <data name="usernamehard" xml:space="preserve">
+    <value>Kullanıcı adı zorunludur.</value>
+  </data>
+  <data name="Vncconnecterror" xml:space="preserve">
+    <value>VNC penceresi açılırken bir hata oluştu:</value>
+  </data>
+  <data name="Vnccurrentclose" xml:space="preserve">
+    <value>Zaten bir VNC bağlantısı aktif. Lütfen mevcut pencereyi kapatın.</value>
+  </data>
+  <data name="Vncnomachine" xml:space="preserve">
+    <value>Bu makine için bir VNC adresi tanımlanmamış.</value>
+  </data>
+  <data name="Yeni kullanıcı için şifre zorunludur." xml:space="preserve">
+    <value>Yeni kullanıcı için şifre zorunludur.</value>
+  </data>
+  <data name="Yilmak" xml:space="preserve">
+    <value>Yilmak Makine Scada</value>
+  </data>
+  <data name="alarmrapor" xml:space="preserve">
+    <value>Geçmil Alarmlar</value>
+  </data>
+  <data name="analizet" xml:space="preserve">
+    <value>Anali Et</value>
+  </data>
+  <data name="anarecete" xml:space="preserve">
+    <value>Ana Reçete:</value>
+  </data>
+  <data name="Baslangic_tarihi" xml:space="preserve">
+    <value>Başlangıç Tarihi:</value>
+  </data>
+  <data name="Bitis_tarihi" xml:space="preserve">
+    <value>Bitiş Tarihi:</value>
+  </data>
+  <data name="devir" xml:space="preserve">
+    <value>Devir</value>
+  </data>
+  <data name="gecmisuretimler" xml:space="preserve">
+    <value>Geçmiş Üretimler</value>
+  </data>
+  <data name="geneltüketim" xml:space="preserve">
+    <value>Genel Tüketim Raporu</value>
+  </data>
+  <data name="grafigiolustur" xml:space="preserve">
+    <value>Grafiği Oluştur</value>
+  </data>
+  <data name="görüntülenecek_veriler" xml:space="preserve">
+    <value>Görüntülenecek veriler</value>
+  </data>
+  <data name="karsilastirilacak" xml:space="preserve">
+    <value>Karşılaştırılacak :</value>
+  </data>
+  <data name="makineler" xml:space="preserve">
+    <value>Makineler</value>
+  </data>
+  <data name="manuelrapor" xml:space="preserve">
+    <value>Manuel Tüketimler</value>
+  </data>
+  <data name="ortalamabuhartuketimi" xml:space="preserve">
+    <value>Ortalama Buhar Tüketimi</value>
+  </data>
+  <data name="ortalamacevrimsuresi" xml:space="preserve">
+    <value>Ortalama Çevrim Süresi</value>
+  </data>
+  <data name="ortalamaelektriktuketimi" xml:space="preserve">
+    <value>Ortalama Elektrik Tüketimi</value>
+  </data>
+  <data name="ortalamasutuketimi" xml:space="preserve">
+    <value>Ortalama Su Tüketimi</value>
+  </data>
+  <data name="suseviyesi" xml:space="preserve">
+    <value>Su seviyesi</value>
+  </data>
+  <data name="üretimraporu" xml:space="preserve">
+    <value>Üretim Raporu</value>
+  </data>
+</root>
