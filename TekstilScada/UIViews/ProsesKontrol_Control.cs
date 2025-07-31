@@ -9,6 +9,7 @@ using TekstilScada.Repositories;
 using TekstilScada.Services;
 using TekstilScada.UI.Controls;
 using TekstilScada.UI.Controls.RecipeStepEditors;
+using TekstilScada.UIViews;
 
 namespace TekstilScada.UI.Views
 {
@@ -111,28 +112,18 @@ namespace TekstilScada.UI.Views
         {
             try
             {
-                // 1. Daha önce hangi öğenin seçili olduğunu hatırla
                 int selectedId = (lstRecipes.SelectedItem as ScadaRecipe)?.Id ?? -1;
+                _recipeList = _recipeRepository.GetAllRecipes(); // Tüm reçeteleri al
+                FilterRecipeList(); // Ve seçili makineye göre filtrele
 
-                // 2. Listeyi veritabanından yeniden yükle
-                _recipeList = _recipeRepository.GetAllRecipes();
-                lstRecipes.DataSource = null;
-                lstRecipes.DataSource = _recipeList;
-                lstRecipes.DisplayMember = "RecipeName";
-                lstRecipes.ValueMember = "Id";
-
-                // 3. Eski seçili öğeyi tekrar seçmeye çalış
                 if (selectedId != -1)
                 {
-                    // --- YENİ GÜVENLİK KONTROLÜ ---
-                    // 'selectedId'nin yeni yüklenen '_recipeList' içinde hala var olup olmadığını kontrol et.
-                    var itemExists = _recipeList.Any(r => r.Id == selectedId);
-                    if (itemExists)
+                    // Eğer önceden seçili bir reçete varsa ve hala listedeyse, onu tekrar seç
+                    var selectedItem = (lstRecipes.DataSource as List<ScadaRecipe>)?.FirstOrDefault(r => r.Id == selectedId);
+                    if (selectedItem != null)
                     {
-                        // Eğer hala varsa, güvenli bir şekilde seç.
-                        lstRecipes.SelectedValue = selectedId;
+                        lstRecipes.SelectedItem = selectedItem;
                     }
-                    // Eğer yoksa, hiçbir şey yapma ve hatayı önle.
                 }
             }
             catch (Exception ex)
@@ -143,17 +134,46 @@ namespace TekstilScada.UI.Views
 
         private void BtnNewRecipe_Click(object sender, EventArgs e)
         {
-            _currentRecipe = new ScadaRecipe { RecipeName = "YENİ REÇETE" };
+            // Sistemdeki mevcut ve aktif olan makine tiplerini/alt tiplerini al
+            var machineTypes = _machineRepository.GetAllEnabledMachines()
+                .Select(m => !string.IsNullOrEmpty(m.MachineSubType) ? m.MachineSubType : m.MachineType)
+                .Distinct()
+                .ToList();
 
-            var selectedMachine = cmbTargetMachine.SelectedItem as Machine;
-            int stepCount = (selectedMachine != null && selectedMachine.MachineType == "Kurutma Makinesi") ? 1 : 98;
-
-            _currentRecipe.Steps.Clear();
-            for (int i = 1; i <= stepCount; i++)
+            if (!machineTypes.Any())
             {
-                _currentRecipe.Steps.Add(new ScadaRecipeStep { StepNumber = i });
+                MessageBox.Show("Sistemde reçete oluşturulabilecek aktif makine tipi bulunamadı.", "Uyarı");
+                return;
             }
-            DisplayCurrentRecipe();
+
+            // Yeni formu oluşturup kullanıcıdan tip seçmesini iste
+            using (var typeForm = new RecipeTypeSelection_Form(machineTypes))
+            {
+                if (typeForm.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedType = typeForm.SelectedType;
+                    if (string.IsNullOrEmpty(selectedType)) return;
+
+                    _currentRecipe = new ScadaRecipe
+                    {
+                        RecipeName = "YENİ REÇETE",
+                        TargetMachineType = selectedType // Seçilen tipi yeni reçeteye ata
+                    };
+
+                    // Seçilen tipe göre adım sayısını belirle
+                    int stepCount = (selectedType == "Kurutma Makinesi") ? 1 : 98;
+
+                    _currentRecipe.Steps.Clear();
+                    for (int i = 1; i <= stepCount; i++)
+                    {
+                        _currentRecipe.Steps.Add(new ScadaRecipeStep { StepNumber = i });
+                    }
+
+                    // Seçili reçeteyi temizle ve editörü yeni reçete ile doldur
+                    lstRecipes.ClearSelected();
+                    DisplayCurrentRecipe();
+                }
+            }
         }
 
         private void LstRecipes_SelectedIndexChanged(object sender, EventArgs e)
@@ -174,9 +194,52 @@ namespace TekstilScada.UI.Views
 
         private void CmbTargetMachine_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayCurrentRecipe();
-        }
+            // Önce seçime göre reçete listesini filtrele
+            FilterRecipeList();
 
+            // Eğer ekranda hala yüklü bir reçete varsa, yeni seçilen makine tipiyle uyumlu mu diye kontrol et
+            if (_currentRecipe != null && cmbTargetMachine.SelectedItem is Machine selectedMachine)
+            {
+                string machineTypeForRecipe = !string.IsNullOrEmpty(selectedMachine.MachineSubType)
+                                              ? selectedMachine.MachineSubType
+                                              : selectedMachine.MachineType;
+
+                // Mevcut reçete, yeni seçilen makine tipiyle uyumlu değilse...
+                if (_currentRecipe.TargetMachineType != machineTypeForRecipe)
+                {
+                    _currentRecipe = null; // Aktif reçeteyi temizle
+                    lstRecipes.ClearSelected(); // Listeden seçimi kaldır
+                    DisplayCurrentRecipe(); // Editör panelini temizle
+                }
+            }
+            else
+            {
+                // Eğer makine seçimi sonrası listede hiç reçete kalmadıysa veya seçim boşsa, editörü temizle
+                _currentRecipe = null;
+                DisplayCurrentRecipe();
+            }
+        }
+        private string ShowFtpRecipeNumberDialog()
+        {
+            Form prompt = new Form()
+            {
+                Width = 400,
+                Height = 180,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "HMI Reçete Numarası",
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            Label textLabel = new Label() { Left = 50, Top = 20, Text = "HMI'a kaydedilecek reçete numarasını girin (1-99):", Width = 300 };
+            NumericUpDown inputBox = new NumericUpDown() { Left = 50, Top = 50, Width = 300, Minimum = 1, Maximum = 99 };
+            Button confirmation = new Button() { Text = "Tamam", Left = 250, Width = 100, Top = 90, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(inputBox);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+
+            return prompt.ShowDialog() == DialogResult.OK ? inputBox.Value.ToString() : "";
+        }
         private void DisplayCurrentRecipe()
         {
             if (_currentRecipe != null)
@@ -335,76 +398,151 @@ namespace TekstilScada.UI.Views
 
         private async void BtnSendToPlc_Click(object sender, EventArgs e)
         {
-            if (_currentRecipe == null) { MessageBox.Show("Lütfen PLC'ye göndermek için bir reçete seçin veya oluşturun.", "Uyarı"); return; }
-            var selectedMachine = cmbTargetMachine.SelectedItem as Machine;
-            if (selectedMachine == null) { MessageBox.Show("Lütfen bir hedef makine seçin.", "Uyarı"); return; }
-
-            if (_plcManagers == null || !_plcManagers.TryGetValue(selectedMachine.Id, out var plcManager))
+            if (_currentRecipe == null)
             {
-                MessageBox.Show($"'{selectedMachine.MachineName}' için aktif bir PLC bağlantısı bulunamadı.", "Bağlantı Hatası");
+                MessageBox.Show("Lütfen PLC'ye göndermek için bir reçete seçin veya oluşturun.", "Uyarı");
+                return;
+            }
+            var selectedMachine = cmbTargetMachine.SelectedItem as Machine;
+            if (selectedMachine == null)
+            {
+                MessageBox.Show("Lütfen bir hedef makine seçin.", "Uyarı");
                 return;
             }
 
-            int? recipeSlot = null;
-
-            if (selectedMachine.MachineType == "Kurutma Makinesi")
+            // --- YENİ MANTIK: MAKİNE TİPİNE GÖRE İŞLEM SEÇİMİ ---
+            if (selectedMachine.MachineType == "BYMakinesi")
             {
-                string input = ShowInputDialog("Lütfen PLC'ye kaydedilecek reçete numarasını girin (1-20):");
-                if (int.TryParse(input, out int slot) && slot >= 1 && slot <= 20)
+                // 1. FTP bilgileri kontrolü
+                if (string.IsNullOrEmpty(selectedMachine.FtpUsername) || string.IsNullOrEmpty(selectedMachine.IpAddress))
                 {
-                    recipeSlot = slot;
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(input))
-                    {
-                        MessageBox.Show("Geçersiz reçete numarası girdiniz.", "Hata");
-                    }
+                    MessageBox.Show("Bu makine için FTP bilgileri (IP Adresi, Kullanıcı Adı) eksik. Lütfen Ayarlar > Makine Yönetimi ekranından bilgileri girin.", "Eksik Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-            }
 
-            btnSendToPlc.Enabled = false;
-            this.Cursor = Cursors.WaitCursor;
-            try
-            {
-                var result = await plcManager.WriteRecipeToPlcAsync(_currentRecipe, recipeSlot);
+                // 2. Yeni numaratik giriş panelini kullanarak kullanıcıdan numara al
+                string recipeNumberStr = ShowFtpRecipeNumberDialog();
+                if (string.IsNullOrEmpty(recipeNumberStr))
+                {
+                    return; // Kullanıcı iptal etti
+                }
 
-                if (result.IsSuccess) { MessageBox.Show($"'{_currentRecipe.RecipeName}' reçetesi, '{selectedMachine.MachineName}' makinesine başarıyla gönderildi.", "Başarılı"); }
-                else { MessageBox.Show($"Reçete gönderilirken hata oluştu: {result.Message}", "Hata"); }
+                if (!int.TryParse(recipeNumberStr, out int recipeNumber) || recipeNumber < 1 || recipeNumber > 99)
+                {
+                    MessageBox.Show("Geçersiz reçete numarası. Lütfen 1-99 arasında bir sayı girin.", "Hata");
+                    return;
+                }
+
+                // 3. Dosya adını otomatik olarak XPR0000.csv formatına çevir
+                string remoteFileName = string.Format("XPR{0:D4}.csv", recipeNumber);
+
+                btnSendToPlc.Enabled = false;
+                this.Cursor = Cursors.WaitCursor;
+                try
+                {
+                    // 4. Reçeteyi CSV'ye çevir
+                    string csvContent = RecipeCsvConverter.ToCsv(_currentRecipe);
+
+                    // 5. FTP servisi ile dosyayı gönder
+                    var ftpService = new FtpService(selectedMachine.IpAddress, selectedMachine.FtpUsername, selectedMachine.FtpPassword);
+                    await ftpService.UploadFileAsync($"/{remoteFileName}", csvContent);
+
+                    MessageBox.Show($"'{_currentRecipe.RecipeName}' reçetesi, '{selectedMachine.MachineName}' makinesine '{remoteFileName}' adıyla başarıyla gönderildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"FTP ile reçete gönderilirken hata oluştu: {ex.Message}", "FTP Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                    btnSendToPlc.Enabled = true;
+                }
             }
-            catch (NotImplementedException)
+            else // Kurutma Makinesi gibi diğer makineler için eski, doğrudan PLC'ye yazma yöntemi devam eder
             {
-                MessageBox.Show($"'{selectedMachine.MachineType}' tipi için reçete gönderme özelliği henüz tamamlanmadı.", "Geliştirme Aşamasında");
-            }
-            catch (Exception ex) { MessageBox.Show($"Beklenmedik bir hata oluştu: {ex.Message}", "Sistem Hatası"); }
-            finally
-            {
-                this.Cursor = Cursors.Default;
-                btnSendToPlc.Enabled = true;
+                if (_plcManagers == null || !_plcManagers.TryGetValue(selectedMachine.Id, out var plcManager))
+                {
+                    MessageBox.Show($"'{selectedMachine.MachineName}' için aktif bir PLC bağlantısı bulunamadı.", "Bağlantı Hatası");
+                    return;
+                }
+
+                int? recipeSlot = null;
+                if (selectedMachine.MachineType == "Kurutma Makinesi")
+                {
+                    // Güncellenmiş ShowInputDialog metodunu kullanıyoruz (isNumeric = true)
+                    string input = ShowInputDialog("Lütfen PLC'ye kaydedilecek reçete numarasını girin (1-20):", true);
+                    if (int.TryParse(input, out int slot) && slot >= 1 && slot <= 20)
+                    {
+                        recipeSlot = slot;
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(input))
+                        {
+                            MessageBox.Show("Geçersiz reçete numarası girdiniz.", "Hata");
+                        }
+                        return;
+                    }
+                }
+
+                btnSendToPlc.Enabled = false;
+                this.Cursor = Cursors.WaitCursor;
+                try
+                {
+                    var result = await plcManager.WriteRecipeToPlcAsync(_currentRecipe, recipeSlot);
+
+                    if (result.IsSuccess)
+                    {
+                        MessageBox.Show($"'{_currentRecipe.RecipeName}' reçetesi, '{selectedMachine.MachineName}' makinesine başarıyla gönderildi.", "Başarılı");
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Reçete gönderilirken hata oluştu: {result.Message}", "Hata");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Beklenmedik bir hata oluştu: {ex.Message}", "Sistem Hatası");
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                    btnSendToPlc.Enabled = true;
+                }
             }
         }
 
-        public static string ShowInputDialog(string text)
+        public static string ShowInputDialog(string text, bool isNumeric = false)
         {
             Form prompt = new Form()
             {
-                Width = 400,
+                Width = 500,
                 Height = 180,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "Giriş Gerekli",
                 StartPosition = FormStartPosition.CenterScreen
             };
-            Label textLabel = new Label() { Left = 50, Top = 20, Text = "Reçete No (1-20):", Width = 300 };
-            NumericUpDown inputBox = new NumericUpDown() { Left = 50, Top = 50, Width = 300, Minimum = 1, Maximum = 20 };
-            Button confirmation = new Button() { Text = "Tamam", Left = 250, Width = 100, Top = 90, DialogResult = DialogResult.OK };
+            Label textLabel = new Label() { Left = 50, Top = 20, Text = text, Width = 400 };
+            Control inputBox; // Kontrol tipini dinamik olarak belirliyoruz
+
+            if (isNumeric)
+            {
+                inputBox = new NumericUpDown() { Left = 50, Top = 50, Width = 400, Minimum = 1, Maximum = 20 };
+            }
+            else
+            {
+                inputBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            }
+
+            Button confirmation = new Button() { Text = "Tamam", Left = 350, Width = 100, Top = 90, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(inputBox);
             prompt.Controls.Add(confirmation);
             prompt.Controls.Add(textLabel);
             prompt.AcceptButton = confirmation;
 
-            return prompt.ShowDialog() == DialogResult.OK ? inputBox.Value.ToString() : "";
+            return prompt.ShowDialog() == DialogResult.OK ? inputBox.Text : "";
         }
 
         private async void BtnReadFromPlc_Click(object sender, EventArgs e)
@@ -547,6 +685,41 @@ namespace TekstilScada.UI.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"Maliyet hesaplanırken bir hata oluştu: {ex.Message}", "Hata");
+            }
+        }
+        private void FilterRecipeList()
+        {
+            if (cmbTargetMachine.SelectedItem is not Machine selectedMachine || _recipeList == null)
+            {
+                lstRecipes.DataSource = null;
+                return;
+            }
+
+            string filterType = !string.IsNullOrEmpty(selectedMachine.MachineSubType)
+                                ? selectedMachine.MachineSubType
+                                : selectedMachine.MachineType;
+
+            // Uyumlu reçeteleri filtrele
+            var compatibleRecipes = _recipeList
+                .Where(r => r.TargetMachineType == filterType)
+                .ToList();
+
+            // DataGridView'in seçim olayını geçici olarak kaldır
+            lstRecipes.SelectedIndexChanged -= LstRecipes_SelectedIndexChanged;
+
+            lstRecipes.DataSource = null;
+            lstRecipes.DataSource = compatibleRecipes;
+            lstRecipes.DisplayMember = "RecipeName";
+            lstRecipes.ValueMember = "Id";
+
+            // Olayı geri ekle
+            lstRecipes.SelectedIndexChanged += LstRecipes_SelectedIndexChanged;
+
+            // Filtreleme sonrası seçili bir reçete kalmadıysa editörü temizle
+            if (lstRecipes.Items.Count == 0 || lstRecipes.SelectedIndex == -1)
+            {
+                _currentRecipe = null;
+                DisplayCurrentRecipe();
             }
         }
     }

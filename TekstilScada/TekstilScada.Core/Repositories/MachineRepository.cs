@@ -110,7 +110,7 @@ namespace TekstilScada.Repositories
             {
                 connection.Open();
                 // GÜNCELLENDİ: FTP alanları sorguya eklendi
-                string query = "INSERT INTO machines (MachineUserDefinedId, MachineName, IpAddress, Port, MachineType, IsEnabled, VncAddress, VncPassword, FtpUsername, FtpPassword) VALUES (@MachineUserDefinedId, @MachineName, @IpAddress, @Port, @MachineType, @IsEnabled, @VncAddress, @VncPassword, @FtpUsername,MachineSubType=@MachineSubType @FtpPassword);";
+                string query = "INSERT INTO machines (MachineUserDefinedId, MachineName, IpAddress, Port, MachineType, IsEnabled, VncAddress, VncPassword, FtpUsername, FtpPassword) VALUES (@MachineUserDefinedId, @MachineName, @IpAddress, @Port, @MachineType, @IsEnabled, @VncAddress, @VncPassword, @FtpUsername, @MachineSubType, @FtpPassword);";
                 var cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@MachineUserDefinedId", machine.MachineUserDefinedId);
                 cmd.Parameters.AddWithValue("@MachineName", machine.MachineName);
@@ -134,7 +134,7 @@ namespace TekstilScada.Repositories
             {
                 connection.Open();
                 // GÜNCELLENDİ: FTP alanları sorguya eklendi
-                string query = "UPDATE machines SET MachineUserDefinedId = @MachineUserDefinedId, MachineName = @MachineName, IpAddress = @IpAddress, Port = @Port, MachineType = @MachineType, IsEnabled = @IsEnabled, VncAddress = @VncAddress, VncPassword = @VncPassword, FtpUsername = @FtpUsername, FtpPassword = @FtpPassword, MachineSubType=@MachineSubType WHERE Id = @Id;";
+                string query = "UPDATE machines SET MachineUserDefinedId = @MachineUserDefinedId, MachineName = @MachineName, IpAddress = @IpAddress, Port = @Port, MachineType = @MachineType, IsEnabled = @IsEnabled, VncAddress = @VncAddress, VncPassword = @VncPassword, FtpUsername = @FtpUsername, FtpPassword = @FtpPassword, MachineSubType = @MachineSubType WHERE Id = @Id;";
                 var cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@Id", machine.Id);
                 cmd.Parameters.AddWithValue("@MachineUserDefinedId", machine.MachineUserDefinedId);

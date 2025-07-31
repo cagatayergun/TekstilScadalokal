@@ -8,6 +8,7 @@ namespace TekstilScada.Models
     {
         public int Id { get; set; }
         public string RecipeName { get; set; }
+        public string TargetMachineType { get; set; } // YENİ EKLENEN SATIR
         public DateTime CreationDate { get; set; }
         public List<ScadaRecipeStep> Steps { get; set; }
 

@@ -32,9 +32,10 @@ namespace TekstilScada.Repositories
                 {
                     try
                     {
-                        string recipeQuery = "INSERT INTO recipes (RecipeName, CreationDate) VALUES (@RecipeName, @CreationDate); SELECT LAST_INSERT_ID();";
+                        string recipeQuery = "INSERT INTO recipes (RecipeName, TargetMachineType,CreationDate) VALUES (@RecipeName, @TargetMachineType, @CreationDate); SELECT LAST_INSERT_ID();";
                         var recipeCmd = new MySqlCommand(recipeQuery, connection, transaction);
                         recipeCmd.Parameters.AddWithValue("@RecipeName", recipe.RecipeName);
+                        recipeCmd.Parameters.AddWithValue("@TargetMachineType", recipe.TargetMachineType); // Yeni parametreyi ekleyin
                         recipeCmd.Parameters.AddWithValue("@CreationDate", DateTime.Now);
                         recipe.Id = Convert.ToInt32(recipeCmd.ExecuteScalar());
 
@@ -74,9 +75,10 @@ namespace TekstilScada.Repositories
                     try
                     {
                         // 1. Ana reçete adını güncelle
-                        string recipeQuery = "UPDATE recipes SET RecipeName = @RecipeName WHERE Id = @Id;";
+                        string recipeQuery = "UPDATE recipes SET RecipeName = @RecipeName, TargetMachineType = @TargetMachineType WHERE Id = @Id;";
                         var recipeCmd = new MySqlCommand(recipeQuery, connection, transaction);
                         recipeCmd.Parameters.AddWithValue("@RecipeName", recipe.RecipeName);
+                        recipeCmd.Parameters.AddWithValue("@TargetMachineType", recipe.TargetMachineType); // Yeni parametreyi ekleyin
                         recipeCmd.Parameters.AddWithValue("@Id", recipe.Id);
                         recipeCmd.ExecuteNonQuery();
 
@@ -116,7 +118,7 @@ namespace TekstilScada.Repositories
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT Id, RecipeName, CreationDate FROM recipes ORDER BY RecipeName;";
+                string query = "SELECT Id, RecipeName,TargetMachineType, CreationDate FROM recipes ORDER BY RecipeName;";
                 var cmd = new MySqlCommand(query, connection);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -126,6 +128,7 @@ namespace TekstilScada.Repositories
                         {
                             Id = reader.GetInt32("Id"),
                             RecipeName = reader.GetString("RecipeName"),
+                            TargetMachineType = reader.IsDBNull(reader.GetOrdinal("TargetMachineType")) ? "Bilinmiyor" : reader.GetString("TargetMachineType"),
                             CreationDate = reader.GetDateTime("CreationDate")
                         });
                     }
@@ -152,7 +155,7 @@ namespace TekstilScada.Repositories
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string recipeQuery = "SELECT Id, RecipeName, CreationDate FROM recipes WHERE Id = @Id;";
+                string recipeQuery = "SELECT Id, RecipeName,TargetMachineType, CreationDate FROM recipes WHERE Id = @Id;";
                 var recipeCmd = new MySqlCommand(recipeQuery, connection);
                 recipeCmd.Parameters.AddWithValue("@Id", recipeId);
 
@@ -164,6 +167,7 @@ namespace TekstilScada.Repositories
                         {
                             Id = reader.GetInt32("Id"),
                             RecipeName = reader.GetString("RecipeName"),
+                            TargetMachineType = reader.IsDBNull(reader.GetOrdinal("TargetMachineType")) ? "Bilinmiyor" : reader.GetString("TargetMachineType"),
                             CreationDate = reader.GetDateTime("CreationDate")
                         };
                     }
