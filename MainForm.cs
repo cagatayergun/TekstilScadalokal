@@ -74,7 +74,7 @@ namespace TekstilScada
             // Veritabaný ve PLC iþlemlerini baþlatan metotlar burada çaðrýlýr.
             ApplyLocalization();
             UpdateUserInfoAndPermissions();
-            ReloadSystem();
+            ReloadSystem(_genelBakisView);
             ApplyPermissions(); // YENÝ: Yetkileri uygula
         }
         private void ApplyPermissions()
@@ -88,14 +88,13 @@ namespace TekstilScada
             // Ayarlar butonunu sadece Admin görebilir/kullanabilir.
             btnAyarlar.Enabled = PermissionService.CanViewSettings;
         }
-        private void ReloadSystem()
+        private void ReloadSystem(Control viewToShow)
         {
             _pollingService.Stop();
             List<Machine> machines = _machineRepository.GetAllEnabledMachines();
             if (machines == null)
             {
-                
-                MessageBox.Show(Resources.DatabaseConnectionFailed, Resources.CriticalError);
+                MessageBox.Show("Veritabaný baðlantýsý kurulamadý veya makine bilgileri alýnamadý.", "Kritik Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             _pollingService.Start(machines);
@@ -108,7 +107,17 @@ namespace TekstilScada
             _raporlarView.InitializeControl(_machineRepository, _alarmRepository, _productionRepository, _dashboardRepository, _processLogRepository, _recipeRepository);
             _genelBakisView.InitializeControl(_pollingService, _machineRepository, _dashboardRepository);
 
-            ShowView(_genelBakisView); // Baþlangýç ekraný olarak Genel Bakýþ'ý göster
+            // HANGÝ SAYFANIN GÖSTERÝLECEÐÝNÝ KONTROL ET
+            if (viewToShow != _genelBakisView)
+            {
+                // Eðer bir sayfa belirtilmiþse onu göster
+                ShowView(_ayarlarView);
+            }
+            else
+            {
+                // Eðer bir sayfa belirtilmemiþse (ilk açýlýþ gibi), Genel Bakýþ'ý göster
+                ShowView(_genelBakisView);
+            }
         }
 
         #region Arayüz ve Dil Yönetimi
@@ -168,7 +177,7 @@ namespace TekstilScada
 
         #region Olay Yöneticileri (Event Handlers)
 
-        private void OnMachineListChanged(object sender, EventArgs e) => ReloadSystem();
+        private void OnMachineListChanged(object sender, EventArgs e) => ReloadSystem(_ayarlarView);
         private void OnBackRequested(object sender, EventArgs e) => ShowView(_prosesIzlemeView);
         private void btnGenelBakis_Click(object sender, EventArgs e) => ShowView(_genelBakisView);
         private void btnProsesIzleme_Click(object sender, EventArgs e) => ShowView(_prosesIzlemeView);
@@ -191,7 +200,7 @@ namespace TekstilScada
                     if (loginForm.ShowDialog() == DialogResult.OK)
                     {
                         UpdateUserInfoAndPermissions();
-                        ReloadSystem();
+                        ReloadSystem(_genelBakisView);
                         this.Show();
                     }
                     else

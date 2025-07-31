@@ -179,6 +179,34 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
                 editor.Dock = DockStyle.Top;
                 pnlParameters.Controls.Add(editor);
             }
+
+        }
+        public void SetReadOnly(bool isReadOnly)
+        {
+            // Bu metot, içindeki tüm alt kontrollere ulaşarak
+            // düzenleme yapılmasını engeller veya izin verir.
+            SetControlsState(this.Controls, !isReadOnly);
+        }
+
+        private void SetControlsState(Control.ControlCollection controls, bool enabled)
+        {
+            foreach (Control control in controls)
+            {
+                // Sadece kullanıcı girişi alan kontrolleri hedef alıyoruz.
+                // Butonlar veya labellar etkilenmez.
+                if (control is NumericUpDown || control is TextBox || control is CheckBox || control is ComboBox)
+                {
+                    control.Enabled = enabled;
+                }
+
+                // Panel veya GroupBox gibi taşıyıcıların içindeki kontrollere de ulaşmak için
+                // kendini tekrar çağıran (recursive) bir yapı kullanıyoruz.
+                if (control.HasChildren)
+                {
+                    SetControlsState(control.Controls, enabled);
+                }
+            }
         }
     }
+
 }

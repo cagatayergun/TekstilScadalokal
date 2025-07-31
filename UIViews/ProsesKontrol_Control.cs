@@ -27,7 +27,7 @@ namespace TekstilScada.UI.Views
         private Panel pnlStepDetails;
         private Label lblStepDetailsTitle;
         private CostRepository _costRepository;
-
+        private FtpSync_Form _ftpFormInstance; // YENİ EKLENEN SATIR
         public ProsesKontrol_Control()
         {
             InitializeComponent();
@@ -41,6 +41,7 @@ namespace TekstilScada.UI.Views
             lstRecipes.SelectedIndexChanged += LstRecipes_SelectedIndexChanged;
             cmbTargetMachine.SelectedIndexChanged += CmbTargetMachine_SelectedIndexChanged;
             btnFtpSync.Click += BtnFtpSync_Click;
+            this.Load += ProsesKontrol_Control_Load;
         }
 
         public void InitializeControl(RecipeRepository recipeRepo, MachineRepository machineRepo, Dictionary<int, IPlcManager> plcManagers)
@@ -57,7 +58,9 @@ namespace TekstilScada.UI.Views
             LoadMachineList();
             ApplyRolePermissions(); // YENİ: Yetki kontrolünü çağır
             ApplyPermissions(); // YENİ: Bu ekran için yetkileri uygula
+            FtpTransferService.Instance.RecipeListChanged += OnRecipeListChanged;
         }
+
         private void ApplyPermissions()
         {
             // Reçete kaydetme yetkisi kontrolü
@@ -79,8 +82,23 @@ namespace TekstilScada.UI.Views
             // Sadece Admin ve Muhendis (Mühendis) rolleri kaydedebilir.
             btnSaveRecipe.Enabled = CurrentUser.HasRole("Admin") || CurrentUser.HasRole("Muhendis");
 
-           
+
         }
+        // YENİ EKLENEN METOT: Sinyal geldiğinde bu metot çalışacak
+        private void OnRecipeListChanged(object sender, EventArgs e)
+        {
+            // Farklı bir thread'den gelebileceği için Invoke kullanarak UI'ı güvenli şekilde güncelle
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => LoadRecipeList()));
+            }
+            else
+            {
+                LoadRecipeList();
+            }
+        }
+         
+             
         private void LoadMachineList()
         {
             var machines = _machineRepository.GetAllEnabledMachines();
@@ -93,16 +111,28 @@ namespace TekstilScada.UI.Views
         {
             try
             {
+                // 1. Daha önce hangi öğenin seçili olduğunu hatırla
                 int selectedId = (lstRecipes.SelectedItem as ScadaRecipe)?.Id ?? -1;
+
+                // 2. Listeyi veritabanından yeniden yükle
                 _recipeList = _recipeRepository.GetAllRecipes();
                 lstRecipes.DataSource = null;
                 lstRecipes.DataSource = _recipeList;
                 lstRecipes.DisplayMember = "RecipeName";
                 lstRecipes.ValueMember = "Id";
 
+                // 3. Eski seçili öğeyi tekrar seçmeye çalış
                 if (selectedId != -1)
                 {
-                    lstRecipes.SelectedValue = selectedId;
+                    // --- YENİ GÜVENLİK KONTROLÜ ---
+                    // 'selectedId'nin yeni yüklenen '_recipeList' içinde hala var olup olmadığını kontrol et.
+                    var itemExists = _recipeList.Any(r => r.Id == selectedId);
+                    if (itemExists)
+                    {
+                        // Eğer hala varsa, güvenli bir şekilde seç.
+                        lstRecipes.SelectedValue = selectedId;
+                    }
+                    // Eğer yoksa, hiçbir şey yapma ve hatayı önle.
                 }
             }
             catch (Exception ex)
@@ -282,9 +312,25 @@ namespace TekstilScada.UI.Views
 
         private void BtnFtpSync_Click(object sender, EventArgs e)
         {
-            var ftpForm = new FtpSync_Form(_machineRepository, _recipeRepository);
-            ftpForm.ShowDialog(this);
-            LoadRecipeList();
+            // 1. Eğer form daha önce açılmış ve hala açıksa, yeni bir tane açma, eskisini öne getir.
+            if (_ftpFormInstance != null && !_ftpFormInstance.IsDisposed)
+            {
+                _ftpFormInstance.BringToFront();
+                return;
+            }
+
+            // 2. Formu oluştur.
+            _ftpFormInstance = new FtpSync_Form(_machineRepository, _recipeRepository);
+
+            // 3. Form kapandığında, referansı temizle ki tekrar açılabilsin.
+            _ftpFormInstance.FormClosed += (s, args) => _ftpFormInstance = null;
+
+            // 4. Formu ShowDialog() yerine Show() ile açarak arka planda çalışmaya izin ver.
+            _ftpFormInstance.Show(this);
+
+            // DİKKAT: LoadRecipeList() satırını buradan siliyoruz.
+            // Çünkü Show() komutu beklemeyeceği için, liste yenileme işlemini
+            // arka plan servisinden bir sinyal geldiğinde yapacağız. (Bir sonraki adımda anlatılıyor)
         }
 
         private async void BtnSendToPlc_Click(object sender, EventArgs e)
@@ -432,23 +478,46 @@ namespace TekstilScada.UI.Views
 
         private void BtnDeleteRecipe_Click(object sender, EventArgs e)
         {
-            if (lstRecipes.SelectedItem is ScadaRecipe selectedRecipe)
+            // 1. Listeden seçili olan tüm reçeteleri al.
+            var selectedRecipes = lstRecipes.SelectedItems.Cast<ScadaRecipe>().ToList();
+
+            // 2. Hiçbir reçete seçilmediyse uyarı ver ve metottan çık.
+            if (!selectedRecipes.Any())
             {
-                var result = MessageBox.Show($"'{selectedRecipe.RecipeName}' reçetesini silmek istediğinizden emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (result == DialogResult.Yes)
+                MessageBox.Show("Lütfen silmek için listeden en az bir reçete seçin.", "Uyarı");
+                return;
+            }
+
+            // 3. Kullanıcıdan toplu silme için onay al.
+            var result = MessageBox.Show(
+                $"{selectedRecipes.Count} adet reçeteyi kalıcı olarak silmek istediğinizden emin misiniz?\nBu işlem geri alınamaz.",
+                "Toplu Silme Onayı",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            // 4. Kullanıcı "Evet" derse silme işlemine başla.
+            if (result == DialogResult.Yes)
+            {
+                try
                 {
-                    try
+                    // Seçilen her bir reçete için döngü kur ve sil.
+                    foreach (var recipeToDelete in selectedRecipes)
                     {
-                        _recipeRepository.DeleteRecipe(selectedRecipe.Id);
-                        MessageBox.Show("Reçete başarıyla silindi.", "Başarılı");
-                        _currentRecipe = null;
-                        DisplayCurrentRecipe();
-                        LoadRecipeList();
+                        _recipeRepository.DeleteRecipe(recipeToDelete.Id);
                     }
-                    catch (Exception ex) { MessageBox.Show($"Reçete silinirken bir hata oluştu: {ex.Message}", "Hata"); }
+
+                    MessageBox.Show($"{selectedRecipes.Count} adet reçete başarıyla silindi.", "İşlem Tamamlandı");
+
+                    // 5. Mevcut reçete ekranını temizle ve listeyi yenile.
+                    _currentRecipe = null;
+                    DisplayCurrentRecipe();
+                    LoadRecipeList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Reçeteler silinirken bir hata oluştu: {ex.Message}", "Hata");
                 }
             }
-            else { MessageBox.Show("Lütfen silmek için listeden bir reçete seçin.", "Uyarı"); }
         }
         private void btnCalculateCost_Click(object sender, EventArgs e)
         {

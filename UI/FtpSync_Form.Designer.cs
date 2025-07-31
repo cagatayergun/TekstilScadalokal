@@ -17,222 +17,309 @@
 
         private void InitializeComponent()
         {
-            this.pnlTop = new System.Windows.Forms.Panel();
-            this.cmbMachines = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.lstLocalRecipes = new System.Windows.Forms.ListBox();
-            this.pnlMiddle = new System.Windows.Forms.Panel();
-            this.btnReceive = new System.Windows.Forms.Button();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lstHmiRecipes = new System.Windows.Forms.ListBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.btnRefreshHmi = new System.Windows.Forms.Button();
-            this.dgvTransfers = new System.Windows.Forms.DataGridView();
-            this.pnlTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.pnlMiddle.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTransfers)).BeginInit();
-            this.SuspendLayout();
+            pnlTop = new Panel();
+            clbMachines = new CheckedListBox();
+            label1 = new Label();
+            splitContainer1 = new SplitContainer();
+            groupBox1 = new GroupBox();
+            lstLocalRecipes = new ListBox();
+            pnlMiddle = new Panel();
+            btnReceive = new Button();
+            btnSend = new Button();
+            groupBox2 = new GroupBox();
+            lstHmiRecipes = new ListBox();
+            panel1 = new Panel();
+            btnRefreshHmi = new Button();
+            dgvTransfers = new DataGridView();
+            tabControlMain = new TabControl();
+            tabPageTransfers = new TabPage();
+            tabPagePreview = new TabPage();
+            pnlPreviewArea = new Panel();
+            lblPreviewStatus = new Label();
+            pnlTop.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            groupBox1.SuspendLayout();
+            pnlMiddle.SuspendLayout();
+            groupBox2.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTransfers).BeginInit();
+            tabControlMain.SuspendLayout();
+            tabPageTransfers.SuspendLayout();
+            tabPagePreview.SuspendLayout();
+            pnlPreviewArea.SuspendLayout();
+            SuspendLayout();
             // 
             // pnlTop
             // 
-            this.pnlTop.Controls.Add(this.cmbMachines);
-            this.pnlTop.Controls.Add(this.label1);
-            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlTop.Location = new System.Drawing.Point(10, 10);
-            this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(962, 50);
-            this.pnlTop.TabIndex = 0;
+            pnlTop.Controls.Add(clbMachines);
+            pnlTop.Controls.Add(label1);
+            pnlTop.Dock = DockStyle.Right;
+            pnlTop.Location = new Point(896, 8);
+            pnlTop.Margin = new Padding(3, 2, 3, 2);
+            pnlTop.Name = "pnlTop";
+            pnlTop.Size = new Size(257, 570);
+            pnlTop.TabIndex = 0;
             // 
-            // cmbMachines
+            // clbMachines
             // 
-            this.cmbMachines.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbMachines.FormattingEnabled = true;
-            this.cmbMachines.Location = new System.Drawing.Point(120, 11);
-            this.cmbMachines.Name = "cmbMachines";
-            this.cmbMachines.Size = new System.Drawing.Size(350, 28);
-            this.cmbMachines.TabIndex = 1;
-            this.cmbMachines.SelectedIndexChanged += new System.EventHandler(this.cmbMachines_SelectedIndexChanged);
+            clbMachines.FormattingEnabled = true;
+            clbMachines.Location = new Point(4, 27);
+            clbMachines.Margin = new Padding(3, 2, 3, 2);
+            clbMachines.Name = "clbMachines";
+            clbMachines.Size = new Size(248, 526);
+            clbMachines.TabIndex = 1;
+            clbMachines.ItemCheck += clbMachines_ItemCheck;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(3, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(111, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Hedef Makine:";
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            label1.Location = new Point(84, 10);
+            label1.Name = "label1";
+            label1.Size = new Size(86, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Hedef Makine";
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitContainer1.Location = new System.Drawing.Point(10, 60);
-            this.splitContainer1.Name = "splitContainer1";
+            splitContainer1.Dock = DockStyle.Top;
+            splitContainer1.Location = new Point(9, 8);
+            splitContainer1.Margin = new Padding(3, 2, 3, 2);
+            splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
+            splitContainer1.Panel1.Controls.Add(groupBox1);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.pnlMiddle);
-            this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer1.Size = new System.Drawing.Size(962, 240);
-            this.splitContainer1.SplitterDistance = 420;
-            this.splitContainer1.TabIndex = 1;
+            splitContainer1.Panel2.Controls.Add(pnlMiddle);
+            splitContainer1.Panel2.Controls.Add(groupBox2);
+            splitContainer1.Size = new Size(887, 280);
+            splitContainer1.SplitterDistance = 387;
+            splitContainer1.TabIndex = 1;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.lstLocalRecipes);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(420, 240);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "SCADA Reçeteleri (Çoklu Seçim)";
+            groupBox1.Controls.Add(lstLocalRecipes);
+            groupBox1.Dock = DockStyle.Fill;
+            groupBox1.Location = new Point(0, 0);
+            groupBox1.Margin = new Padding(3, 2, 3, 2);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new Padding(3, 2, 3, 2);
+            groupBox1.Size = new Size(387, 280);
+            groupBox1.TabIndex = 0;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "SCADA Reçeteleri (Çoklu Seçim)";
             // 
             // lstLocalRecipes
             // 
-            this.lstLocalRecipes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstLocalRecipes.FormattingEnabled = true;
-            this.lstLocalRecipes.ItemHeight = 20;
-            this.lstLocalRecipes.Location = new System.Drawing.Point(3, 23);
-            this.lstLocalRecipes.Name = "lstLocalRecipes";
-            this.lstLocalRecipes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLocalRecipes.Size = new System.Drawing.Size(414, 214);
-            this.lstLocalRecipes.TabIndex = 0;
+            lstLocalRecipes.Dock = DockStyle.Fill;
+            lstLocalRecipes.FormattingEnabled = true;
+            lstLocalRecipes.ItemHeight = 15;
+            lstLocalRecipes.Location = new Point(3, 18);
+            lstLocalRecipes.Margin = new Padding(3, 2, 3, 2);
+            lstLocalRecipes.Name = "lstLocalRecipes";
+            lstLocalRecipes.SelectionMode = SelectionMode.MultiExtended;
+            lstLocalRecipes.Size = new Size(381, 260);
+            lstLocalRecipes.TabIndex = 0;
             // 
             // pnlMiddle
             // 
-            this.pnlMiddle.Controls.Add(this.btnReceive);
-            this.pnlMiddle.Controls.Add(this.btnSend);
-            this.pnlMiddle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMiddle.Location = new System.Drawing.Point(0, 0);
-            this.pnlMiddle.Name = "pnlMiddle";
-            this.pnlMiddle.Size = new System.Drawing.Size(118, 240);
-            this.pnlMiddle.TabIndex = 1;
+            pnlMiddle.Controls.Add(btnReceive);
+            pnlMiddle.Controls.Add(btnSend);
+            pnlMiddle.Dock = DockStyle.Fill;
+            pnlMiddle.Location = new Point(0, 0);
+            pnlMiddle.Margin = new Padding(3, 2, 3, 2);
+            pnlMiddle.Name = "pnlMiddle";
+            pnlMiddle.Size = new Size(128, 280);
+            pnlMiddle.TabIndex = 1;
             // 
             // btnReceive
             // 
-            this.btnReceive.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnReceive.Location = new System.Drawing.Point(9, 130);
-            this.btnReceive.Name = "btnReceive";
-            this.btnReceive.Size = new System.Drawing.Size(100, 50);
-            this.btnReceive.TabIndex = 1;
-            this.btnReceive.Text = "<< Al";
-            this.btnReceive.UseVisualStyleBackColor = true;
-            this.btnReceive.Click += new System.EventHandler(this.btnReceive_Click);
+            btnReceive.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            btnReceive.Location = new Point(20, 98);
+            btnReceive.Margin = new Padding(3, 2, 3, 2);
+            btnReceive.Name = "btnReceive";
+            btnReceive.Size = new Size(88, 38);
+            btnReceive.TabIndex = 1;
+            btnReceive.Text = "<< Al";
+            btnReceive.UseVisualStyleBackColor = true;
+            btnReceive.Click += btnReceive_Click;
             // 
             // btnSend
             // 
-            this.btnSend.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnSend.Location = new System.Drawing.Point(9, 60);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(100, 50);
-            this.btnSend.TabIndex = 0;
-            this.btnSend.Text = "Gönder >>";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            btnSend.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            btnSend.Location = new Point(20, 45);
+            btnSend.Margin = new Padding(3, 2, 3, 2);
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(88, 38);
+            btnSend.TabIndex = 0;
+            btnSend.Text = "Gönder >>";
+            btnSend.UseVisualStyleBackColor = true;
+            btnSend.Click += btnSend_Click;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.lstHmiRecipes);
-            this.groupBox2.Controls.Add(this.panel1);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.groupBox2.Location = new System.Drawing.Point(118, 0);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(420, 240);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "HMI Reçeteleri (Çoklu Seçim)";
+            groupBox2.Controls.Add(lstHmiRecipes);
+            groupBox2.Controls.Add(panel1);
+            groupBox2.Dock = DockStyle.Right;
+            groupBox2.Location = new Point(128, 0);
+            groupBox2.Margin = new Padding(3, 2, 3, 2);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Padding = new Padding(3, 2, 3, 2);
+            groupBox2.Size = new Size(368, 280);
+            groupBox2.TabIndex = 0;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "HMI Reçeteleri (Ön izleme için tek seçim)";
             // 
             // lstHmiRecipes
             // 
-            this.lstHmiRecipes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstHmiRecipes.FormattingEnabled = true;
-            this.lstHmiRecipes.ItemHeight = 20;
-            this.lstHmiRecipes.Location = new System.Drawing.Point(3, 63);
-            this.lstHmiRecipes.Name = "lstHmiRecipes";
-            this.lstHmiRecipes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstHmiRecipes.Size = new System.Drawing.Size(414, 174);
-            this.lstHmiRecipes.TabIndex = 0;
+            lstHmiRecipes.Dock = DockStyle.Fill;
+            lstHmiRecipes.FormattingEnabled = true;
+            lstHmiRecipes.ItemHeight = 15;
+            lstHmiRecipes.Location = new Point(3, 48);
+            lstHmiRecipes.Margin = new Padding(3, 2, 3, 2);
+            lstHmiRecipes.Name = "lstHmiRecipes";
+            lstHmiRecipes.SelectionMode = SelectionMode.MultiExtended;
+            lstHmiRecipes.Size = new Size(362, 230);
+            lstHmiRecipes.TabIndex = 0;
+            lstHmiRecipes.SelectedIndexChanged += lstHmiRecipes_SelectedIndexChanged;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.btnRefreshHmi);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(3, 23);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(414, 40);
-            this.panel1.TabIndex = 1;
+            panel1.Controls.Add(btnRefreshHmi);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(3, 18);
+            panel1.Margin = new Padding(3, 2, 3, 2);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(362, 30);
+            panel1.TabIndex = 1;
             // 
             // btnRefreshHmi
             // 
-            this.btnRefreshHmi.Location = new System.Drawing.Point(3, 5);
-            this.btnRefreshHmi.Name = "btnRefreshHmi";
-            this.btnRefreshHmi.Size = new System.Drawing.Size(120, 30);
-            this.btnRefreshHmi.TabIndex = 0;
-            this.btnRefreshHmi.Text = "Listeyi Yenile";
-            this.btnRefreshHmi.UseVisualStyleBackColor = true;
-            this.btnRefreshHmi.Click += new System.EventHandler(this.btnRefreshHmi_Click);
+            btnRefreshHmi.Location = new Point(3, 4);
+            btnRefreshHmi.Margin = new Padding(3, 2, 3, 2);
+            btnRefreshHmi.Name = "btnRefreshHmi";
+            btnRefreshHmi.Size = new Size(105, 22);
+            btnRefreshHmi.TabIndex = 0;
+            btnRefreshHmi.Text = "Listeyi Yenile";
+            btnRefreshHmi.UseVisualStyleBackColor = true;
+            btnRefreshHmi.Click += btnRefreshHmi_Click;
             // 
             // dgvTransfers
             // 
-            this.dgvTransfers.AllowUserToAddRows = false;
-            this.dgvTransfers.AllowUserToDeleteRows = false;
-            this.dgvTransfers.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvTransfers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvTransfers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvTransfers.Location = new System.Drawing.Point(10, 300);
-            this.dgvTransfers.Name = "dgvTransfers";
-            this.dgvTransfers.ReadOnly = true;
-            this.dgvTransfers.RowHeadersWidth = 51;
-            this.dgvTransfers.RowTemplate.Height = 29;
-            this.dgvTransfers.Size = new System.Drawing.Size(962, 243);
-            this.dgvTransfers.TabIndex = 2;
+            dgvTransfers.AllowUserToAddRows = false;
+            dgvTransfers.AllowUserToDeleteRows = false;
+            dgvTransfers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTransfers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvTransfers.Dock = DockStyle.Fill;
+            dgvTransfers.Location = new Point(3, 2);
+            dgvTransfers.Margin = new Padding(3, 2, 3, 2);
+            dgvTransfers.Name = "dgvTransfers";
+            dgvTransfers.ReadOnly = true;
+            dgvTransfers.RowHeadersWidth = 51;
+            dgvTransfers.RowTemplate.Height = 29;
+            dgvTransfers.Size = new Size(873, 258);
+            dgvTransfers.TabIndex = 2;
+            // 
+            // tabControlMain
+            // 
+            tabControlMain.Controls.Add(tabPageTransfers);
+            tabControlMain.Controls.Add(tabPagePreview);
+            tabControlMain.Dock = DockStyle.Fill;
+            tabControlMain.Location = new Point(9, 288);
+            tabControlMain.Margin = new Padding(3, 2, 3, 2);
+            tabControlMain.Name = "tabControlMain";
+            tabControlMain.SelectedIndex = 0;
+            tabControlMain.Size = new Size(887, 290);
+            tabControlMain.TabIndex = 3;
+            // 
+            // tabPageTransfers
+            // 
+            tabPageTransfers.Controls.Add(dgvTransfers);
+            tabPageTransfers.Location = new Point(4, 24);
+            tabPageTransfers.Margin = new Padding(3, 2, 3, 2);
+            tabPageTransfers.Name = "tabPageTransfers";
+            tabPageTransfers.Padding = new Padding(3, 2, 3, 2);
+            tabPageTransfers.Size = new Size(879, 262);
+            tabPageTransfers.TabIndex = 0;
+            tabPageTransfers.Text = "Transfer Listesi";
+            tabPageTransfers.UseVisualStyleBackColor = true;
+            // 
+            // tabPagePreview
+            // 
+            tabPagePreview.Controls.Add(pnlPreviewArea);
+            tabPagePreview.Location = new Point(4, 24);
+            tabPagePreview.Margin = new Padding(3, 2, 3, 2);
+            tabPagePreview.Name = "tabPagePreview";
+            tabPagePreview.Padding = new Padding(3, 2, 3, 2);
+            tabPagePreview.Size = new Size(834, 143);
+            tabPagePreview.TabIndex = 1;
+            tabPagePreview.Text = "Reçete Ön İzleme";
+            tabPagePreview.UseVisualStyleBackColor = true;
+            // 
+            // pnlPreviewArea
+            // 
+            pnlPreviewArea.Controls.Add(lblPreviewStatus);
+            pnlPreviewArea.Dock = DockStyle.Fill;
+            pnlPreviewArea.Location = new Point(3, 2);
+            pnlPreviewArea.Margin = new Padding(3, 2, 3, 2);
+            pnlPreviewArea.Name = "pnlPreviewArea";
+            pnlPreviewArea.Size = new Size(828, 139);
+            pnlPreviewArea.TabIndex = 0;
+            // 
+            // lblPreviewStatus
+            // 
+            lblPreviewStatus.Dock = DockStyle.Fill;
+            lblPreviewStatus.Font = new Font("Segoe UI", 12F, FontStyle.Italic);
+            lblPreviewStatus.ForeColor = SystemColors.ControlDarkDark;
+            lblPreviewStatus.Location = new Point(0, 0);
+            lblPreviewStatus.Name = "lblPreviewStatus";
+            lblPreviewStatus.Size = new Size(828, 139);
+            lblPreviewStatus.TabIndex = 0;
+            lblPreviewStatus.Text = "Ön izleme için HMI listesinden bir reçete seçin.";
+            lblPreviewStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // FtpSync_Form
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(982, 553);
-            this.Controls.Add(this.dgvTransfers);
-            this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.pnlTop);
-            this.Name = "FtpSync_Form";
-            this.Padding = new System.Windows.Forms.Padding(10);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Toplu FTP Reçete Senkronizasyonu";
-            this.Load += new System.EventHandler(this.FtpSync_Form_Load);
-            this.pnlTop.ResumeLayout(false);
-            this.pnlTop.PerformLayout();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.pnlMiddle.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTransfers)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1162, 586);
+            Controls.Add(tabControlMain);
+            Controls.Add(splitContainer1);
+            Controls.Add(pnlTop);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "FtpSync_Form";
+            Padding = new Padding(9, 8, 9, 8);
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Toplu FTP Reçete Senkronizasyonu";
+            Load += FtpSync_Form_Load;
+            pnlTop.ResumeLayout(false);
+            pnlTop.PerformLayout();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            pnlMiddle.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvTransfers).EndInit();
+            tabControlMain.ResumeLayout(false);
+            tabPageTransfers.ResumeLayout(false);
+            tabPagePreview.ResumeLayout(false);
+            pnlPreviewArea.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
 
         private System.Windows.Forms.Panel pnlTop;
-        private System.Windows.Forms.ComboBox cmbMachines;
+        private System.Windows.Forms.CheckedListBox clbMachines;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -245,5 +332,10 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnRefreshHmi;
         private System.Windows.Forms.DataGridView dgvTransfers;
+        private System.Windows.Forms.TabControl tabControlMain;
+        private System.Windows.Forms.TabPage tabPageTransfers;
+        private System.Windows.Forms.TabPage tabPagePreview;
+        private System.Windows.Forms.Panel pnlPreviewArea;
+        private System.Windows.Forms.Label lblPreviewStatus;
     }
 }
