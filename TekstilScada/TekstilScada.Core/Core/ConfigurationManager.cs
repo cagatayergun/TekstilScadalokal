@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Dosya: TekstilScada.Core/Core/ConfigurationManager.cs
+using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace TekstilScada.Core
@@ -10,7 +11,9 @@ namespace TekstilScada.Core
         static AppConfig()
         {
             var configuration = new ConfigurationBuilder()
+                // Çalışan uygulamanın bulunduğu dizini baz al
                 .SetBasePath(Directory.GetCurrentDirectory())
+                // Bu dizindeki appsettings.json dosyasını oku
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
