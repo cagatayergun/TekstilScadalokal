@@ -201,15 +201,26 @@ namespace TekstilScada.Services
         {
             foreach (var machineStatus in MachineDataCache.Values)
             {
+                // Koşulu düzelttik: Artık sadece bağlantının varlığını kontrol ediyoruz.
                 if (machineStatus.ConnectionState == ConnectionStatus.Connected)
                 {
                     try
                     {
-                        if (machineStatus.IsInRecipeMode) _processLogRepository.LogData(machineStatus);
-                        else if (machineStatus.AnlikSicaklik > 30 || machineStatus.AnlikDevirRpm > 0) _processLogRepository.LogManualData(machineStatus);
+                        // Parti varsa (üretimdeyse) normal üretim logu at.
+                        // Bu çağrı kendi içinde parti kontrolü yapıyor (LogData metodu).
+                        if (machineStatus.IsInRecipeMode)
+                        {
+                            _processLogRepository.LogData(machineStatus);
+                        }
+                        else // Parti yoksa (boştaysa) manuel log at.
+                        {
+                            // Artık sıcaklık veya devir koşulu yok. Makine boşta da olsa verisi kaydedilecek.
+                            _processLogRepository.LogManualData(machineStatus);
+                        }
                     }
                     catch (Exception ex)
                     {
+                        // Olası veritabanı hatalarını yakalamak için bu bloğu koruyoruz.
                         Console.WriteLine($"Makine {machineStatus.MachineId} için veri loglama hatası: {ex.Message}");
                     }
                 }

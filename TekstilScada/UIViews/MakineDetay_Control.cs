@@ -1,10 +1,10 @@
 ﻿// UI/Views/MakineDetay_Control.cs
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
 using TekstilScada.Repositories;
 using TekstilScada.Services;
@@ -22,8 +22,7 @@ namespace TekstilScada.UI.Views
         private ProductionRepository _productionRepository;
         private Machine _machine;
         private System.Windows.Forms.Timer _uiUpdateTimer;
-        private string _lastLoadedBatchId = null;
-        private string _lastLoadedRecipeName = null;
+        private string _lastLoadedBatchIdForChart = null; // Sadece bu değişken kalacak
 
         public MakineDetay_Control()
         {
@@ -39,13 +38,12 @@ namespace TekstilScada.UI.Views
             _logRepository = logRepo;
             _alarmRepository = alarmRepo;
             _recipeRepository = recipeRepo;
-            _productionRepository = productionRepo; // Bu satırı ekleyin
+            _productionRepository = productionRepo;
             _uiUpdateTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _uiUpdateTimer.Tick += (sender, args) => UpdateLiveGauges();
             _uiUpdateTimer.Start();
             _pollingService.OnMachineDataRefreshed += OnDataRefreshed;
             _pollingService.OnMachineConnectionStateChanged += OnConnectionStateChanged;
-            // BU SATIRI YENİ EKLEYİN
             this.VisibleChanged += MakineDetay_Control_VisibleChanged;
             LoadInitialData();
         }
@@ -60,35 +58,32 @@ namespace TekstilScada.UI.Views
 
         private void OnConnectionStateChanged(int machineId, FullMachineStatus status)
         {
-            if (machineId == _machine.Id)
+            if (machineId == _machine.Id && this.IsHandleCreated && !this.IsDisposed)
             {
-                SafeInvoke(() => UpdateUI(status));
+                this.BeginInvoke(new Action(() => UpdateUI(status)));
             }
         }
 
         private void OnDataRefreshed(int machineId, FullMachineStatus status)
         {
-            if (machineId == _machine.Id)
+            if (machineId == _machine.Id && this.IsHandleCreated && !this.IsDisposed)
             {
-                SafeInvoke(() => UpdateUI(status));
+                this.BeginInvoke(new Action(() => UpdateUI(status)));
             }
         }
+
         private void MakineDetay_Control_VisibleChanged(object sender, EventArgs e)
         {
             if (this.Visible && _machine != null)
             {
-                // Sayfa göründüğünde, son yüklenen parti bilgisini sıfırla.
-                // Bu, UpdateUI metodunun verileri yeniden yüklemesini zorunlu kılacaktır.
-                _lastLoadedBatchId = null;
-                _lastLoadedRecipeName = null;
-
-                // Mevcut anlık verilerle arayüzü hemen güncelle
+                _lastLoadedBatchIdForChart = null; // Sayfa göründüğünde izleyiciyi sıfırla
                 if (_pollingService.MachineDataCache.TryGetValue(_machine.Id, out var status))
                 {
                     UpdateUI(status);
                 }
             }
         }
+
         private void UpdateLiveGauges()
         {
             if (_machine != null && _pollingService.MachineDataCache.TryGetValue(_machine.Id, out var status))
@@ -108,61 +103,209 @@ namespace TekstilScada.UI.Views
 
         private void UpdateUI(FullMachineStatus status)
         {
+            // 1. Temel bilgileri her zaman güncelle
             lblMakineAdi.Text = status.MachineName;
+            lblOperator.Text = string.IsNullOrEmpty(status.OperatorIsmi) ? "---" : status.OperatorIsmi;
+            lblReceteAdi.Text = string.IsNullOrEmpty(status.RecipeName) ? "---" : status.RecipeName;
+            lblMusteriNo.Text = string.IsNullOrEmpty(status.MusteriNumarasi) ? "---" : status.MusteriNumarasi;
+            lblBatchNo.Text = string.IsNullOrEmpty(status.BatchNumarasi) ? "---" : status.BatchNumarasi;
+            lblSiparisNo.Text = string.IsNullOrEmpty(status.SiparisNumarasi) ? "---" : status.SiparisNumarasi;
+            lblCalisanAdim.Text = $"#{status.AktifAdimNo} - {status.AktifAdimAdi}";
 
+            // 2. Bağlantı durumunu kontrol et
             if (status.ConnectionState != ConnectionStatus.Connected)
             {
-                ClearAllFields();
-                lblMakineAdi.Text = _machine.MachineName;
+                ClearAllFieldsWithMessage("Bağlantı bekleniyor...");
                 return;
             }
 
-            if (status.BatchNumarasi != _lastLoadedBatchId || status.RecipeName != _lastLoadedRecipeName)
+            // 3. Parti durumuna göre veri yükleme modunu seç
+            if (!string.IsNullOrEmpty(status.BatchNumarasi))
             {
-                LoadBatchAndRecipeData(status);
-                LoadTimelineChart(status.BatchNumarasi);
+                // PARTİ MODU: Sadece parti ID'si değiştiyse tüm verileri yeniden yükle
+                if (status.BatchNumarasi != _lastLoadedBatchIdForChart)
+                {
+                    LoadDataForBatch(status);
+                }
+            }
+            else
+            {
+                // CANLI MOD (PARTİ YOK): Canlı verileri göster
+                if (_lastLoadedBatchIdForChart != null) // Parti modundan canlı moda yeni geçildiyse grafiği temizle/yenile
+                {
+                    LoadDataForLive(status);
+                }
+                _lastLoadedBatchIdForChart = null; // Parti bittiğinde izleyiciyi sıfırla
+                LoadDataForLive(status);
             }
 
-            lblReceteAdi.Text = status.RecipeName;
-            lblOperator.Text = status.OperatorIsmi;
-            lblMusteriNo.Text = status.MusteriNumarasi;
-            lblBatchNo.Text = status.BatchNumarasi;
-            lblSiparisNo.Text = status.SiparisNumarasi;
-            lblCalisanAdim.Text = $"#{status.AktifAdimNo} - {status.AktifAdimAdi}";
+            // 4. Her döngüde mevcut adımı vurgula
             HighlightCurrentStep(status.AktifAdimNo);
         }
 
-        private void LoadBatchAndRecipeData(FullMachineStatus status)
+        private void LoadDataForBatch(FullMachineStatus status)
         {
-            _lastLoadedBatchId = status.BatchNumarasi;
-            _lastLoadedRecipeName = status.RecipeName;
+            _lastLoadedBatchIdForChart = status.BatchNumarasi;
 
-            // --- ALARMLAR ---
-            lstAlarmlar.DataSource = null;
-            if (!string.IsNullOrEmpty(status.BatchNumarasi))
-            {
-                var alarms = _alarmRepository.GetAlarmDetailsForBatch(status.BatchNumarasi, _machine.Id);
-                lstAlarmlar.DataSource = alarms.Select(a => a.AlarmDescription).ToList();
-            }
+            // Partiye özel alarmları yükle
+            var alarms = _alarmRepository.GetAlarmDetailsForBatch(status.BatchNumarasi, _machine.Id);
+            lstAlarmlar.DataSource = alarms.Any() ? alarms.Select(a => a.AlarmDescription).ToList() : new List<string> { "Bu parti için kayıtlı alarm yok." };
 
-            // --- REÇETE ADIMLARI ---
+            // Partinin reçetesine ait adımları yükle
+            LoadRecipeSteps(status.RecipeName);
+
+            // Tüm parti süresini kapsayan grafiği yükle
+            LoadTimelineChartForBatch(status.BatchNumarasi);
+        }
+
+        private void LoadDataForLive(FullMachineStatus status)
+        {
+            // Son 1 saatteki alarmları yükle
+            var alarms = _alarmRepository.GetAlarmsForDateRange(_machine.Id, DateTime.Now.AddHours(-1), DateTime.Now);
+            lstAlarmlar.DataSource = alarms.Any() ? alarms.Select(a => a.AlarmText).ToList() : new List<string> { "Yakın zamanda alarm yok." };
+
+            // PLC'de o an yüklü olan reçetenin adımlarını yükle
+            LoadRecipeSteps(status.RecipeName);
+
+            // Son 30 dakikanın canlı grafiğini yükle
+            LoadTimelineChartForLive();
+        }
+
+        private void LoadRecipeSteps(string recipeName)
+        {
             dgvAdimlar.DataSource = null;
-            if (!string.IsNullOrEmpty(status.RecipeName))
+            if (!string.IsNullOrEmpty(recipeName))
             {
-                // Adım 1'de eklediğimiz verimli metodu kullanıyoruz
-                var recipe = _recipeRepository.GetRecipeByName(status.RecipeName);
+                var recipe = _recipeRepository.GetRecipeByName(recipeName);
                 if (recipe != null)
                 {
                     dgvAdimlar.DataSource = recipe.Steps.Select(s => new { Adım = s.StepNumber, Açıklama = GetStepTypeName(s) }).ToList();
                 }
+                else
+                {
+                    var placeholder = new List<object> { new { Adım = 0, Açıklama = $"'{recipeName}' reçetesi veritabanında bulunamadı." } };
+                    dgvAdimlar.DataSource = placeholder;
+                }
             }
+        }
+
+        private void LoadTimelineChartForBatch(string batchId)
+        {
+            SafeInvoke(() =>
+            {
+                formsPlot1.Plot.Clear();
+                var (startTime, endTime) = _productionRepository.GetBatchTimestamps(batchId, _machine.Id);
+
+                if (!startTime.HasValue)
+                {
+                    formsPlot1.Plot.Title("Parti başlangıç zamanı bulunamadı.");
+                    formsPlot1.Refresh();
+                    return;
+                }
+
+                DateTime effectiveEndTime = endTime ?? DateTime.Now;
+                var dataPoints = _logRepository.GetLogsForDateRange(_machine.Id, startTime.Value, effectiveEndTime);
+
+                if (!dataPoints.Any())
+                {
+                    formsPlot1.Plot.Title("Bu parti için henüz proses verisi kaydedilmemiş.");
+                    formsPlot1.Refresh();
+                    return;
+                }
+
+                formsPlot1.Plot.Title($"{_machine.MachineName} - Proses Zaman Çizgisi ({batchId})");
+                var tempPlot = formsPlot1.Plot.Add.Scatter(
+                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
+                    dataPoints.Select(p => (double)p.Temperature).ToArray());
+                tempPlot.Color = ScottPlot.Colors.Red;
+                tempPlot.LegendText = "Sıcaklık";
+                tempPlot.LineWidth = 2;
+
+                var rpmAxis = formsPlot1.Plot.Axes.AddLeftAxis();
+                rpmAxis.Label.Text = "Devir (RPM)";
+                var rpmPlot = formsPlot1.Plot.Add.Scatter(
+                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
+                    dataPoints.Select(p => (double)p.Rpm).ToArray());
+                rpmPlot.Color = ScottPlot.Colors.Blue;
+                rpmPlot.LegendText = "Devir";
+                rpmPlot.Axes.YAxis = rpmAxis;
+
+                formsPlot1.Plot.Axes.DateTimeTicksBottom();
+                formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
+                formsPlot1.Plot.Axes.AutoScale();
+                formsPlot1.Refresh();
+            });
+        }
+
+        private void LoadTimelineChartForLive()
+        {
+            SafeInvoke(() =>
+            {
+                formsPlot1.Plot.Clear();
+                DateTime startTime = DateTime.Now.AddMinutes(-30);
+                DateTime endTime = DateTime.Now;
+
+                // --- DEĞİŞİKLİK BURADA ---
+                // process_data_log yerine manual_mode_log tablosundan veri çekiyoruz.
+                var dataPoints = _logRepository.GetManualLogs(_machine.Id, startTime, endTime);
+
+                if (!dataPoints.Any())
+                {
+                    formsPlot1.Plot.Title("Canlı veri akışı bekleniyor...");
+                    formsPlot1.Refresh();
+                    return;
+                }
+
+                formsPlot1.Plot.Title($"{_machine.MachineName} - Canlı Proses Verileri (Son 30 Dakika)");
+                var tempPlot = formsPlot1.Plot.Add.Scatter(
+                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
+                    dataPoints.Select(p => (double)p.Temperature).ToArray());
+                tempPlot.Color = ScottPlot.Colors.Red;
+                tempPlot.LegendText = "Sıcaklık";
+                tempPlot.LineWidth = 2;
+
+                var rpmAxis = formsPlot1.Plot.Axes.AddLeftAxis();
+                rpmAxis.Label.Text = "Devir (RPM)";
+                var rpmPlot = formsPlot1.Plot.Add.Scatter(
+                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
+                    dataPoints.Select(p => (double)p.Rpm).ToArray());
+                rpmPlot.Color = ScottPlot.Colors.Blue;
+                rpmPlot.LegendText = "Devir";
+                rpmPlot.Axes.YAxis = rpmAxis;
+
+                formsPlot1.Plot.Axes.DateTimeTicksBottom();
+                formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
+                formsPlot1.Plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.AddMinutes(1).ToOADate());
+                formsPlot1.Plot.Axes.AutoScaleY();
+                formsPlot1.Refresh();
+            });
+        }
+
+        private void ClearAllFieldsWithMessage(string message)
+        {
+            ClearBatchSpecificFieldsWithMessage(message);
+            lblReceteAdi.Text = "---";
+            lblOperator.Text = "---";
+            lblMusteriNo.Text = "---";
+            lblBatchNo.Text = "---";
+            lblSiparisNo.Text = "---";
+            lblCalisanAdim.Text = "---";
+        }
+
+        private void ClearBatchSpecificFieldsWithMessage(string message)
+        {
+            lstAlarmlar.DataSource = new List<string> { message };
+            dgvAdimlar.DataSource = null;
+            formsPlot1.Plot.Clear();
+            formsPlot1.Plot.Title(message);
+            formsPlot1.Refresh();
         }
 
         private void HighlightCurrentStep(int currentStepNumber)
         {
             foreach (DataGridViewRow row in dgvAdimlar.Rows)
             {
-                if (row.Cells["Adım"].Value != null && (int)row.Cells["Adım"].Value == currentStepNumber)
+                if (row.Cells["Adım"].Value != null && Convert.ToInt32(row.Cells["Adım"].Value) == currentStepNumber)
                 {
                     row.DefaultCellStyle.BackColor = Color.LightGreen;
                     row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Bold);
@@ -188,132 +331,6 @@ namespace TekstilScada.UI.Views
             return string.Join(" + ", stepTypes);
         }
 
-        private void ClearAllFields()
-        {
-            lblReceteAdi.Text = "---";
-            lblOperator.Text = "---";
-            lblMusteriNo.Text = "---";
-            lblBatchNo.Text = "---";
-            lblSiparisNo.Text = "---";
-            lblCalisanAdim.Text = "---";
-            gaugeRpm.Value = 0;
-            gaugeRpm.Text = "0";
-            progressTemp.Value = 0;
-            lblTempValue.Text = "0 °C";
-            waterTankGauge1.Value = 0;
-            lstAlarmlar.DataSource = null;
-            dgvAdimlar.DataSource = null;
-        }
-
-        private void LoadTimelineChart(string batchId)
-        {
-            SafeInvoke(() =>
-            {
-                formsPlot1.Plot.Clear();
-                if (string.IsNullOrEmpty(batchId))
-                {
-                    formsPlot1.Plot.Title("Aktif bir Parti bulunamadı.");
-                    formsPlot1.Refresh();
-                    return;
-                }
-
-                try
-                {
-                    // 1. Parti başlangıç ve bitiş zamanlarını al
-                    var (startTime, endTime) = _productionRepository.GetBatchTimestamps(batchId, _machine.Id);
-                    if (!startTime.HasValue)
-                    {
-                        formsPlot1.Plot.Title("Parti bilgileri bulunamadı.");
-                        formsPlot1.Refresh();
-                        return;
-                    }
-
-                    DateTime chartStartTime = startTime.Value.AddHours(-5);
-                    DateTime chartEndTime = endTime ?? DateTime.Now.AddMinutes(15);
-
-                    // 2. Zaman aralığındaki tüm proses ve alarm verilerini çek
-                    var dataPoints = _logRepository.GetLogsForDateRange(_machine.Id, chartStartTime, chartEndTime);
-                    var alarms = _alarmRepository.GetAlarmsForDateRange(_machine.Id, chartStartTime, chartEndTime);
-
-                    if (!dataPoints.Any())
-                    {
-                        formsPlot1.Plot.Title("Bu zaman aralığı için veri kaydedilmemiş.");
-                        formsPlot1.Refresh();
-                        return;
-                    }
-
-                    // 3. EKSENLERİ VE GRAFİKLERİ OLUŞTUR
-                    formsPlot1.Plot.Title($"{_machine.MachineName} - Proses Zaman Çizgisi");
-
-                    // Sıcaklık (Sol Eksen)
-                    var tempPlot = formsPlot1.Plot.Add.Scatter(
-                        dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
-                        dataPoints.Select(p => (double)p.Temperature).ToArray());
-                    tempPlot.Color = ScottPlot.Colors.Red;
-                    tempPlot.LegendText = "Sıcaklık";
-                    tempPlot.LineWidth = 2;
-                    formsPlot1.Plot.Axes.Left.Label.Text = "Sıcaklık (°C)";
-
-                    var rpmAxis = formsPlot1.Plot.Axes.AddLeftAxis();
-                    rpmAxis.Label.Text = "Devir (RPM)";
-                    var rpmPlot = formsPlot1.Plot.Add.Scatter(
-                        dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
-                        dataPoints.Select(p => (double)p.Rpm).ToArray());
-                    rpmPlot.Color = ScottPlot.Colors.Blue;
-                    rpmPlot.LegendText = "Devir";
-                    rpmPlot.Axes.YAxis = rpmAxis;
-
-                    // 4. OLAYLARI İŞARETLE
-
-                    // Parti Başlangıcı
-                    var batchStartLine = formsPlot1.Plot.Add.VerticalLine(startTime.Value.ToOADate());
-                    batchStartLine.Color = ScottPlot.Colors.Green;
-                    batchStartLine.LineWidth = 3;
-                    batchStartLine.LegendText = "Parti Başlangıcı";
-
-                    // Alarmlar
-                    foreach (var alarm in alarms)
-                    {
-                        var alarmLine = formsPlot1.Plot.Add.VerticalLine(alarm.StartTime.ToOADate());
-                        alarmLine.Color = ScottPlot.Colors.OrangeRed;
-                        alarmLine.LinePattern = ScottPlot.LinePattern.Dashed;
-                        var alarmMarker = formsPlot1.Plot.Add.Marker(alarm.StartTime.ToOADate(), 0);
-                        alarmMarker.IsVisible = false;
-                        alarmMarker.Label = alarm.AlarmText;
-                    }
-
-                    // Su Alma Anları
-                    decimal lastWaterLevel = -1;
-                    bool waterLegendAdded = false;
-                    foreach (var point in dataPoints)
-                    {
-                        if (lastWaterLevel != -1 && point.WaterLevel > lastWaterLevel + 10)
-                        {
-                            var waterLine = formsPlot1.Plot.Add.VerticalLine(point.Timestamp.ToOADate());
-                            waterLine.Color = ScottPlot.Colors.LightBlue;
-                            waterLine.LinePattern = ScottPlot.LinePattern.Dotted;
-                            if (!waterLegendAdded)
-                            {
-                                waterLine.LegendText = "Su Alma";
-                                waterLegendAdded = true;
-                            }
-                        }
-                        lastWaterLevel = point.WaterLevel;
-                    }
-
-                    // 5. GRAFİĞİ SONLANDIR
-                    formsPlot1.Plot.Axes.DateTimeTicksBottom();
-                    formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
-                    formsPlot1.Plot.Axes.SetLimitsX(chartStartTime.ToOADate(), chartEndTime.ToOADate());
-                    formsPlot1.Refresh();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Grafik verileri yüklenirken hata oluştu: {ex.Message}", "Grafik Hatası");
-                }
-            });
-        }
-
         private Color GetTemperatureColor(int temp)
         {
             if (temp < 40) return Color.DodgerBlue;
@@ -328,7 +345,6 @@ namespace TekstilScada.UI.Views
             if (bar == null || bar.Maximum == 0) return;
 
             Rectangle rec = e.ClipRectangle;
-
             int barHeight = (int)(e.ClipRectangle.Height * ((double)bar.Value / bar.Maximum));
             rec.Y = e.ClipRectangle.Height - barHeight;
             rec.Height = barHeight;
@@ -336,12 +352,17 @@ namespace TekstilScada.UI.Views
             e.Graphics.FillRectangle(new SolidBrush(GetTemperatureColor(bar.Value)), rec);
         }
 
+        private void lblMakineAdi_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void SafeInvoke(Action action)
         {
             if (this.IsHandleCreated && !this.IsDisposed)
             {
                 try { this.BeginInvoke(action); }
-                catch { }
+                catch (Exception) { /* Form kapatılırken oluşabilecek hataları yoksay */ }
             }
         }
 
@@ -355,11 +376,6 @@ namespace TekstilScada.UI.Views
             _uiUpdateTimer?.Stop();
             _uiUpdateTimer?.Dispose();
             base.OnHandleDestroyed(e);
-        }
-
-        private void lblMakineAdi_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
