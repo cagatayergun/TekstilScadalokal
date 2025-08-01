@@ -22,7 +22,7 @@ namespace TekstilScada.Services
         private const string RECETE_MODU = "KX30D";
         private const string PAUSE_DURUMU = "MX1015";
         private const string ALARM_NO = "D3604";
-        private const string ANLIK_SU_SEVIYESI = "D6002";
+        private const string ANLIK_SU_SEVIYESI = "K200";
         private const string ANLIK_DEVIR = "D6007";
         private const string ANLIK_SICAKLIK = "D4980";
         private const string PROSES_YUZDESI = "D7752";

@@ -21,6 +21,10 @@ namespace TekstilScada.UI.Views
         private RecipeRepository _recipeRepository;
         private ProductionRepository _productionRepository;
         private Machine _machine;
+        private ScottPlot.Plottables.Scatter _tempPlot;
+        private ScottPlot.Plottables.Scatter _rpmPlot;
+        private ScottPlot.Plottables.Scatter _waterLevelPlot; // Eğer su seviyesi çizgisini de eklediyseniz veya ekleyecekseniz
+       
         private System.Windows.Forms.Timer _uiUpdateTimer;
         private string _lastLoadedBatchIdForChart = null; // Sadece bu değişken kalacak
 
@@ -29,12 +33,14 @@ namespace TekstilScada.UI.Views
             InitializeComponent();
             btnGeri.Click += (sender, args) => BackRequested?.Invoke(this, EventArgs.Empty);
             this.progressTemp.Paint += new System.Windows.Forms.PaintEventHandler(this.progressTemp_Paint);
+            
         }
 
         public void InitializeControl(Machine machine, PlcPollingService service, ProcessLogRepository logRepo, AlarmRepository alarmRepo, RecipeRepository recipeRepo, ProductionRepository productionRepo)
         {
             _machine = machine;
             _pollingService = service;
+
             _logRepository = logRepo;
             _alarmRepository = alarmRepo;
             _recipeRepository = recipeRepo;
@@ -54,6 +60,7 @@ namespace TekstilScada.UI.Views
             {
                 UpdateUI(status);
             }
+          
         }
 
         private void OnConnectionStateChanged(int machineId, FullMachineStatus status)
@@ -92,10 +99,16 @@ namespace TekstilScada.UI.Views
                 {
                     gaugeRpm.Value = status.AnlikDevirRpm;
                     gaugeRpm.Text = status.AnlikDevirRpm.ToString();
-                    progressTemp.Value = Math.Min(progressTemp.Maximum, status.AnlikSicaklik);
+
+                    // Anlık sıcaklık değerini Panel'in Tag özelliğine atıyoruz.
+                    // Maksimum değeri (150) burada veya Paint metodunda sabit tutabilirsiniz,
+                    // veya onu da Tag'in farklı bir parçası olarak geçirebilirsiniz.
+                    progressTemp.Tag = status.AnlikSicaklik;
+
                     lblTempValue.Text = $"{status.AnlikSicaklik} °C";
                     lblTempValue.ForeColor = GetTemperatureColor(status.AnlikSicaklik);
-                    progressTemp.Invalidate();
+                    progressTemp.Invalidate(); // Panel'in Paint olayını tetikler
+
                     waterTankGauge1.Value = status.AnlikSuSeviyesi;
                 });
             }
@@ -230,6 +243,17 @@ namespace TekstilScada.UI.Views
                 rpmPlot.LegendText = "Devir";
                 rpmPlot.Axes.YAxis = rpmAxis;
 
+                // YENİ EKLENEN KOD: Su Seviyesi (Water Level) verisini grafiğe ekle
+                var waterLevelAxis = formsPlot1.Plot.Axes.AddRightAxis();
+                waterLevelAxis.Label.Text = "Su Seviyesi (L)";
+                var waterLevelPlot = formsPlot1.Plot.Add.Scatter(
+                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
+                    dataPoints.Select(p => (double)p.WaterLevel).ToArray());
+                waterLevelPlot.Color = ScottPlot.Colors.Green; // Su seviyesi için yeşil renk
+                waterLevelPlot.LegendText = "Su Seviyesi";
+                waterLevelPlot.Axes.YAxis = waterLevelAxis;
+
+
                 formsPlot1.Plot.Axes.DateTimeTicksBottom();
                 formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
                 formsPlot1.Plot.Axes.AutoScale();
@@ -237,46 +261,104 @@ namespace TekstilScada.UI.Views
             });
         }
 
+        // MakineDetay_Control.cs
         private void LoadTimelineChartForLive()
         {
+           
             SafeInvoke(() =>
             {
                 formsPlot1.Plot.Clear();
-                DateTime startTime = DateTime.Now.AddMinutes(-30);
                 DateTime endTime = DateTime.Now;
+                // Son 5 saati (300 dakika) kapsayacak şekilde başlangıç zamanı
+                DateTime startTime = endTime.AddMinutes(-100);
 
-                // --- DEĞİŞİKLİK BURADA ---
-                // process_data_log yerine manual_mode_log tablosundan veri çekiyoruz.
                 var dataPoints = _logRepository.GetManualLogs(_machine.Id, startTime, endTime);
 
                 if (!dataPoints.Any())
                 {
+                    formsPlot1.Plot.Clear();
                     formsPlot1.Plot.Title("Canlı veri akışı bekleniyor...");
                     formsPlot1.Refresh();
                     return;
                 }
 
-                formsPlot1.Plot.Title($"{_machine.MachineName} - Canlı Proses Verileri (Son 30 Dakika)");
-                var tempPlot = formsPlot1.Plot.Add.Scatter(
-                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
-                    dataPoints.Select(p => (double)p.Temperature).ToArray());
-                tempPlot.Color = ScottPlot.Colors.Red;
-                tempPlot.LegendText = "Sıcaklık";
-                tempPlot.LineWidth = 2;
+                double[] timeData = dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray();
+                double[] tempData = dataPoints.Select(p => (double)p.Temperature).ToArray();
+                double[] rpmData = dataPoints.Select(p => (double)p.Rpm).ToArray();
+                double[] waterLevelData = dataPoints.Select(p => (double)p.WaterLevel).ToArray();
 
-                var rpmAxis = formsPlot1.Plot.Axes.AddLeftAxis();
-                rpmAxis.Label.Text = "Devir (RPM)";
-                var rpmPlot = formsPlot1.Plot.Add.Scatter(
-                    dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
-                    dataPoints.Select(p => (double)p.Rpm).ToArray());
-                rpmPlot.Color = ScottPlot.Colors.Blue;
-                rpmPlot.LegendText = "Devir";
-                rpmPlot.Axes.YAxis = rpmAxis;
+                // Grafik nesneleri henüz oluşturulmadıysa (yani proses detay sayfası yeni açıldıysa)
+                if (_tempPlot == null)
+                {
+                    formsPlot1.Plot.Clear(); // İlk oluşturmada her şeyi temizle
+                    formsPlot1.Plot.Title($"{_machine.MachineName} - Canlı Proses Verileri");
+                    formsPlot1.Plot.Axes.DateTimeTicksBottom();
+                    formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
 
-                formsPlot1.Plot.Axes.DateTimeTicksBottom();
-                formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
-                formsPlot1.Plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.AddMinutes(1).ToOADate());
-                formsPlot1.Plot.Axes.AutoScaleY();
+                    // Sıcaklık Çizgisi
+                    _tempPlot = formsPlot1.Plot.Add.Scatter(timeData, tempData);
+                    _tempPlot.Color = ScottPlot.Colors.Red;
+                    _tempPlot.LegendText = "Sıcaklık";
+                    _tempPlot.LineWidth = 2;
+
+                    // Devir Çizgisi
+                    _rpmPlot = formsPlot1.Plot.Add.Scatter(timeData, rpmData);
+                    _rpmPlot.Color = ScottPlot.Colors.Blue;
+                    _rpmPlot.LegendText = "Devir";
+
+                    // Su Seviyesi Çizgisi
+                    _waterLevelPlot = formsPlot1.Plot.Add.Scatter(timeData, waterLevelData);
+                    _waterLevelPlot.Color = ScottPlot.Colors.Green;
+                    _waterLevelPlot.LegendText = "Su Seviyesi";
+
+                    // SADECE İLK AÇILIŞTA EKSEN REFERANSLAMASI
+                    // X eksenini endTime'a (şu anki zamana) göre ayarla ve geçmiş 5 saati göster
+                    formsPlot1.Plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+
+                    // Y eksenlerini mevcut verilere göre otomatik ölçeklendir
+                    formsPlot1.Plot.Axes.AutoScaleY();
+                }
+                else
+                {
+                    // Eğer grafik nesneleri zaten oluşturulduysa (yani sayfa açıkken sonraki güncellemeler geliyorsa)
+                    // Mevcut çizgi grafiklerini kaldır
+                    formsPlot1.Plot.Remove(_tempPlot);
+                    formsPlot1.Plot.Remove(_rpmPlot);
+                    formsPlot1.Plot.Remove(_waterLevelPlot);
+
+                    // Yeni verilerle çizgi grafiklerini yeniden oluştur ve formsPlot1.Plot'a ekle
+                    _tempPlot = formsPlot1.Plot.Add.Scatter(timeData, tempData);
+                    _tempPlot.Color = ScottPlot.Colors.Red;
+                    _tempPlot.LegendText = "Sıcaklık";
+                    _tempPlot.LineWidth = 2;
+
+                    _rpmPlot = formsPlot1.Plot.Add.Scatter(timeData, rpmData);
+                    _rpmPlot.Color = ScottPlot.Colors.Blue;
+                    _rpmPlot.LegendText = "Devir";
+
+                    _waterLevelPlot = formsPlot1.Plot.Add.Scatter(timeData, waterLevelData);
+                    _waterLevelPlot.Color = ScottPlot.Colors.Green;
+                    _waterLevelPlot.LegendText = "Su Seviyesi";
+
+                    // Sonraki güncellemelerde eksen limitlerini otomatik olarak değiştirmeyin,
+                    // kullanıcının yaptığı zoom ve kaydırmaları koruyun.
+                    // Sadece yeni veri mevcut görünümün dışına taştığında X eksenini biraz kaydırabilirsiniz.
+                    // Bu kısım, kullanıcı etkileşimini korumak için önemlidir.
+
+                    // Opsiyonel: Eğer kullanıcı herhangi bir zoom veya kaydırma yapmadıysa ve son veri
+                    // görünür alanın dışına çıktıysa, görünümü son veriye kaydırabiliriz.
+                    var xRange = formsPlot1.Plot.Axes.Bottom.Range;
+                    if (timeData.Any() && timeData.Last() > xRange.Max)
+                    {
+                        // Mevcut aralığı koruyarak sadece sonuna eklemek için
+                        // formsPlot1.Plot.Axes.SetLimitsX(xRange.Min, timeData.Last() + xRange.Span * 0.05);
+                        // Veya daha basitçe, tüm aralığı en yeni veriye göre güncelle:
+                        formsPlot1.Plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+                        // Y ekseni için de benzer bir mantık düşünebilirsiniz veya AutoScaleY() çağırarak güncelleyebilirsiniz.
+                        // formsPlot1.Plot.Axes.AutoScaleY(); 
+                    }
+                }
+
                 formsPlot1.Refresh();
             });
         }
@@ -341,15 +423,42 @@ namespace TekstilScada.UI.Views
 
         private void progressTemp_Paint(object sender, PaintEventArgs e)
         {
-            ProgressBar bar = sender as ProgressBar;
-            if (bar == null || bar.Maximum == 0) return;
+            // Sender'ı bir Panel olarak alıyoruz
+            Panel barPanel = sender as Panel;
+            if (barPanel == null || barPanel.Tag == null) return; // Tag kontrolü eklendi
 
-            Rectangle rec = e.ClipRectangle;
-            int barHeight = (int)(e.ClipRectangle.Height * ((double)bar.Value / bar.Maximum));
-            rec.Y = e.ClipRectangle.Height - barHeight;
-            rec.Height = barHeight;
+            // Tag'den anlık değeri alıyoruz (eğer short atadıysanız short, int atadıysanız int olarak çekin)
+            int currentValue = Convert.ToInt32(barPanel.Tag);
+            int maximumValue = 150; // Max değeri burada sabit tuttuk (önceki gibi 150)
 
-            e.Graphics.FillRectangle(new SolidBrush(GetTemperatureColor(bar.Value)), rec);
+            // Değerin ProgressBar aralığında olduğundan emin olalım
+            currentValue = Math.Max(0, Math.Min(maximumValue, currentValue));
+
+            int controlWidth = barPanel.Width;
+            int controlHeight = barPanel.Height;
+
+            // Tüm arka planı temizle (varsayılan çizim müdahalesi olmayacak)
+            e.Graphics.FillRectangle(new SolidBrush(Color.WhiteSmoke), 0, 0, controlWidth, controlHeight);
+
+            // Dolu olması gereken yüksekliği hesapla
+            int filledHeight = (int)(controlHeight * ((double)currentValue / maximumValue));
+
+            // Dolu alanı çizeceğimiz dikdörtgeni tanımla
+            Rectangle filledRect = new Rectangle(
+                0, // X başlangıcı: Kontrolün sol kenarından başla
+                controlHeight - filledHeight, // Y başlangıcı: Aşağıdan yukarıya dolum için
+                controlWidth, // Genişlik: Kontrolün tam genişliğini kullan
+                filledHeight // Yükseklik: Hesaplanan dolu alan yüksekliği
+            );
+
+            // Dolu alanı çiz
+            e.Graphics.FillRectangle(new SolidBrush(GetTemperatureColor(currentValue)), filledRect);
+
+            // Kenarlık çiz
+            using (Pen borderPen = new Pen(Color.LightGray, 1))
+            {
+                e.Graphics.DrawRectangle(borderPen, 0, 0, controlWidth - 1, controlHeight - 1);
+            }
         }
 
         private void lblMakineAdi_Click(object sender, EventArgs e)

@@ -33,6 +33,7 @@
 		<PackageReference Include="HslCommunication" Version="12.3.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
 		<PackageReference Include="MySql.Data" Version="9.4.0" />
+		<PackageReference Include="ScottPlot" Version="5.0.55" />
 		<PackageReference Include="ScottPlot.WinForms" Version="5.0.55" />
 		<PackageReference Include="WinSCP" Version="6.5.3" />
 	</ItemGroup>
