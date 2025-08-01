@@ -105,7 +105,7 @@ namespace TekstilScada
             _prosesKontrolView.InitializeControl(_recipeRepository, _machineRepository, plcManagers);
             _ayarlarView.InitializeControl(_machineRepository, plcManagers);
             _raporlarView.InitializeControl(_machineRepository, _alarmRepository, _productionRepository, _dashboardRepository, _processLogRepository, _recipeRepository);
-            _genelBakisView.InitializeControl(_pollingService, _machineRepository, _dashboardRepository);
+            _genelBakisView.InitializeControl(_pollingService, _machineRepository, _dashboardRepository, _alarmRepository, _processLogRepository);
 
             // HANGÝ SAYFANIN GÖSTERÝLECEÐÝNÝ KONTROL ET
             if (viewToShow != _genelBakisView)
@@ -216,12 +216,11 @@ namespace TekstilScada
             var machine = _machineRepository.GetAllMachines().FirstOrDefault(m => m.Id == machineId);
             if (machine != null)
             {
-                // YENÝ: Alarm ve Reçete repository'leri de metoda gönderiliyor.
-                _makineDetayView.InitializeControl(machine, _pollingService, _processLogRepository, _alarmRepository, _recipeRepository);
+                // YENÝ: _productionRepository parametresini ekleyin
+                _makineDetayView.InitializeControl(machine, _pollingService, _processLogRepository, _alarmRepository, _recipeRepository, _productionRepository);
                 ShowView(_makineDetayView);
             }
         }
-
         private void OnMachineVncRequested(object sender, int machineId)
         {
             if (_activeVncViewerForm != null && !_activeVncViewerForm.IsDisposed)

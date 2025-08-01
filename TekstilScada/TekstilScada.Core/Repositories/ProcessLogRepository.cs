@@ -94,6 +94,34 @@ namespace TekstilScada.Repositories
             }
             return dataPoints;
         }
+        public List<ProcessDataPoint> GetLogsForDateRange(int machineId, DateTime startTime, DateTime endTime)
+        {
+            var dataPoints = new List<ProcessDataPoint>();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT LogTimestamp, LiveTemperature, LiveWaterLevel, LiveRpm FROM process_data_log WHERE MachineId = @MachineId AND LogTimestamp BETWEEN @StartTime AND @EndTime ORDER BY LogTimestamp;";
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@MachineId", machineId);
+                cmd.Parameters.AddWithValue("@StartTime", startTime);
+                cmd.Parameters.AddWithValue("@EndTime", endTime);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dataPoints.Add(new ProcessDataPoint
+                        {
+                            Timestamp = reader.GetDateTime("LogTimestamp"),
+                            Temperature = reader.GetDecimal("LiveTemperature"),
+                            WaterLevel = reader.GetDecimal("LiveWaterLevel"),
+                            Rpm = reader.GetInt32("LiveRpm")
+                        });
+                    }
+                }
+            }
+            return dataPoints;
+        }
         public List<ProcessDataPoint> GetManualLogs(int machineId, DateTime startTime, DateTime endTime)
         {
             var dataPoints = new List<ProcessDataPoint>();

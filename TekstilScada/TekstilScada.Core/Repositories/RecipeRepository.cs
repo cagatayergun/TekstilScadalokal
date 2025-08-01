@@ -250,5 +250,26 @@ namespace TekstilScada.Repositories
             }
             return history;
         }
+        public ScadaRecipe GetRecipeByName(string recipeName)
+        {
+            int recipeId = -1;
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT Id FROM recipes WHERE RecipeName = @RecipeName LIMIT 1;";
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@RecipeName", recipeName);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    recipeId = Convert.ToInt32(result);
+                }
+            }
+            if (recipeId > 0)
+            {
+                return GetRecipeById(recipeId);
+            }
+            return null;
+        }
     }
 }

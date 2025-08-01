@@ -355,5 +355,26 @@ namespace TekstilScada.Repositories
             }
             return totals;
         }
+        public (DateTime? StartTime, DateTime? EndTime) GetBatchTimestamps(string batchId, int machineId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT StartTime, EndTime FROM production_batches WHERE BatchId = @BatchId AND MachineId = @MachineId;";
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@BatchId", batchId);
+                cmd.Parameters.AddWithValue("@MachineId", machineId);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var startTime = reader.GetDateTime("StartTime");
+                        var endTime = reader.IsDBNull(reader.GetOrdinal("EndTime")) ? (DateTime?)null : reader.GetDateTime("EndTime");
+                        return (startTime, endTime);
+                    }
+                }
+            }
+            return (null, null);
+        }
     }
 }

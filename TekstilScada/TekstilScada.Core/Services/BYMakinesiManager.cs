@@ -36,7 +36,7 @@ namespace TekstilScada.Services
         private const string ELEKTRIK_HARCAMA = "D7720";
         private const string BUHAR_HARCAMA = "D7744";
         private const string CALISMA_SURESI = "D7750";
-        private const string AKTIF_CALISMA = "M2501";
+        private const string AKTIF_CALISMA = "MX2501";
         private const string TOPLAM_DURUS_SURESI_SN = "D7764";
         private const string STANDART_CEVRIM_SURESI_DK = "D6411";
         private const string TOPLAM_URETIM_ADEDI = "D7768";
@@ -102,66 +102,53 @@ namespace TekstilScada.Services
         }
         public OperateResult<FullMachineStatus> ReadLiveStatusData()
         {
+            var errorMessages = new List<string>();
             try
             {
                 var status = new FullMachineStatus();
-
+                bool anyReadFailed = false;
                 var adimNoResult = _plcClient.ReadInt16(ADIM_NO);
-                if (!adimNoResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(adimNoResult);
-                status.AktifAdimNo = adimNoResult.Content;
+                if (adimNoResult.IsSuccess) status.AktifAdimNo = adimNoResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {ADIM_NO} (Adım No) okunamadı: {adimNoResult.Message}"); anyReadFailed = true; }
+
 
                 var receteModuResult = _plcClient.ReadBool(RECETE_MODU);
                 if (!receteModuResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(receteModuResult);
                 status.IsInRecipeMode = receteModuResult.Content;
 
+              
                 var pauseResult = _plcClient.ReadBool(PAUSE_DURUMU);
-                if (!pauseResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(pauseResult);
-                status.IsPaused = pauseResult.Content;
+                if (pauseResult.IsSuccess) status.IsPaused = pauseResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {PAUSE_DURUMU} (Pause Durumu) okunamadı: {pauseResult.Message}"); anyReadFailed = true; }
 
                 var alarmNoResult = _plcClient.ReadInt16(ALARM_NO);
-                if (!alarmNoResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(alarmNoResult);
-                status.ActiveAlarmNumber = alarmNoResult.Content;
-                status.HasActiveAlarm = alarmNoResult.Content > 0;
+                if (alarmNoResult.IsSuccess) { status.ActiveAlarmNumber = alarmNoResult.Content; status.HasActiveAlarm = alarmNoResult.Content > 0; }
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {ALARM_NO} (Alarm No) okunamadı: {alarmNoResult.Message}"); anyReadFailed = true; }
 
                 var suSeviyesiResult = _plcClient.ReadInt16(ANLIK_SU_SEVIYESI);
-                if (!suSeviyesiResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(suSeviyesiResult);
-                status.AnlikSuSeviyesi = suSeviyesiResult.Content;
+                if (suSeviyesiResult.IsSuccess) status.AnlikSuSeviyesi = suSeviyesiResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {ANLIK_SU_SEVIYESI} (Anlık Su Seviyesi) okunamadı: {suSeviyesiResult.Message}"); anyReadFailed = true; }
 
                 var devirResult = _plcClient.ReadInt16(ANLIK_DEVIR);
-                if (!devirResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(devirResult);
-                status.AnlikDevirRpm = devirResult.Content;
+                if (devirResult.IsSuccess) status.AnlikDevirRpm = devirResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {ANLIK_DEVIR} (Anlık Devir) okunamadı: {devirResult.Message}"); anyReadFailed = true; }
 
                 var sicaklikResult = _plcClient.ReadInt16(ANLIK_SICAKLIK);
-                if (!sicaklikResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(sicaklikResult);
-                status.AnlikSicaklik = sicaklikResult.Content;
+                if (sicaklikResult.IsSuccess) status.AnlikSicaklik = sicaklikResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {ANLIK_SICAKLIK} (Anlık Sıcaklık) okunamadı: {sicaklikResult.Message}"); anyReadFailed = true; }
 
                 var yuzdeResult = _plcClient.ReadInt16(PROSES_YUZDESI);
-                if (!yuzdeResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(yuzdeResult);
-                status.ProsesYuzdesi = yuzdeResult.Content;
-
-                var makineTipiResult = ReadStringFromWords(MAKINE_TIPI, 10);
-                if (!makineTipiResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(makineTipiResult);
-                status.MakineTipi = makineTipiResult.Content;
-
-                var siparisNoResult = ReadStringFromWords(SIPARIS_NO, 10);
-                if (!siparisNoResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(siparisNoResult);
-                status.SiparisNumarasi = siparisNoResult.Content;
-
-                var musteriNoResult = ReadStringFromWords(MUSTERI_NO, 10);
-                if (!musteriNoResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(musteriNoResult);
-                status.MusteriNumarasi = musteriNoResult.Content;
-
-                var batchNoResult = ReadStringFromWords(BATCH_NO, 10);
-                if (!batchNoResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(batchNoResult);
-                status.BatchNumarasi = batchNoResult.Content;
+                if (yuzdeResult.IsSuccess) status.ProsesYuzdesi = yuzdeResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {PROSES_YUZDESI} (Proses Yüzdesi) okunamadı: {yuzdeResult.Message}"); anyReadFailed = true; }
 
                 var operatorResult = ReadStringFromWords(OPERATOR_ISMI, 5);
-                if (!operatorResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(operatorResult);
-                status.OperatorIsmi = operatorResult.Content;
+                if (operatorResult.IsSuccess) status.OperatorIsmi = operatorResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {OPERATOR_ISMI} (Operatör İsmi) okunamadı: {operatorResult.Message}"); anyReadFailed = true; }
 
                 var recipeNameResult = ReadStringFromWords(RECETE_ADI, 5);
-                if (!recipeNameResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(recipeNameResult);
-                status.RecipeName = recipeNameResult.Content;
+                if (recipeNameResult.IsSuccess) status.RecipeName = recipeNameResult.Content;
+                else { Debug.WriteLine($"[HATA] {IpAddress} - {RECETE_ADI} (Reçete Adı) okunamadı: {recipeNameResult.Message}"); anyReadFailed = true; }
+
 
                 var suResult = _plcClient.ReadInt16(SU_MIKTARI);
                 if (!suResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(suResult);
@@ -209,6 +196,12 @@ namespace TekstilScada.Services
                 // Bu değeri kullanacağınız modeldeki ilgili alana atayın. Örnek:
                 // status.DefectiveProductionCount = defectiveProdResult.Content;
 
+                if (errorMessages.Any())
+                {
+                    string combinedErrors = string.Join("\n", errorMessages);
+                    Debug.WriteLine($"[PLC OKUMA HATASI] {IpAddress}:\n{combinedErrors}");
+                    return new OperateResult<FullMachineStatus>($"PLC'den okuma hatası: {combinedErrors}");
+                }
                 status.ConnectionState = ConnectionStatus.Connected;
                 return OperateResult.CreateSuccessResult(status);
 

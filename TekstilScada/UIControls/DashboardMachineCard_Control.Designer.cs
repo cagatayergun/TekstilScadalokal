@@ -1,150 +1,159 @@
-﻿namespace TekstilScada.UIControls
+﻿// Bu dosyanın içeriğini tamamen aşağıdakiyle değiştirin
+namespace TekstilScada.UI.Controls
 {
     partial class DashboardMachineCard_Control
     {
         private System.ComponentModel.IContainer components = null;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
+        protected override void Dispose(bool disposing) { if (disposing && (components != null)) { components.Dispose(); } base.Dispose(disposing); }
         #region Component Designer generated code
-
         private void InitializeComponent()
         {
-            this.pnlStatusIndicator = new System.Windows.Forms.Panel();
-            this.lblMachineName = new System.Windows.Forms.Label();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblRecipeName = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lblTemperature = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.lblBatchId = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            pnlStatusIndicator = new Panel();
+            lblMachineName = new Label();
+            lblStatus = new Label();
+            lblRecipeName = new Label();
+            lblBatchId = new Label();
+            pnlSparkline = new Panel();
+            lblTemperature = new Label();
+            gaugeRpm = new CircularProgressBar.CircularProgressBar();
+            SuspendLayout();
             // 
             // pnlStatusIndicator
             // 
-            this.pnlStatusIndicator.BackColor = System.Drawing.Color.DarkGray;
-            this.pnlStatusIndicator.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlStatusIndicator.Location = new System.Drawing.Point(0, 0);
-            this.pnlStatusIndicator.Name = "pnlStatusIndicator";
-            this.pnlStatusIndicator.Size = new System.Drawing.Size(15, 150);
-            this.pnlStatusIndicator.TabIndex = 0;
+            pnlStatusIndicator.BackColor = Color.SlateGray;
+            pnlStatusIndicator.Dock = DockStyle.Left;
+            pnlStatusIndicator.Location = new Point(0, 0);
+            pnlStatusIndicator.Margin = new Padding(4, 3, 4, 3);
+            pnlStatusIndicator.Name = "pnlStatusIndicator";
+            pnlStatusIndicator.Size = new Size(12, 173);
+            pnlStatusIndicator.TabIndex = 0;
             // 
             // lblMachineName
             // 
-            this.lblMachineName.AutoSize = true;
-            this.lblMachineName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblMachineName.Location = new System.Drawing.Point(25, 10);
-            this.lblMachineName.Name = "lblMachineName";
-            this.lblMachineName.Size = new System.Drawing.Size(103, 20);
-            this.lblMachineName.TabIndex = 1;
-            this.lblMachineName.Text = "Makine Adı";
+            lblMachineName.AutoSize = true;
+            lblMachineName.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblMachineName.Location = new Point(23, 6);
+            lblMachineName.Margin = new Padding(4, 0, 4, 0);
+            lblMachineName.Name = "lblMachineName";
+            lblMachineName.Size = new Size(97, 21);
+            lblMachineName.TabIndex = 1;
+            lblMachineName.Text = "Makine Adı";
             // 
             // lblStatus
             // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblStatus.Location = new System.Drawing.Point(26, 35);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(63, 16);
-            this.lblStatus.TabIndex = 2;
-            this.lblStatus.Text = "DURDU";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 65);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(46, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Reçete:";
+            lblStatus.AutoSize = true;
+            lblStatus.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold);
+            lblStatus.Location = new Point(24, 32);
+            lblStatus.Margin = new Padding(4, 0, 4, 0);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(69, 17);
+            lblStatus.TabIndex = 2;
+            lblStatus.Text = "DURUYOR";
             // 
             // lblRecipeName
             // 
-            this.lblRecipeName.AutoSize = true;
-            this.lblRecipeName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblRecipeName.Location = new System.Drawing.Point(90, 65);
-            this.lblRecipeName.Name = "lblRecipeName";
-            this.lblRecipeName.Size = new System.Drawing.Size(11, 13);
-            this.lblRecipeName.TabIndex = 4;
-            this.lblRecipeName.Text = "-";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(26, 90);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(47, 13);
-            this.label5.TabIndex = 5;
-            this.label5.Text = "Sıcaklık:";
-            // 
-            // lblTemperature
-            // 
-            this.lblTemperature.AutoSize = true;
-            this.lblTemperature.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblTemperature.Location = new System.Drawing.Point(90, 90);
-            this.lblTemperature.Name = "lblTemperature";
-            this.lblTemperature.Size = new System.Drawing.Size(33, 13);
-            this.lblTemperature.TabIndex = 6;
-            this.lblTemperature.Text = "0 °C";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(26, 115);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 13);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "Parti No:";
+            lblRecipeName.Font = new Font("Segoe UI", 8.25F);
+            lblRecipeName.Location = new Point(152, 9);
+            lblRecipeName.Margin = new Padding(4, 0, 4, 0);
+            lblRecipeName.Name = "lblRecipeName";
+            lblRecipeName.Size = new Size(131, 21);
+            lblRecipeName.TabIndex = 4;
+            lblRecipeName.Text = "Reçete: -";
+            lblRecipeName.TextAlign = ContentAlignment.MiddleRight;
             // 
             // lblBatchId
             // 
-            this.lblBatchId.AutoSize = true;
-            this.lblBatchId.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblBatchId.Location = new System.Drawing.Point(90, 115);
-            this.lblBatchId.Name = "lblBatchId";
-            this.lblBatchId.Size = new System.Drawing.Size(11, 13);
-            this.lblBatchId.TabIndex = 8;
-            this.lblBatchId.Text = "-";
+            lblBatchId.Font = new Font("Segoe UI", 8.25F);
+            lblBatchId.Location = new Point(152, 31);
+            lblBatchId.Margin = new Padding(4, 0, 4, 0);
+            lblBatchId.Name = "lblBatchId";
+            lblBatchId.Size = new Size(131, 21);
+            lblBatchId.TabIndex = 8;
+            lblBatchId.Text = "Parti: -";
+            lblBatchId.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // pnlSparkline
+            // 
+            pnlSparkline.Location = new Point(21, 127);
+            pnlSparkline.Margin = new Padding(4, 3, 4, 3);
+            pnlSparkline.Name = "pnlSparkline";
+            pnlSparkline.Size = new Size(261, 40);
+            pnlSparkline.TabIndex = 9;
+            pnlSparkline.Paint += pnlSparkline_Paint;
+            // 
+            // lblTemperature
+            // 
+            lblTemperature.Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold);
+            lblTemperature.ForeColor = Color.FromArgb(64, 64, 64);
+            lblTemperature.Location = new Point(22, 66);
+            lblTemperature.Margin = new Padding(4, 0, 4, 0);
+            lblTemperature.Name = "lblTemperature";
+            lblTemperature.Size = new Size(130, 51);
+            lblTemperature.TabIndex = 11;
+            lblTemperature.Text = "25 °C";
+            // 
+            // gaugeRpm
+            // 
+            gaugeRpm.AnimationFunction = WinFormAnimation.KnownAnimationFunctions.Liner;
+            gaugeRpm.AnimationSpeed = 500;
+            gaugeRpm.BackColor = Color.Transparent;
+            gaugeRpm.Font = new Font("Segoe UI Black", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            gaugeRpm.ForeColor = Color.FromArgb(64, 64, 64);
+            gaugeRpm.InnerColor = Color.White;
+            gaugeRpm.InnerMargin = 2;
+            gaugeRpm.InnerWidth = -1;
+            gaugeRpm.Location = new Point(201, 54);
+            gaugeRpm.Margin = new Padding(3, 2, 3, 2);
+            gaugeRpm.MarqueeAnimationSpeed = 2000;
+            gaugeRpm.Maximum = 500;
+            gaugeRpm.Name = "gaugeRpm";
+            gaugeRpm.OuterColor = Color.FromArgb(224, 224, 224);
+            gaugeRpm.OuterMargin = -25;
+            gaugeRpm.OuterWidth = 26;
+            gaugeRpm.ProgressColor = Color.FromArgb(46, 204, 113);
+            gaugeRpm.ProgressWidth = 18;
+            gaugeRpm.SecondaryFont = new Font("Segoe UI Black", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            gaugeRpm.Size = new Size(78, 68);
+            gaugeRpm.StartAngle = 135;
+            gaugeRpm.SubscriptColor = Color.FromArgb(100, 100, 100);
+            gaugeRpm.SubscriptMargin = new Padding(-4, -37, 0, 0);
+            gaugeRpm.SubscriptText = "RPM";
+            gaugeRpm.SuperscriptColor = Color.FromArgb(166, 166, 166);
+            gaugeRpm.SuperscriptMargin = new Padding(0, 0, 50, 0);
+            gaugeRpm.SuperscriptText = "";
+            gaugeRpm.TabIndex = 12;
+            gaugeRpm.Text = "0";
+            gaugeRpm.TextMargin = new Padding(7, 25, 0, 0);
+            gaugeRpm.Value = 68;
             // 
             // DashboardMachineCard_Control
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.lblBatchId);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.lblTemperature);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.lblRecipeName);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.lblStatus);
-            this.Controls.Add(this.lblMachineName);
-            this.Controls.Add(this.pnlStatusIndicator);
-            this.Name = "DashboardMachineCard_Control";
-            this.Size = new System.Drawing.Size(248, 148);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            BorderStyle = BorderStyle.FixedSingle;
+            Controls.Add(gaugeRpm);
+            Controls.Add(lblTemperature);
+            Controls.Add(pnlSparkline);
+            Controls.Add(lblBatchId);
+            Controls.Add(lblRecipeName);
+            Controls.Add(lblStatus);
+            Controls.Add(lblMachineName);
+            Controls.Add(pnlStatusIndicator);
+            Margin = new Padding(9);
+            Name = "DashboardMachineCard_Control";
+            Size = new Size(292, 173);
+            ResumeLayout(false);
+            PerformLayout();
         }
-
         #endregion
-
         private System.Windows.Forms.Panel pnlStatusIndicator;
         private System.Windows.Forms.Label lblMachineName;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblRecipeName;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label lblTemperature;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblBatchId;
+        private System.Windows.Forms.Panel pnlSparkline;
+        private System.Windows.Forms.Label lblTemperature;
+        private CircularProgressBar.CircularProgressBar gaugeRpm;
     }
 }

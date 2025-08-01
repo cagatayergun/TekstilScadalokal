@@ -107,6 +107,7 @@ namespace TekstilScada.Services
 
             // Sadece bağlantı durumu değiştiğinde değil, genel veri yenileme olayını da tetikle
             OnMachineConnectionStateChanged?.Invoke(machineId, status);
+
             LiveEventAggregator.Instance.Publish(new LiveEvent
             {
                 Source = status.MachineName,
@@ -254,7 +255,87 @@ namespace TekstilScada.Services
 
         private void CheckAndLogAlarms(int machineId, FullMachineStatus currentStatus)
         {
-            // Bu metodun içeriği doğru ve aynı kalabilir.
+            // Bu metot, sizin sağladığınız çalışan alarm tespit mantığını kullanır
+            // ve sadece eksik olan LiveEventAggregator bildirimlerini ekler.
+
+            if (_activeAlarmsTracker == null || !_activeAlarmsTracker.TryGetValue(machineId, out var machineActiveAlarms))
+            {
+                _activeAlarmsTracker?.TryAdd(machineId, new ConcurrentDictionary<int, DateTime>());
+                return;
+            }
+
+            MachineDataCache.TryGetValue(machineId, out var previousStatus);
+            int previousAlarmNumber = previousStatus?.ActiveAlarmNumber ?? 0;
+            int currentAlarmNumber = currentStatus.ActiveAlarmNumber;
+
+            // Yeni bir alarm geldiyse
+            if (currentAlarmNumber > 0)
+            {
+                if (!machineActiveAlarms.ContainsKey(currentAlarmNumber) && _alarmDefinitionsCache.TryGetValue(currentAlarmNumber, out var newAlarmDef))
+                {
+                    _alarmRepository.WriteAlarmHistoryEvent(machineId, newAlarmDef.Id, "ACTIVE");
+
+                    // YENİ EKLENEN SATIR: Alarmı Canlı Olay Akışına gönder
+                    LiveEventAggregator.Instance.PublishAlarm(currentStatus.MachineName, newAlarmDef.AlarmText);
+                }
+                machineActiveAlarms[currentAlarmNumber] = DateTime.Now;
+            }
+
+            // Zaman aşımına uğrayan (artık PLC'den gelmeyen) alarmları temizle
+            var timedOutAlarms = machineActiveAlarms.Where(kvp => (DateTime.Now - kvp.Value).TotalSeconds > 30).ToList();
+            foreach (var timedOutAlarm in timedOutAlarms)
+            {
+                if (_alarmDefinitionsCache.TryGetValue(timedOutAlarm.Key, out var oldAlarmDef))
+                {
+                    _alarmRepository.WriteAlarmHistoryEvent(machineId, oldAlarmDef.Id, "INACTIVE");
+
+                    // YENİ EKLENEN SATIR: Temizlenen alarmı Canlı Olay Akışına bildir
+                    LiveEventAggregator.Instance.PublishSystemSuccess(currentStatus.MachineName, $"Alarm temizlendi: {oldAlarmDef.AlarmText}");
+                }
+                machineActiveAlarms.TryRemove(timedOutAlarm.Key, out _);
+            }
+
+            // PLC'den "alarm yok" sinyali gelirse tüm aktif alarmları temizle
+            if (currentAlarmNumber == 0 && !machineActiveAlarms.IsEmpty)
+            {
+                foreach (var activeAlarm in machineActiveAlarms)
+                {
+                    if (_alarmDefinitionsCache.TryGetValue(activeAlarm.Key, out var oldAlarmDef))
+                    {
+                        _alarmRepository.WriteAlarmHistoryEvent(machineId, oldAlarmDef.Id, "INACTIVE");
+
+                        // YENİ EKLENEN SATIR: Temizlenen alarmı Canlı Olay Akışına bildir
+                        LiveEventAggregator.Instance.PublishSystemSuccess(currentStatus.MachineName, $"Alarm temizlendi: {oldAlarmDef.AlarmText}");
+                    }
+                }
+                machineActiveAlarms.Clear();
+            }
+
+            // Anlık durum nesnesini güncelle
+            currentStatus.HasActiveAlarm = !machineActiveAlarms.IsEmpty;
+            if (currentStatus.HasActiveAlarm)
+            {
+                currentStatus.ActiveAlarmNumber = machineActiveAlarms.OrderByDescending(kvp => kvp.Value).First().Key;
+                if (_alarmDefinitionsCache.TryGetValue(currentStatus.ActiveAlarmNumber, out var def))
+                {
+                    currentStatus.ActiveAlarmText = def.AlarmText;
+                }
+                else
+                {
+                    currentStatus.ActiveAlarmText = $"TANIMSIZ ALARM ({currentStatus.ActiveAlarmNumber})";
+                }
+            }
+            else
+            {
+                currentStatus.ActiveAlarmNumber = 0;
+                currentStatus.ActiveAlarmText = "";
+            }
+
+            // Eğer genel alarm durumu değiştiyse, arayüzdeki diğer bileşenleri (örn. ana ekran banner'ı) uyar
+            if ((previousStatus?.HasActiveAlarm ?? false) != currentStatus.HasActiveAlarm || previousAlarmNumber != currentStatus.ActiveAlarmNumber)
+            {
+                OnActiveAlarmStateChanged?.Invoke(machineId, currentStatus);
+            }
         }
         public Dictionary<int, IPlcManager> GetPlcManagers()
         {

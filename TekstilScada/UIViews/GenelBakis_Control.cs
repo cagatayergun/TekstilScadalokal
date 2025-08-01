@@ -1,15 +1,15 @@
-﻿
+﻿// Bu dosyanın içeriğini tamamen aşağıdakiyle değiştirin
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Reflection; // Double Buffering için eklendi
 using System.Windows.Forms;
 using TekstilScada.Models;
 using TekstilScada.Repositories;
 using TekstilScada.Services;
 using TekstilScada.UI.Controls;
-
+using TekstilScada.Repositories; // <-- BU SATIRI EKLEYİN
 namespace TekstilScada.UI.Views
 {
     public partial class GenelBakis_Control : UserControl
@@ -17,152 +17,166 @@ namespace TekstilScada.UI.Views
         private PlcPollingService _pollingService;
         private MachineRepository _machineRepository;
         private DashboardRepository _dashboardRepository;
+        private AlarmRepository _alarmRepository;
+        private ProcessLogRepository _logRepository;
 
-        private readonly Dictionary<int, MachineStatusCard_Control> _machineCards = new Dictionary<int, MachineStatusCard_Control>();
-        private System.Windows.Forms.Timer _refreshTimer;
+        private readonly Dictionary<int, DashboardMachineCard_Control> _machineCards = new Dictionary<int, DashboardMachineCard_Control>();
+        private System.Windows.Forms.Timer _uiUpdateTimer;
 
         public GenelBakis_Control()
         {
             InitializeComponent();
-            // HATA GİDERİLDİ: Akıcı bir güncelleme için Double Buffering'i aktif ediyoruz.
+            // Akıcı çizim için Double Buffering
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            flpMachineGroups.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(flpMachineGroups, true, null);
         }
 
-        public void InitializeControl(PlcPollingService pollingService, MachineRepository machineRepo, DashboardRepository dashboardRepo)
+        public void InitializeControl(PlcPollingService pollingService, MachineRepository machineRepo, DashboardRepository dashboardRepo, AlarmRepository alarmRepo, ProcessLogRepository logRepo)
         {
             _pollingService = pollingService;
             _machineRepository = machineRepo;
             _dashboardRepository = dashboardRepo;
+            _alarmRepository = alarmRepo;
+            _logRepository = logRepo;
         }
 
         private void GenelBakis_Control_Load(object sender, EventArgs e)
         {
             if (this.DesignMode) return;
 
-            BuildInitialLayout();
+            BuildMachineCards();
 
             _pollingService.OnMachineDataRefreshed += PollingService_OnMachineDataRefreshed;
 
-            _refreshTimer = new System.Windows.Forms.Timer { Interval = 5000 };
-            _refreshTimer.Tick += (s, a) => RefreshDashboard();
-            _refreshTimer.Start();
+            _uiUpdateTimer = new System.Windows.Forms.Timer { Interval = 2000 }; // 2 saniyede bir güncelleme
+            _uiUpdateTimer.Tick += (s, a) => RefreshDashboard();
+            _uiUpdateTimer.Start();
+
+            RefreshDashboard(); // İlk yüklemede çalıştır
         }
 
-        private void BuildInitialLayout()
+        private void BuildMachineCards()
         {
             var allMachines = _machineRepository.GetAllEnabledMachines();
             _machineCards.Clear();
-            foreach (var machine in allMachines)
-            {
-                var card = new MachineStatusCard_Control(machine);
-                _machineCards.Add(machine.Id, card);
-            }
-            RefreshDashboard();
-        }
-
-        private void RefreshDashboard()
-        {
-            if (this.InvokeRequired)
-            {
-                this.Invoke(new Action(RefreshDashboard));
-                return;
-            }
-
-            SortAndRedrawMachineCards();
-            UpdateKpiCards();
-        }
-
-        private void SortAndRedrawMachineCards()
-        {
-            // HATA GİDERİLDİ: Panelin yeniden çizimini geçici olarak durduruyoruz.
-            flpMachineGroups.SuspendLayout();
-
-            var allMachinesWithStatus = _machineRepository.GetAllEnabledMachines()
-                .Select(m => new { Machine = m, Status = _pollingService.MachineDataCache.ContainsKey(m.Id) ? _pollingService.MachineDataCache[m.Id] : new FullMachineStatus() })
-                .ToList();
-
-            var sortedMachines = allMachinesWithStatus
-                .OrderBy(x => GetStatusPriority(x.Status))
-                .ThenByDescending(x => x.Machine.Id)
-                .ToList();
-
-            var groupedMachines = sortedMachines.GroupBy(x => x.Machine.MachineSubType);
-
             flpMachineGroups.Controls.Clear();
+
+            var groupedMachines = allMachines
+                .OrderBy(m => m.MachineSubType)
+                .ThenBy(m => m.Id)
+                .GroupBy(m => m.MachineSubType ?? "Diğer");
 
             foreach (var group in groupedMachines)
             {
                 var groupPanel = new GroupBox
                 {
-                    Text = string.IsNullOrEmpty(group.Key) ? "Diğer Makineler" : group.Key,
+                    Text = group.Key,
+                    Width = flpMachineGroups.Width - 25,
                     AutoSize = true,
-                    MinimumSize = new Size(flpMachineGroups.Width - 40, 0),
-                    Font = new Font("Segoe UI", 12F, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 11F, FontStyle.Bold)
                 };
 
                 var innerPanel = new FlowLayoutPanel
                 {
                     Dock = DockStyle.Fill,
                     AutoSize = true,
-                    Padding = new Padding(10)
+                    Padding = new Padding(5)
                 };
 
-                foreach (var machineItem in group)
+                foreach (var machine in group)
                 {
-                    if (_machineCards.ContainsKey(machineItem.Machine.Id))
-                    {
-                        innerPanel.Controls.Add(_machineCards[machineItem.Machine.Id]);
-                    }
+                    var card = new DashboardMachineCard_Control(machine);
+                    _machineCards.Add(machine.Id, card);
+                    innerPanel.Controls.Add(card);
                 }
-
                 groupPanel.Controls.Add(innerPanel);
                 flpMachineGroups.Controls.Add(groupPanel);
             }
-
-            // HATA GİDERİLDİ: Tüm değişiklikler bittikten sonra panelin yeniden çizilmesine izin veriyoruz.
-            flpMachineGroups.ResumeLayout(false);
-            flpMachineGroups.PerformLayout();
         }
 
-        private int GetStatusPriority(FullMachineStatus status)
+        private void RefreshDashboard()
         {
-            if (status.HasActiveAlarm) return 0; // Alarm en öncelikli (0)
-            if (status.IsInRecipeMode) return 1; // Çalışan ikinci (1)
-            return 2;                            // Duran son (2)
+            if (this.IsDisposed) return;
+            UpdateKpiCards();
+            UpdateSidebarCharts();
         }
 
         private void PollingService_OnMachineDataRefreshed(int machineId, FullMachineStatus status)
         {
             if (_machineCards.TryGetValue(machineId, out var cardToUpdate))
             {
-                cardToUpdate.UpdateStatus(status);
+                // Sparkline için son 15 dakikalık veriyi çek
+                var trendData = _logRepository.GetLogsForBatch(machineId, status.BatchNumarasi, DateTime.Now.AddMinutes(-15), DateTime.Now);
+                cardToUpdate.UpdateData(status, trendData);
             }
         }
 
         private void UpdateKpiCards()
         {
+            var allStatuses = _pollingService.MachineDataCache.Values;
+            if (!allStatuses.Any()) return;
 
             flpTopKpis.Controls.Clear();
-            var allStatuses = _pollingService.MachineDataCache.Values;
 
             int totalMachines = allStatuses.Count;
             int runningMachines = allStatuses.Count(s => s.IsInRecipeMode && !s.HasActiveAlarm);
             int alarmMachines = allStatuses.Count(s => s.HasActiveAlarm);
+            int idleMachines = totalMachines - runningMachines - alarmMachines;
 
-            var kpi1 = new KpiCard_Control();
-            kpi1.SetData("TOPLAM MAKİNE", totalMachines.ToString(), Color.FromArgb(41, 128, 185));
+            // KpiCard'ları oluştur
+            var kpiTotal = new KpiCard_Control();
+            var kpiRunning = new KpiCard_Control();
+            var kpiAlarm = new KpiCard_Control();
+            var kpiIdle = new KpiCard_Control();
 
-            var kpi2 = new KpiCard_Control();
-            kpi2.SetData("AKTİF ÜRETİM", runningMachines.ToString(), Color.FromArgb(46, 204, 113));
+            // SetData metodu ile değerlerini ata
+            kpiTotal.SetData("TOPLAM MAKİNE", totalMachines.ToString(), Color.FromArgb(41, 128, 185));
+            kpiRunning.SetData("AKTİF ÜRETİM", runningMachines.ToString(), Color.FromArgb(46, 204, 113));
+            kpiAlarm.SetData("ALARM DURUMU", alarmMachines.ToString(), Color.FromArgb(231, 76, 60));
+            kpiIdle.SetData("BOŞTA BEKLEYEN", idleMachines.ToString(), Color.FromArgb(243, 156, 18));
 
-            var kpi3 = new KpiCard_Control();
-            kpi3.SetData("ALARM DURUMU", alarmMachines.ToString(), Color.FromArgb(231, 76, 60));
+            // Kontrolleri panele ekle
+            flpTopKpis.Controls.Add(kpiTotal);
+            flpTopKpis.Controls.Add(kpiRunning);
+            flpTopKpis.Controls.Add(kpiAlarm);
+            flpTopKpis.Controls.Add(kpiIdle);
+        }
 
-            flpTopKpis.Controls.Add(kpi1);
-            flpTopKpis.Controls.Add(kpi2);
-            flpTopKpis.Controls.Add(kpi3);
+        private void UpdateSidebarCharts()
+        {
+            // Saatlik Tüketim Grafiği (Bu kısım aynı kalıyor)
+            var hourlyData = _dashboardRepository.GetHourlyFactoryConsumption(DateTime.Today);
+            formsPlotHourly.Plot.Clear();
+            if (hourlyData.Rows.Count > 0)
+            {
+                double[] hours = hourlyData.AsEnumerable().Select(row => Convert.ToDouble(row["Saat"])).ToArray();
+                double[] consumption = hourlyData.AsEnumerable().Select(row => Convert.ToDouble(row["ToplamElektrik"])).ToArray();
+                var barPlot = formsPlotHourly.Plot.Add.Bars(hours, consumption);
+                barPlot.Color = ScottPlot.Colors.SteelBlue;
+            }
+            formsPlotHourly.Plot.Title("Saatlik Elektrik Tüketimi (kW)");
+            formsPlotHourly.Plot.Axes.AutoScale();
+            formsPlotHourly.Refresh();
 
+            // Popüler Alarmlar Grafiği (GÜNCELLENEN BÖLÜM)
+            var topAlarms = _alarmRepository.GetTopAlarmsByFrequency(DateTime.Now.AddDays(-1), DateTime.Now);
+            formsPlotTopAlarms.Plot.Clear();
+            if (topAlarms.Any())
+            {
+                // HATA DÜZELTİLDİ: Artık a.Count ve a.AlarmText özelliklerine güvenle erişebiliriz.
+                double[] counts = topAlarms.Select(a => (double)a.Count).ToArray();
+                var labels = topAlarms.Select(a => a.AlarmText).ToArray();
+
+                var barPlot = formsPlotTopAlarms.Plot.Add.Bars(counts);
+                barPlot.Color = ScottPlot.Colors.OrangeRed;
+
+                // Eksen etiketlerini ayarla
+                var ticks = Enumerable.Range(0, labels.Length).Select(i => new ScottPlot.Tick(i, labels[i])).ToArray();
+                formsPlotTopAlarms.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ticks);
+                formsPlotTopAlarms.Plot.Axes.Bottom.TickLabelStyle.Rotation = 45;
+            }
+            formsPlotTopAlarms.Plot.Title("En Sık 5 Alarm (Son 24 Saat)");
+            formsPlotTopAlarms.Plot.Axes.AutoScale();
+            formsPlotTopAlarms.Refresh();
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
@@ -171,11 +185,9 @@ namespace TekstilScada.UI.Views
             {
                 _pollingService.OnMachineDataRefreshed -= PollingService_OnMachineDataRefreshed;
             }
-            _refreshTimer?.Stop();
-            _refreshTimer?.Dispose();
+            _uiUpdateTimer?.Stop();
+            _uiUpdateTimer?.Dispose();
             base.OnHandleDestroyed(e);
         }
-
     }
 }
-

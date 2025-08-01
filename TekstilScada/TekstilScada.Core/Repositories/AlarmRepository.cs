@@ -240,24 +240,24 @@ namespace TekstilScada.Repositories
             }
             return details;
         }
-        public List<dynamic> GetTopAlarmsByFrequency(DateTime startTime, DateTime endTime, int limit = 5)
+        public List<TopAlarmData> GetTopAlarmsByFrequency(DateTime startTime, DateTime endTime, int limit = 5)
         {
-            var topAlarms = new List<dynamic>();
+            var topAlarms = new List<TopAlarmData>();
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
                 string query = @"
-                    SELECT 
-                        ad.AlarmText, 
-                        COUNT(ah.Id) as AlarmCount
-                    FROM alarm_history ah
-                    JOIN alarm_definitions ad ON ah.AlarmDefinitionId = ad.Id
-                    WHERE 
-                        ah.EventType = 'ACTIVE' AND
-                        ah.EventTimestamp BETWEEN @StartTime AND @EndTime
-                    GROUP BY ad.AlarmText
-                    ORDER BY AlarmCount DESC
-                    LIMIT @Limit;";
+            SELECT 
+                ad.AlarmText, 
+                COUNT(ah.Id) as AlarmCount
+            FROM alarm_history ah
+            JOIN alarm_definitions ad ON ah.AlarmDefinitionId = ad.Id
+            WHERE 
+                ah.EventType = 'ACTIVE' AND
+                ah.EventTimestamp BETWEEN @StartTime AND @EndTime
+            GROUP BY ad.AlarmText
+            ORDER BY AlarmCount DESC
+            LIMIT @Limit;";
 
                 var cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@StartTime", startTime);
@@ -268,15 +268,58 @@ namespace TekstilScada.Repositories
                 {
                     while (reader.Read())
                     {
-                        topAlarms.Add(new
+                        topAlarms.Add(new TopAlarmData
                         {
-                            Alarm = reader.GetString("AlarmText"),
+                            AlarmText = reader.GetString("AlarmText"),
                             Count = reader.GetInt32("AlarmCount")
                         });
                     }
                 }
             }
             return topAlarms;
+        }
+        public List<AlarmReportItem> GetAlarmsForDateRange(int machineId, DateTime startTime, DateTime endTime)
+        {
+            var reportItems = new List<AlarmReportItem>();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+            SELECT 
+                m.MachineName,
+                ad.AlarmNumber,
+                ad.AlarmText,
+                ah.EventTimestamp AS StartTime
+            FROM alarm_history AS ah
+            JOIN machines AS m ON ah.MachineId = m.Id
+            JOIN alarm_definitions AS ad ON ah.AlarmDefinitionId = ad.Id
+            WHERE 
+                ah.EventType = 'ACTIVE' AND
+                ah.MachineId = @MachineId AND
+                ah.EventTimestamp BETWEEN @StartTime AND @EndTime
+            ORDER BY StartTime DESC;";
+
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@MachineId", machineId);
+                cmd.Parameters.AddWithValue("@StartTime", startTime);
+                cmd.Parameters.AddWithValue("@EndTime", endTime);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var item = new AlarmReportItem
+                        {
+                            MachineName = reader.GetString("MachineName"),
+                            AlarmNumber = reader.GetInt32("AlarmNumber"),
+                            AlarmText = reader.GetString("AlarmText"),
+                            StartTime = reader.GetDateTime("StartTime"),
+                        };
+                        reportItems.Add(item);
+                    }
+                }
+            }
+            return reportItems;
         }
     }
 }
