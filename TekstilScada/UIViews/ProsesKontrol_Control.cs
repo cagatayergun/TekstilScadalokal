@@ -398,20 +398,18 @@ namespace TekstilScada.UI.Views
 
         private async void BtnSendToPlc_Click(object sender, EventArgs e)
         {
-            if (_currentRecipe == null)
+            if (_currentRecipe == null || cmbTargetMachine.SelectedItem is not Machine selectedMachine)
             {
-                MessageBox.Show("Lütfen PLC'ye göndermek için bir reçete seçin veya oluşturun.", "Uyarı");
+                MessageBox.Show("Lütfen bir reçete ve hedef makine seçin.", "Uyarı");
                 return;
             }
-            var selectedMachine = cmbTargetMachine.SelectedItem as Machine;
-            if (selectedMachine == null)
+            // Butonları ve imleci işlem süresince yönet
+            btnSendToPlc.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
+            try
             {
-                MessageBox.Show("Lütfen bir hedef makine seçin.", "Uyarı");
-                return;
-            }
-
-            // --- YENİ MANTIK: MAKİNE TİPİNE GÖRE İŞLEM SEÇİMİ ---
-            if (selectedMachine.MachineType == "BYMakinesi")
+                // --- YENİ MANTIK: MAKİNE TİPİNE GÖRE İŞLEM SEÇİMİ ---
+                if (selectedMachine.MachineType == "BYMakinesi")
             {
                 // 1. FTP bilgileri kontrolü
                 if (string.IsNullOrEmpty(selectedMachine.FtpUsername) || string.IsNullOrEmpty(selectedMachine.IpAddress))
@@ -510,8 +508,22 @@ namespace TekstilScada.UI.Views
                     this.Cursor = Cursors.Default;
                     btnSendToPlc.Enabled = true;
                 }
+
+            }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Gönderme sırasında bir hata oluştu: {ex.Message}", "Hata");
+            }
+            finally
+            {
+                // İşlem bitince UI elemanlarını eski haline getir
+                this.Cursor = Cursors.Default;
+                btnSendToPlc.Enabled = true;
             }
         }
+    
+
 
         public static string ShowInputDialog(string text, bool isNumeric = false)
         {

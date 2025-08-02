@@ -34,7 +34,7 @@ namespace TekstilScada.UI.Views
             cmbMachines.ValueMember = "Id";
         }
 
-        private void btnGenerateReport_Click(object sender, EventArgs e)
+        private async void btnGenerateReport_Click(object sender, EventArgs e)
         {
             DateTime startTime = dtpStartTime.Value;
             DateTime endTime = dtpEndTime.Value;
@@ -66,9 +66,21 @@ namespace TekstilScada.UI.Views
             }
         }
 
-        private void btnExportToExcel_Click(object sender, EventArgs e)
+        private async void btnExportToExcel_Click(object sender, EventArgs e)
         {
-            ExcelExporter.ExportDataGridViewToExcel(dgvManualUsage);
+            this.Cursor = Cursors.WaitCursor;
+            try
+            {
+                ExcelExporter.ExportDataGridViewToExcel(dgvManualUsage);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Excell Rapor oluşturulurken bir hata oluştu: {ex.Message}", "Hata");
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

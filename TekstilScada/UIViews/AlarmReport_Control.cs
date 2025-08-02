@@ -39,12 +39,13 @@ namespace TekstilScada.UI.Views
             cmbMachines.ValueMember = "Id";
         }
 
-        private void btnGenerateReport_Click(object sender, EventArgs e)
+        private async void btnGenerateReport_Click(object sender, EventArgs e)
         {
             DateTime startTime = dtpStartTime.Value;
             DateTime endTime = dtpEndTime.Value;
             int? machineId = (int)cmbMachines.SelectedValue == -1 ? (int?)null : (int)cmbMachines.SelectedValue;
-
+            btnGenerateReport.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
             try
             {
                 var reportData = _alarmRepository.GetAlarmReport(startTime, endTime, machineId);
@@ -54,6 +55,11 @@ namespace TekstilScada.UI.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"Rapor oluşturulurken bir hata oluştu: {ex.Message}", "Hata");
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                btnGenerateReport.Enabled = true;
             }
         }
     }

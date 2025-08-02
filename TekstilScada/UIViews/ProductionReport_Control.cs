@@ -42,7 +42,7 @@ namespace TekstilScada.UI.Views
             cmbMachines.ValueMember = "Id";
         }
 
-        private void btnGenerateReport_Click(object sender, EventArgs e)
+        private async void btnGenerateReport_Click(object sender, EventArgs e)
         {
             var filters = new ReportFilters
             {
