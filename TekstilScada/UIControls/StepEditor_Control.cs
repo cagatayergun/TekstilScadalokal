@@ -2,8 +2,11 @@
 using System;
 using System.Linq;
 using System.Reflection.PortableExecutable;
+using System.Text;
+using System.Text.Json;
 using System.Windows.Forms;
 using TekstilScada.Models;
+using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Controls.RecipeStepEditors
 {
@@ -13,6 +16,7 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         public event EventHandler StepDataChanged;
         private bool _isUpdating = false; // Programatik değişikliklerde olayların tekrar tetiklenmesini önlemek için
         private TekstilScada.Models.Machine _machine; // YENİ: Hangi makine için çalıştığını bilmeli
+        private readonly RecipeConfigurationRepository _configRepo = new RecipeConfigurationRepository();
         public StepEditor_Control()
         {
             InitializeComponent();
@@ -102,84 +106,51 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         private void UpdateEditorPanels()
         {
             pnlParameters.Controls.Clear();
+            if (_step == null || _machine == null) return;
 
-            // Hangi CheckBox işaretliyse, ilgili editörü panele yükle
-            if (chkSuAlma.Checked)
-            {
-                var editor = new SuAlmaEditor_Control();
-                editor.LoadStep(_step);
-                editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                editor.Dock = DockStyle.Top;
-                pnlParameters.Controls.Add(editor);
-            }
-            if (chkIsitma.Checked)
-            {
-                var editor = new IsitmaEditor_Control();
-                editor.LoadStep(_step);
-                editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                editor.Dock = DockStyle.Top;
-                pnlParameters.Controls.Add(editor);
-            }
-            if (chkCalisma.Checked)
-            {
-                var editor = new CalismaEditor_Control();
-                editor.LoadStep(_step);
-                editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                editor.Dock = DockStyle.Top;
-                pnlParameters.Controls.Add(editor);
-            }
-            if (chkDozaj.Checked)
-            {
-                pnlParameters.Controls.Clear();
-                if (_machine == null) return; // Makine seçilmemişse hiçbir şey yapma
+            int? stepTypeId = GetStepTypeIdFromControlWord(_step.StepDataWords[24]);
+            if (!stepTypeId.HasValue) return;
 
-                // Hangi CheckBox işaretliyse, makine alt tipine göre ilgili editörü yükle
-                if (chkDozaj.Checked)
+            string layoutJson = _configRepo.GetLayoutJson(_machine.MachineSubType, stepTypeId.Value);
+            if (string.IsNullOrEmpty(layoutJson))
+            {
+                layoutJson = _configRepo.GetLayoutJson("DEFAULT", stepTypeId.Value);
+            }
+            if (string.IsNullOrEmpty(layoutJson)) return;
+
+            try
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var controlsData = JsonSerializer.Deserialize<List<ControlMetadata>>(layoutJson, options);
+
+                foreach (var data in controlsData)
                 {
-                    // MAKİNE ALT TİPİNE GÖRE EDİTÖR SEÇİMİ
-                    if (_machine.MachineSubType?.ToUpper() == "BOYAMA")
-                    {
-                        var editor = new DozajEditor_Boyama_Control(); // Detaylı editör
-                        editor.LoadStep(_step);
-                        editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                        editor.Dock = DockStyle.Top;
-                        pnlParameters.Controls.Add(editor);
-                    }
-                    else if (_machine.MachineSubType?.ToUpper() == "YIKAMA")
-                    {
-                        var editor = new DozajEditor_Yikama_Control(); // Basit editör
-                        editor.LoadStep(_step);
-                        editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                        editor.Dock = DockStyle.Top;
-                        pnlParameters.Controls.Add(editor);
-                    }
-                    else // Alt tip belirtilmemişse veya eşleşmiyorsa, varsayılanı yükle
-                    {
-                        var editor = new DozajEditor_Control(); // Orijinal, varsayılan editör
-                        editor.LoadStep(_step);
-                        editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                        editor.Dock = DockStyle.Top;
-                        pnlParameters.Controls.Add(editor);
-                    }
-                }
-            }
-            if (chkBosaltma.Checked)
-            {
-                var editor = new BosaltmaEditor_Control();
-                editor.LoadStep(_step);
-                editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                editor.Dock = DockStyle.Top;
-                pnlParameters.Controls.Add(editor);
-            }
-            if (chkSikma.Checked)
-            {
-                var editor = new SikmaEditor_Control();
-                editor.LoadStep(_step);
-                editor.ValueChanged += (s, ev) => StepDataChanged?.Invoke(this, EventArgs.Empty);
-                editor.Dock = DockStyle.Top;
-                pnlParameters.Controls.Add(editor);
-            }
+                    Type controlType = Type.GetType(data.ControlType);
+                    if (controlType == null) continue;
 
+                    Control control = (Control)Activator.CreateInstance(controlType);
+
+                    control.Name = data.Name;
+                    control.Text = data.Text;
+                    control.Location = new Point(int.Parse(data.Location.Split(',')[0].Trim()), int.Parse(data.Location.Split(',')[1].Trim()));
+                    control.Size = new Size(int.Parse(data.Size.Split(',')[0].Trim()), int.Parse(data.Size.Split(',')[1].Trim()));
+
+                    if (control is NumericUpDown num) num.Maximum = data.Maximum;
+
+                    control.Tag = new PlcMapping { WordIndex = data.PLC_WordIndex, BitIndex = data.PLC_BitIndex };
+
+                    if (control is NumericUpDown numeric) numeric.ValueChanged += OnDynamicControlValueChanged;
+                    if (control is CheckBox chk) chk.CheckedChanged += OnDynamicControlValueChanged;
+
+                    pnlParameters.Controls.Add(control);
+                }
+                LoadDataToDynamicControls();
+            }
+            catch (Exception ex)
+            {
+                pnlParameters.Controls.Add(new Label { Text = "Arayüz yüklenirken hata.", Dock = DockStyle.Fill });
+                Console.WriteLine($"JSON Parse/UI Oluşturma Hatası: {ex.Message}");
+            }
         }
         public void SetReadOnly(bool isReadOnly)
         {
@@ -207,6 +178,97 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
                 }
             }
         }
+
+
+        private void OnDynamicControlValueChanged(object sender, EventArgs e)
+        {
+            if (_isUpdating) return;
+            Control control = sender as Control;
+            if (control?.Tag is not PlcMapping mapping) return;
+
+            if (mapping.WordIndex >= _step.StepDataWords.Length) return;
+
+            if (control is NumericUpDown num)
+            {
+                _step.StepDataWords[mapping.WordIndex] = (short)num.Value;
+            }
+            else if (control is CheckBox chk)
+            {
+                SetBit(_step.StepDataWords, mapping.WordIndex, mapping.BitIndex, chk.Checked);
+            }
+            // YENİ: TextBox değeri değiştiğinde çalışacak mantık
+            else if (control is TextBox txt && mapping.StringWordLength > 0)
+            {
+                // String'i istenen uzunlukta byte dizisine çevir
+                int byteLength = mapping.StringWordLength * 2;
+                byte[] stringBytes = new byte[byteLength];
+                Encoding.ASCII.GetBytes(txt.Text, 0, Math.Min(txt.Text.Length, byteLength), stringBytes, 0);
+
+                // Byte dizisini StepDataWords'e yaz
+                for (int i = 0; i < mapping.StringWordLength; i++)
+                {
+                    int targetIndex = mapping.WordIndex + i;
+                    if (targetIndex < _step.StepDataWords.Length)
+                    {
+                        _step.StepDataWords[targetIndex] = BitConverter.ToInt16(stringBytes, i * 2);
+                    }
+                }
+            }
+            StepDataChanged?.Invoke(this, EventArgs.Empty);
+        }
+        private void LoadDataToDynamicControls()
+        {
+            _isUpdating = true;
+            foreach (Control control in pnlParameters.Controls)
+            {
+                if (control?.Tag is not PlcMapping mapping) continue;
+                if (mapping.WordIndex >= _step.StepDataWords.Length) continue;
+
+                if (control is NumericUpDown num)
+                {
+                    num.Value = _step.StepDataWords[mapping.WordIndex];
+                }
+                else if (control is CheckBox chk)
+                {
+                    chk.Checked = GetBit(_step.StepDataWords, mapping.WordIndex, mapping.BitIndex);
+                }
+                // YENİ: TextBox'ı dolduracak mantık
+                else if (control is TextBox txt && mapping.StringWordLength > 0)
+                {
+                    List<byte> allBytes = new List<byte>();
+                    for (int i = 0; i < mapping.StringWordLength; i++)
+                    {
+                        int sourceIndex = mapping.WordIndex + i;
+                        if (sourceIndex < _step.StepDataWords.Length)
+                        {
+                            allBytes.AddRange(BitConverter.GetBytes(_step.StepDataWords[sourceIndex]));
+                        }
+                    }
+                    txt.Text = Encoding.ASCII.GetString(allBytes.ToArray()).Trim('\0');
+                    txt.MaxLength = mapping.StringWordLength * 2;
+                }
+            }
+            _isUpdating = false;
+        }
+
+        private int? GetStepTypeIdFromControlWord(short controlWord)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if ((controlWord & (1 << i)) != 0) return i + 1;
+            }
+            return null;
+        }
+
+        private bool GetBit(short[] data, int wordIndex, int bitIndex) => (data[wordIndex] & (1 << bitIndex)) != 0;
+
+        private void SetBit(short[] data, int wordIndex, int bitIndex, bool value)
+        {
+            if (value) data[wordIndex] = (short)(data[wordIndex] | (1 << bitIndex));
+            else data[wordIndex] = (short)(data[wordIndex] & ~(1 << bitIndex));
+        }
+
+
     }
 
 }

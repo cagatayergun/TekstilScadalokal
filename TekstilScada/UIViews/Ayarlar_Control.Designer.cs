@@ -22,6 +22,7 @@ namespace TekstilScada.UI.Views
             this.tabPageCostSettings = new System.Windows.Forms.TabPage(); // YENİ
             // YENİ: PLC Operatörleri için sekme eklendi.
             this.tabPagePlcOperators = new System.Windows.Forms.TabPage();
+            this.tabPageRecipeDesigner = new System.Windows.Forms.TabPage();
             this.tabControlSettings.SuspendLayout();
             this.SuspendLayout();
 
@@ -34,6 +35,8 @@ namespace TekstilScada.UI.Views
             this.tabControlSettings.Controls.Add(this.tabPageCostSettings); // YENİ
             // YENİ: Sekme kontrole eklendi.
             this.tabControlSettings.Controls.Add(this.tabPagePlcOperators);
+            // YENİ SEKME EKLEMESİ
+            this.tabControlSettings.Controls.Add(this.tabPageRecipeDesigner);
             this.tabControlSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlSettings.Location = new System.Drawing.Point(0, 0);
             this.tabControlSettings.Name = "tabControlSettings";
@@ -88,6 +91,16 @@ namespace TekstilScada.UI.Views
             this.tabPagePlcOperators.TabIndex = 3;
             this.tabPagePlcOperators.Text = "PLC Operatör Yönetimi";
             this.tabPagePlcOperators.UseVisualStyleBackColor = true;
+            // 
+            // tabPageRecipeDesigner
+            // 
+            this.tabPageRecipeDesigner.Location = new System.Drawing.Point(4, 29);
+            this.tabPageRecipeDesigner.Name = "tabPageRecipeDesigner";
+            this.tabPageRecipeDesigner.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageRecipeDesigner.Size = new System.Drawing.Size(792, 567);
+            this.tabPageRecipeDesigner.TabIndex = 5; // Sıradaki uygun index
+            this.tabPageRecipeDesigner.Text = "Reçete Adım Tasarımcısı";
+            this.tabPageRecipeDesigner.UseVisualStyleBackColor = true;
 
             // 
             // Ayarlar_Control
@@ -107,5 +120,6 @@ namespace TekstilScada.UI.Views
         private System.Windows.Forms.TabPage tabPageAlarmSettings;
         private System.Windows.Forms.TabPage tabPagePlcOperators;
         private System.Windows.Forms.TabPage tabPageCostSettings; // YENİ
+        private System.Windows.Forms.TabPage tabPageRecipeDesigner;// YENİ
     }
 }

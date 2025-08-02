@@ -15,6 +15,7 @@ namespace TekstilScada.UI.Views
         private readonly AlarmSettings_Control _alarmSettings;
         private readonly PlcOperatorSettings_Control _plcOperatorSettings;
         private readonly CostSettings_Control _costSettings; // YENİ
+        private readonly RecipeStepDesigner_Control _recipeStepDesigner;
         public Ayarlar_Control()
         {
             InitializeComponent();
@@ -24,6 +25,8 @@ namespace TekstilScada.UI.Views
             _alarmSettings = new AlarmSettings_Control();
             _plcOperatorSettings = new PlcOperatorSettings_Control();
             _costSettings = new CostSettings_Control(); // YENİ
+            // YENİ: Tasarımcı kontrolünü oluştur
+            _recipeStepDesigner = new RecipeStepDesigner_Control();
             _machineSettings.MachineListChanged += (sender, args) => { MachineListChanged?.Invoke(this, args); };
 
             _machineSettings.Dock = DockStyle.Fill;
@@ -39,6 +42,9 @@ namespace TekstilScada.UI.Views
             tabPagePlcOperators.Controls.Add(_plcOperatorSettings);
             _costSettings.Dock = DockStyle.Fill; // YENİ
             tabPageCostSettings.Controls.Add(_costSettings); // YENİ
+                                                             // YENİ: Tasarımcı kontrolünü yeni sekmeye ekle
+            _recipeStepDesigner.Dock = DockStyle.Fill;
+            tabPageRecipeDesigner.Controls.Add(_recipeStepDesigner);
         }
 
         // DEĞİŞİKLİK: LsPlcManager -> IPlcManager
