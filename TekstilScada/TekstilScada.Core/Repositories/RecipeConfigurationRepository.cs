@@ -82,7 +82,8 @@ namespace TekstilScada.Repositories
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT DISTINCT MachineSubType FROM machines WHERE MachineSubType IS NOT NULL AND MachineSubType <> ''";
+                // Sadece 'BYMakinesi' tipindeki makinelerin alt tiplerini al
+                string query = "SELECT DISTINCT MachineSubType FROM machines WHERE MachineType = 'BYMakinesi' AND MachineSubType IS NOT NULL AND MachineSubType <> ''";
                 var cmd = new MySqlCommand(query, connection);
                 using (var reader = cmd.ExecuteReader())
                 {
