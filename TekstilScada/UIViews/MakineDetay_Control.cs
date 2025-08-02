@@ -24,7 +24,8 @@ namespace TekstilScada.UI.Views
         private ScottPlot.Plottables.Scatter _tempPlot;
         private ScottPlot.Plottables.Scatter _rpmPlot;
         private ScottPlot.Plottables.Scatter _waterLevelPlot; // Eğer su seviyesi çizgisini de eklediyseniz veya ekleyecekseniz
-       
+        private List<string> _currentlyDisplayedAlarms = new List<string>(); // BU SATIRI EKLEYİN
+
         private System.Windows.Forms.Timer _uiUpdateTimer;
         private string _lastLoadedBatchIdForChart = null; // Sadece bu değişken kalacak
 
@@ -33,7 +34,7 @@ namespace TekstilScada.UI.Views
             InitializeComponent();
             btnGeri.Click += (sender, args) => BackRequested?.Invoke(this, EventArgs.Empty);
             this.progressTemp.Paint += new System.Windows.Forms.PaintEventHandler(this.progressTemp_Paint);
-            
+
         }
 
         public void InitializeControl(Machine machine, PlcPollingService service, ProcessLogRepository logRepo, AlarmRepository alarmRepo, RecipeRepository recipeRepo, ProductionRepository productionRepo)
@@ -50,6 +51,7 @@ namespace TekstilScada.UI.Views
             _uiUpdateTimer.Start();
             _pollingService.OnMachineDataRefreshed += OnDataRefreshed;
             _pollingService.OnMachineConnectionStateChanged += OnConnectionStateChanged;
+            _pollingService.OnActiveAlarmStateChanged += OnAlarmStateChanged; // BU SATIRI EKLEYİN
             this.VisibleChanged += MakineDetay_Control_VisibleChanged;
             LoadInitialData();
         }
@@ -59,8 +61,11 @@ namespace TekstilScada.UI.Views
             if (_pollingService.MachineDataCache.TryGetValue(_machine.Id, out var status))
             {
                 UpdateUI(status);
+                UpdateAlarmList(); // İLK YÜKLEME: Alarm listesini doldur
+
+                LoadRecipeStepsFromPlcAsync();
             }
-          
+
         }
 
         private void OnConnectionStateChanged(int machineId, FullMachineStatus status)
@@ -87,7 +92,9 @@ namespace TekstilScada.UI.Views
                 if (_pollingService.MachineDataCache.TryGetValue(_machine.Id, out var status))
                 {
                     UpdateUI(status);
+                    UpdateAlarmList(); // GÖRÜNÜR OLDUĞUNDA: Alarm listesini doldur
                 }
+
             }
         }
 
@@ -132,10 +139,8 @@ namespace TekstilScada.UI.Views
                 return;
             }
 
-            // 3. Parti durumuna göre veri yükleme modunu seç
             if (!string.IsNullOrEmpty(status.BatchNumarasi))
             {
-                // PARTİ MODU: Sadece parti ID'si değiştiyse tüm verileri yeniden yükle
                 if (status.BatchNumarasi != _lastLoadedBatchIdForChart)
                 {
                     LoadDataForBatch(status);
@@ -143,16 +148,15 @@ namespace TekstilScada.UI.Views
             }
             else
             {
-                // CANLI MOD (PARTİ YOK): Canlı verileri göster
-                if (_lastLoadedBatchIdForChart != null) // Parti modundan canlı moda yeni geçildiyse grafiği temizle/yenile
+                if (_lastLoadedBatchIdForChart != null)
                 {
                     LoadDataForLive(status);
+                    UpdateAlarmList(); // Canlı moda geçildiğinde alarm listesini yenile
                 }
-                _lastLoadedBatchIdForChart = null; // Parti bittiğinde izleyiciyi sıfırla
+                _lastLoadedBatchIdForChart = null;
                 LoadDataForLive(status);
             }
 
-            // 4. Her döngüde mevcut adımı vurgula
             HighlightCurrentStep(status.AktifAdimNo);
         }
 
@@ -160,45 +164,70 @@ namespace TekstilScada.UI.Views
         {
             _lastLoadedBatchIdForChart = status.BatchNumarasi;
 
-            // Partiye özel alarmları yükle
+            // Partiye özel geçmiş alarmları veritabanından yükle
             var alarms = _alarmRepository.GetAlarmDetailsForBatch(status.BatchNumarasi, _machine.Id);
-            lstAlarmlar.DataSource = alarms.Any() ? alarms.Select(a => a.AlarmDescription).ToList() : new List<string> { "Bu parti için kayıtlı alarm yok." };
+            var alarmStrings = alarms.Any() ? alarms.Select(a => a.AlarmDescription).ToList() : new List<string> { "Bu parti için kayıtlı alarm yok." };
 
-            // Partinin reçetesine ait adımları yükle
-            LoadRecipeSteps(status.RecipeName);
+            // Geçmiş raporu görüntülerken de mevcut durumu hafızaya al
+            _currentlyDisplayedAlarms = alarmStrings;
+            lstAlarmlar.DataSource = _currentlyDisplayedAlarms;
 
-            // Tüm parti süresini kapsayan grafiği yükle
+
             LoadTimelineChartForBatch(status.BatchNumarasi);
         }
 
         private void LoadDataForLive(FullMachineStatus status)
         {
-            // Son 1 saatteki alarmları yükle
-            var alarms = _alarmRepository.GetAlarmsForDateRange(_machine.Id, DateTime.Now.AddHours(-1), DateTime.Now);
-            lstAlarmlar.DataSource = alarms.Any() ? alarms.Select(a => a.AlarmText).ToList() : new List<string> { "Yakın zamanda alarm yok." };
+
 
             // PLC'de o an yüklü olan reçetenin adımlarını yükle
-            LoadRecipeSteps(status.RecipeName);
+
 
             // Son 30 dakikanın canlı grafiğini yükle
             LoadTimelineChartForLive();
         }
 
-        private void LoadRecipeSteps(string recipeName)
+        private async void LoadRecipeStepsFromPlcAsync()
         {
-            dgvAdimlar.DataSource = null;
-            if (!string.IsNullOrEmpty(recipeName))
+            dgvAdimlar.DataSource = new List<object> { new { Adım = "...", Açıklama = "Reçete PLC'den okunuyor..." } };
+
+            if (_pollingService.GetPlcManagers().TryGetValue(_machine.Id, out var plcManager))
             {
-                var recipe = _recipeRepository.GetRecipeByName(recipeName);
-                if (recipe != null)
+                var result = await plcManager.ReadRecipeFromPlcAsync();
+                if (result.IsSuccess)
                 {
-                    dgvAdimlar.DataSource = recipe.Steps.Select(s => new { Adım = s.StepNumber, Açıklama = GetStepTypeName(s) }).ToList();
+                    var steps = new List<ScadaRecipeStep>();
+                    var rawData = result.Content;
+
+                    if (_machine.MachineType == "Kurutma Makinesi")
+                    {
+                        var step = new ScadaRecipeStep { StepNumber = 1 };
+                        Array.Copy(rawData, 0, step.StepDataWords, 0, Math.Min(rawData.Length, 6));
+                        steps.Add(step);
+                    }
+                    else // BYMakinesi
+                    {
+                        for (int i = 0; i < 98; i++)
+                        {
+                            var step = new ScadaRecipeStep { StepNumber = i + 1 };
+                            int offset = i * 25;
+                            if (offset + 25 <= rawData.Length)
+                            {
+                                Array.Copy(rawData, offset, step.StepDataWords, 0, 25);
+                                steps.Add(step);
+                            }
+                        }
+                    }
+                    dgvAdimlar.DataSource = steps.Select(s => new { Adım = s.StepNumber, Açıklama = GetStepTypeName(s) }).ToList();
                 }
                 else
                 {
-                    var placeholder = new List<object> { new { Adım = 0, Açıklama = $"'{recipeName}' reçetesi veritabanında bulunamadı." } };
-                    dgvAdimlar.DataSource = placeholder;
+                    dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = $"PLC'den reçete okunamadı: {result.Message}" } };
                 }
+            }
+            else
+            {
+                dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = "Makine bağlantısı bulunamadı." } };
             }
         }
 
@@ -264,7 +293,7 @@ namespace TekstilScada.UI.Views
         // MakineDetay_Control.cs
         private void LoadTimelineChartForLive()
         {
-           
+
             SafeInvoke(() =>
             {
                 formsPlot1.Plot.Clear();
@@ -387,15 +416,30 @@ namespace TekstilScada.UI.Views
         {
             foreach (DataGridViewRow row in dgvAdimlar.Rows)
             {
-                if (row.Cells["Adım"].Value != null && Convert.ToInt32(row.Cells["Adım"].Value) == currentStepNumber)
+                // Önce hücrenin ve değerinin null olup olmadığını kontrol et
+                if (row.Cells["Adım"] != null && row.Cells["Adım"].Value != null)
                 {
-                    row.DefaultCellStyle.BackColor = Color.LightGreen;
-                    row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Bold);
-                }
-                else
-                {
-                    row.DefaultCellStyle.BackColor = Color.White;
-                    row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Regular);
+                    // Güvenli çevirme için int.TryParse kullan
+                    if (int.TryParse(row.Cells["Adım"].Value.ToString(), out int stepValue))
+                    {
+                        // Eğer çevirme başarılı olursa, mevcut adımla karşılaştır
+                        if (stepValue == currentStepNumber)
+                        {
+                            row.DefaultCellStyle.BackColor = Color.LightGreen;
+                            row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Bold);
+                        }
+                        else
+                        {
+                            row.DefaultCellStyle.BackColor = Color.White;
+                            row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Regular);
+                        }
+                    }
+                    else
+                    {
+                        // Değer bir sayı değilse (örn: "...", "!"), satırı varsayılan renge boya
+                        row.DefaultCellStyle.BackColor = Color.White;
+                        row.DefaultCellStyle.Font = new Font(dgvAdimlar.Font, FontStyle.Regular);
+                    }
                 }
             }
         }
@@ -474,17 +518,58 @@ namespace TekstilScada.UI.Views
                 catch (Exception) { /* Form kapatılırken oluşabilecek hataları yoksay */ }
             }
         }
+        // Bu iki yeni metodu sınıfın içine ekleyin
+        private void OnAlarmStateChanged(int machineId, FullMachineStatus status)
+        {
+            // Sadece ilgili makinede ve form açıkken çalış
+            if (machineId == _machine.Id && this.IsHandleCreated && !this.IsDisposed)
+            {
+                // Sadece alarm durumu değiştiğinde listeyi güncellemek için UI thread'ine güvenli bir çağrı yap
+                this.BeginInvoke(new Action(UpdateAlarmList));
+            }
+        }
 
+        private void UpdateAlarmList()
+        {
+            // Sadece canlı izleme modundaysak (geçmiş bir rapora bakmıyorsak) çalış
+            if (string.IsNullOrEmpty(_lastLoadedBatchIdForChart))
+            {
+                var activeAlarms = _pollingService.GetActiveAlarmsForMachine(_machine.Id);
+                List<string> newAlarmList;
+
+                if (activeAlarms.Any())
+                {
+                    newAlarmList = activeAlarms.Select(a => $"#{a.AlarmNumber}: {a.AlarmText}").ToList();
+                }
+                else
+                {
+                    newAlarmList = new List<string> { "Aktif alarm yok." };
+                }
+
+                // Sadece yeni alarm listesi eskisinden farklıysa arayüzü güncelle
+                if (!_currentlyDisplayedAlarms.SequenceEqual(newAlarmList))
+                {
+                    _currentlyDisplayedAlarms = newAlarmList;
+                    lstAlarmlar.DataSource = _currentlyDisplayedAlarms;
+                }
+            }
+        }
         protected override void OnHandleDestroyed(EventArgs e)
         {
             if (_pollingService != null)
             {
                 _pollingService.OnMachineDataRefreshed -= OnDataRefreshed;
                 _pollingService.OnMachineConnectionStateChanged -= OnConnectionStateChanged;
+                _pollingService.OnActiveAlarmStateChanged -= OnAlarmStateChanged; // BU SATIRI EKLEYİN
             }
             _uiUpdateTimer?.Stop();
             _uiUpdateTimer?.Dispose();
             base.OnHandleDestroyed(e);
+        }
+
+        private void pnlAlarmsAndSteps_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

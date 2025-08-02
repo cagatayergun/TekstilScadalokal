@@ -25,13 +25,6 @@
             pnlTopDashboard = new Panel();
             tableLayoutPanelTop = new TableLayoutPanel();
             pnlGaugesAndInfo = new Panel();
-            pnlAlarmsAndSteps = new Panel();
-            dgvAdimlar = new DataGridView();
-            label10 = new Label();
-            lblCalisanAdim = new Label();
-            label8 = new Label();
-            lstAlarmlar = new ListBox();
-            label7 = new Label();
             pnlGauges = new Panel();
             waterTankGauge1 = new TekstilScada.UI.Controls.WaterTankGauge();
             panelTemp = new Panel();
@@ -53,18 +46,25 @@
             label1 = new Label();
             pnlTimeline = new Panel();
             formsPlot1 = new ScottPlot.WinForms.FormsPlot();
+            pnlAlarmsAndSteps = new Panel();
+            dgvAdimlar = new DataGridView();
+            label10 = new Label();
+            lblCalisanAdim = new Label();
+            label8 = new Label();
+            lstAlarmlar = new ListBox();
+            label7 = new Label();
             pnlTop.SuspendLayout();
             pnlMainContent.SuspendLayout();
             tableLayoutPanelMain.SuspendLayout();
             pnlTopDashboard.SuspendLayout();
             tableLayoutPanelTop.SuspendLayout();
             pnlGaugesAndInfo.SuspendLayout();
-            pnlAlarmsAndSteps.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvAdimlar).BeginInit();
             pnlGauges.SuspendLayout();
             panelTemp.SuspendLayout();
             pnlInfo.SuspendLayout();
             pnlTimeline.SuspendLayout();
+            pnlAlarmsAndSteps.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvAdimlar).BeginInit();
             SuspendLayout();
             // 
             // pnlTop
@@ -105,11 +105,12 @@
             // pnlMainContent
             // 
             pnlMainContent.Controls.Add(tableLayoutPanelMain);
+            pnlMainContent.Controls.Add(pnlAlarmsAndSteps);
             pnlMainContent.Dock = DockStyle.Fill;
             pnlMainContent.Location = new Point(0, 38);
             pnlMainContent.Margin = new Padding(3, 2, 3, 2);
             pnlMainContent.Name = "pnlMainContent";
-            pnlMainContent.Size = new Size(1358, 487);
+            pnlMainContent.Size = new Size(1358, 761);
             pnlMainContent.TabIndex = 2;
             // 
             // tableLayoutPanelMain
@@ -123,9 +124,10 @@
             tableLayoutPanelMain.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanelMain.Name = "tableLayoutPanelMain";
             tableLayoutPanelMain.RowCount = 2;
-            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 240F));
+            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 239F));
             tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanelMain.Size = new Size(1358, 487);
+            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanelMain.Size = new Size(969, 761);
             tableLayoutPanelMain.TabIndex = 0;
             // 
             // pnlTopDashboard
@@ -135,7 +137,7 @@
             pnlTopDashboard.Location = new Point(3, 2);
             pnlTopDashboard.Margin = new Padding(3, 2, 3, 2);
             pnlTopDashboard.Name = "pnlTopDashboard";
-            pnlTopDashboard.Size = new Size(1352, 236);
+            pnlTopDashboard.Size = new Size(963, 235);
             pnlTopDashboard.TabIndex = 0;
             // 
             // tableLayoutPanelTop
@@ -149,111 +151,20 @@
             tableLayoutPanelTop.Name = "tableLayoutPanelTop";
             tableLayoutPanelTop.RowCount = 1;
             tableLayoutPanelTop.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanelTop.Size = new Size(1352, 236);
+            tableLayoutPanelTop.Size = new Size(963, 235);
             tableLayoutPanelTop.TabIndex = 0;
             // 
             // pnlGaugesAndInfo
             // 
-            pnlGaugesAndInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
             pnlGaugesAndInfo.BackColor = Color.WhiteSmoke;
-            pnlGaugesAndInfo.Controls.Add(pnlAlarmsAndSteps);
             pnlGaugesAndInfo.Controls.Add(pnlGauges);
             pnlGaugesAndInfo.Controls.Add(pnlInfo);
+            pnlGaugesAndInfo.Dock = DockStyle.Fill;
             pnlGaugesAndInfo.Location = new Point(3, 2);
             pnlGaugesAndInfo.Margin = new Padding(3, 2, 3, 2);
             pnlGaugesAndInfo.Name = "pnlGaugesAndInfo";
-            pnlGaugesAndInfo.Size = new Size(1346, 232);
+            pnlGaugesAndInfo.Size = new Size(957, 231);
             pnlGaugesAndInfo.TabIndex = 2;
-            // 
-            // pnlAlarmsAndSteps
-            // 
-            pnlAlarmsAndSteps.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
-            pnlAlarmsAndSteps.BackColor = Color.WhiteSmoke;
-            pnlAlarmsAndSteps.Controls.Add(dgvAdimlar);
-            pnlAlarmsAndSteps.Controls.Add(label10);
-            pnlAlarmsAndSteps.Controls.Add(lblCalisanAdim);
-            pnlAlarmsAndSteps.Controls.Add(label8);
-            pnlAlarmsAndSteps.Controls.Add(lstAlarmlar);
-            pnlAlarmsAndSteps.Controls.Add(label7);
-            pnlAlarmsAndSteps.Location = new Point(984, 0);
-            pnlAlarmsAndSteps.Margin = new Padding(3, 2, 3, 2);
-            pnlAlarmsAndSteps.Name = "pnlAlarmsAndSteps";
-            pnlAlarmsAndSteps.Size = new Size(360, 232);
-            pnlAlarmsAndSteps.TabIndex = 5;
-            pnlAlarmsAndSteps.TabStop = true;
-            // 
-            // dgvAdimlar
-            // 
-            dgvAdimlar.AllowUserToAddRows = false;
-            dgvAdimlar.AllowUserToDeleteRows = false;
-            dgvAdimlar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvAdimlar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvAdimlar.Location = new Point(35, 146);
-            dgvAdimlar.Margin = new Padding(3, 2, 3, 2);
-            dgvAdimlar.Name = "dgvAdimlar";
-            dgvAdimlar.ReadOnly = true;
-            dgvAdimlar.RowHeadersVisible = false;
-            dgvAdimlar.RowHeadersWidth = 51;
-            dgvAdimlar.RowTemplate.Height = 24;
-            dgvAdimlar.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvAdimlar.Size = new Size(291, 80);
-            dgvAdimlar.TabIndex = 5;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            label10.Location = new Point(35, 126);
-            label10.Name = "label10";
-            label10.Size = new Size(116, 19);
-            label10.TabIndex = 4;
-            label10.Text = "Reçete Adımları";
-            // 
-            // lblCalisanAdim
-            // 
-            lblCalisanAdim.BackColor = Color.White;
-            lblCalisanAdim.BorderStyle = BorderStyle.FixedSingle;
-            lblCalisanAdim.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblCalisanAdim.ForeColor = Color.ForestGreen;
-            lblCalisanAdim.Location = new Point(35, 96);
-            lblCalisanAdim.Name = "lblCalisanAdim";
-            lblCalisanAdim.Size = new Size(291, 24);
-            lblCalisanAdim.TabIndex = 3;
-            lblCalisanAdim.Text = "---";
-            lblCalisanAdim.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            label8.Location = new Point(35, 79);
-            label8.Name = "label8";
-            label8.Size = new Size(96, 19);
-            label8.TabIndex = 2;
-            label8.Text = "Çalışan Adım";
-            // 
-            // lstAlarmlar
-            // 
-            lstAlarmlar.BackColor = Color.FromArgb(45, 52, 54);
-            lstAlarmlar.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold);
-            lstAlarmlar.ForeColor = Color.White;
-            lstAlarmlar.FormattingEnabled = true;
-            lstAlarmlar.ItemHeight = 15;
-            lstAlarmlar.Location = new Point(35, 27);
-            lstAlarmlar.Margin = new Padding(3, 2, 3, 2);
-            lstAlarmlar.Name = "lstAlarmlar";
-            lstAlarmlar.Size = new Size(291, 49);
-            lstAlarmlar.TabIndex = 1;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
-            label7.Location = new Point(35, 7);
-            label7.Name = "label7";
-            label7.Size = new Size(123, 19);
-            label7.TabIndex = 0;
-            label7.Text = "Parti İçi Alarmlar";
             // 
             // pnlGauges
             // 
@@ -264,7 +175,7 @@
             pnlGauges.Location = new Point(401, -1);
             pnlGauges.Margin = new Padding(3, 2, 3, 2);
             pnlGauges.Name = "pnlGauges";
-            pnlGauges.Size = new Size(556, 232);
+            pnlGauges.Size = new Size(556, 231);
             pnlGauges.TabIndex = 1;
             // 
             // waterTankGauge1
@@ -373,7 +284,7 @@
             pnlInfo.Location = new Point(0, 0);
             pnlInfo.Margin = new Padding(3, 2, 3, 2);
             pnlInfo.Name = "pnlInfo";
-            pnlInfo.Size = new Size(360, 232);
+            pnlInfo.Size = new Size(360, 231);
             pnlInfo.TabIndex = 0;
             // 
             // lblSiparisNo
@@ -500,10 +411,10 @@
             // 
             pnlTimeline.Controls.Add(formsPlot1);
             pnlTimeline.Dock = DockStyle.Fill;
-            pnlTimeline.Location = new Point(3, 242);
+            pnlTimeline.Location = new Point(3, 241);
             pnlTimeline.Margin = new Padding(3, 2, 3, 2);
             pnlTimeline.Name = "pnlTimeline";
-            pnlTimeline.Size = new Size(1352, 243);
+            pnlTimeline.Size = new Size(963, 518);
             pnlTimeline.TabIndex = 1;
             // 
             // formsPlot1
@@ -513,8 +424,105 @@
             formsPlot1.Location = new Point(0, 0);
             formsPlot1.Margin = new Padding(3, 2, 3, 2);
             formsPlot1.Name = "formsPlot1";
-            formsPlot1.Size = new Size(1352, 243);
+            formsPlot1.Size = new Size(963, 518);
             formsPlot1.TabIndex = 0;
+            // 
+            // pnlAlarmsAndSteps
+            // 
+            pnlAlarmsAndSteps.BackColor = Color.WhiteSmoke;
+            pnlAlarmsAndSteps.Controls.Add(dgvAdimlar);
+            pnlAlarmsAndSteps.Controls.Add(label10);
+            pnlAlarmsAndSteps.Controls.Add(lblCalisanAdim);
+            pnlAlarmsAndSteps.Controls.Add(label8);
+            pnlAlarmsAndSteps.Controls.Add(lstAlarmlar);
+            pnlAlarmsAndSteps.Controls.Add(label7);
+            pnlAlarmsAndSteps.Dock = DockStyle.Right;
+            pnlAlarmsAndSteps.Location = new Point(969, 0);
+            pnlAlarmsAndSteps.Margin = new Padding(3, 2, 3, 2);
+            pnlAlarmsAndSteps.Name = "pnlAlarmsAndSteps";
+            pnlAlarmsAndSteps.Size = new Size(389, 761);
+            pnlAlarmsAndSteps.TabIndex = 5;
+            pnlAlarmsAndSteps.TabStop = true;
+            pnlAlarmsAndSteps.Paint += pnlAlarmsAndSteps_Paint;
+            // 
+            // dgvAdimlar
+            // 
+            dgvAdimlar.AllowUserToAddRows = false;
+            dgvAdimlar.AllowUserToDeleteRows = false;
+            dgvAdimlar.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            dgvAdimlar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvAdimlar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvAdimlar.Location = new Point(49, 89);
+            dgvAdimlar.Margin = new Padding(3, 2, 3, 2);
+            dgvAdimlar.Name = "dgvAdimlar";
+            dgvAdimlar.ReadOnly = true;
+            dgvAdimlar.RowHeadersVisible = false;
+            dgvAdimlar.RowHeadersWidth = 51;
+            dgvAdimlar.RowTemplate.Height = 24;
+            dgvAdimlar.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvAdimlar.Size = new Size(291, 305);
+            dgvAdimlar.TabIndex = 5;
+            // 
+            // label10
+            // 
+            label10.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            label10.Location = new Point(136, 69);
+            label10.Name = "label10";
+            label10.Size = new Size(116, 19);
+            label10.TabIndex = 4;
+            label10.Text = "Reçete Adımları";
+            // 
+            // lblCalisanAdim
+            // 
+            lblCalisanAdim.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            lblCalisanAdim.BackColor = Color.White;
+            lblCalisanAdim.BorderStyle = BorderStyle.FixedSingle;
+            lblCalisanAdim.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblCalisanAdim.ForeColor = Color.ForestGreen;
+            lblCalisanAdim.Location = new Point(49, 33);
+            lblCalisanAdim.Name = "lblCalisanAdim";
+            lblCalisanAdim.Size = new Size(291, 24);
+            lblCalisanAdim.TabIndex = 3;
+            lblCalisanAdim.Text = "---";
+            lblCalisanAdim.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label8
+            // 
+            label8.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            label8.AutoSize = true;
+            label8.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            label8.Location = new Point(146, 13);
+            label8.Name = "label8";
+            label8.Size = new Size(96, 19);
+            label8.TabIndex = 2;
+            label8.Text = "Çalışan Adım";
+            // 
+            // lstAlarmlar
+            // 
+            lstAlarmlar.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            lstAlarmlar.BackColor = Color.FromArgb(45, 52, 54);
+            lstAlarmlar.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold);
+            lstAlarmlar.ForeColor = Color.White;
+            lstAlarmlar.FormattingEnabled = true;
+            lstAlarmlar.ItemHeight = 15;
+            lstAlarmlar.Location = new Point(49, 427);
+            lstAlarmlar.Margin = new Padding(3, 2, 3, 2);
+            lstAlarmlar.Name = "lstAlarmlar";
+            lstAlarmlar.Size = new Size(291, 304);
+            lstAlarmlar.TabIndex = 1;
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            label7.AutoSize = true;
+            label7.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
+            label7.Location = new Point(133, 407);
+            label7.Name = "label7";
+            label7.Size = new Size(123, 19);
+            label7.TabIndex = 0;
+            label7.Text = "Parti İçi Alarmlar";
             // 
             // MakineDetay_Control
             // 
@@ -525,21 +533,21 @@
             Controls.Add(pnlTop);
             Margin = new Padding(3, 2, 3, 2);
             Name = "MakineDetay_Control";
-            Size = new Size(1358, 525);
+            Size = new Size(1358, 799);
             pnlTop.ResumeLayout(false);
             pnlMainContent.ResumeLayout(false);
             tableLayoutPanelMain.ResumeLayout(false);
             pnlTopDashboard.ResumeLayout(false);
             tableLayoutPanelTop.ResumeLayout(false);
             pnlGaugesAndInfo.ResumeLayout(false);
-            pnlAlarmsAndSteps.ResumeLayout(false);
-            pnlAlarmsAndSteps.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvAdimlar).EndInit();
             pnlGauges.ResumeLayout(false);
             panelTemp.ResumeLayout(false);
             pnlInfo.ResumeLayout(false);
             pnlInfo.PerformLayout();
             pnlTimeline.ResumeLayout(false);
+            pnlAlarmsAndSteps.ResumeLayout(false);
+            pnlAlarmsAndSteps.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvAdimlar).EndInit();
             ResumeLayout(false);
         }
 

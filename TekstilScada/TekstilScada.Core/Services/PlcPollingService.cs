@@ -266,9 +266,6 @@ namespace TekstilScada.Services
 
         private void CheckAndLogAlarms(int machineId, FullMachineStatus currentStatus)
         {
-            // Bu metot, sizin sağladığınız çalışan alarm tespit mantığını kullanır
-            // ve sadece eksik olan LiveEventAggregator bildirimlerini ekler.
-
             if (_activeAlarmsTracker == null || !_activeAlarmsTracker.TryGetValue(machineId, out var machineActiveAlarms))
             {
                 _activeAlarmsTracker?.TryAdd(machineId, new ConcurrentDictionary<int, DateTime>());
@@ -279,16 +276,17 @@ namespace TekstilScada.Services
             int previousAlarmNumber = previousStatus?.ActiveAlarmNumber ?? 0;
             int currentAlarmNumber = currentStatus.ActiveAlarmNumber;
 
-            // Yeni bir alarm geldiyse
+            // Yeni bir alarm geldiyse...
             if (currentAlarmNumber > 0)
             {
+                // Ve bu alarm daha önce aktif değilse...
                 if (!machineActiveAlarms.ContainsKey(currentAlarmNumber) && _alarmDefinitionsCache.TryGetValue(currentAlarmNumber, out var newAlarmDef))
                 {
+                    // Veritabanına 'ACTIVE' olarak kaydet ve olayı yayınla
                     _alarmRepository.WriteAlarmHistoryEvent(machineId, newAlarmDef.Id, "ACTIVE");
-
-                    // YENİ EKLENEN SATIR: Alarmı Canlı Olay Akışına gönder
                     LiveEventAggregator.Instance.PublishAlarm(currentStatus.MachineName, newAlarmDef.AlarmText);
                 }
+                // Alarmı aktif listesine ekle veya başlangıç zamanını güncelle
                 machineActiveAlarms[currentAlarmNumber] = DateTime.Now;
             }
 
@@ -299,14 +297,12 @@ namespace TekstilScada.Services
                 if (_alarmDefinitionsCache.TryGetValue(timedOutAlarm.Key, out var oldAlarmDef))
                 {
                     _alarmRepository.WriteAlarmHistoryEvent(machineId, oldAlarmDef.Id, "INACTIVE");
-
-                    // YENİ EKLENEN SATIR: Temizlenen alarmı Canlı Olay Akışına bildir
-                    LiveEventAggregator.Instance.PublishSystemSuccess(currentStatus.MachineName, $"Alarm temizlendi: {oldAlarmDef.AlarmText}");
+                    LiveEventAggregator.Instance.Publish(new LiveEvent { Type = EventType.SystemInfo, Source = currentStatus.MachineName, Message = $"{oldAlarmDef.AlarmText} - TEMİZLENDİ" });
                 }
                 machineActiveAlarms.TryRemove(timedOutAlarm.Key, out _);
             }
 
-            // PLC'den "alarm yok" sinyali gelirse tüm aktif alarmları temizle
+            // PLC'den "alarm yok" (0) sinyali gelirse ve içeride hala aktif alarm varsa hepsini temizle
             if (currentAlarmNumber == 0 && !machineActiveAlarms.IsEmpty)
             {
                 foreach (var activeAlarm in machineActiveAlarms)
@@ -314,18 +310,16 @@ namespace TekstilScada.Services
                     if (_alarmDefinitionsCache.TryGetValue(activeAlarm.Key, out var oldAlarmDef))
                     {
                         _alarmRepository.WriteAlarmHistoryEvent(machineId, oldAlarmDef.Id, "INACTIVE");
-
-                        // YENİ EKLENEN SATIR: Temizlenen alarmı Canlı Olay Akışına bildir
-                        LiveEventAggregator.Instance.PublishSystemSuccess(currentStatus.MachineName, $"Alarm temizlendi: {oldAlarmDef.AlarmText}");
                     }
                 }
                 machineActiveAlarms.Clear();
             }
 
-            // Anlık durum nesnesini güncelle
+            // Anlık durum nesnesini en güncel bilgilere göre güncelle
             currentStatus.HasActiveAlarm = !machineActiveAlarms.IsEmpty;
             if (currentStatus.HasActiveAlarm)
             {
+                // Birden fazla alarm aktifse, en son geleni göster
                 currentStatus.ActiveAlarmNumber = machineActiveAlarms.OrderByDescending(kvp => kvp.Value).First().Key;
                 if (_alarmDefinitionsCache.TryGetValue(currentStatus.ActiveAlarmNumber, out var def))
                 {
@@ -342,11 +336,27 @@ namespace TekstilScada.Services
                 currentStatus.ActiveAlarmText = "";
             }
 
-            // Eğer genel alarm durumu değiştiyse, arayüzdeki diğer bileşenleri (örn. ana ekran banner'ı) uyar
+            // Alarm durumunda bir değişiklik olduysa (yeni alarm geldi veya temizlendi), ilgili event'i tetikle
             if ((previousStatus?.HasActiveAlarm ?? false) != currentStatus.HasActiveAlarm || previousAlarmNumber != currentStatus.ActiveAlarmNumber)
             {
                 OnActiveAlarmStateChanged?.Invoke(machineId, currentStatus);
             }
+        }
+        public List<AlarmDefinition> GetActiveAlarmsForMachine(int machineId)
+        {
+            var activeAlarms = new List<AlarmDefinition>();
+            if (_activeAlarmsTracker.TryGetValue(machineId, out var machineActiveAlarms) && !machineActiveAlarms.IsEmpty)
+            {
+                foreach (var alarmNumber in machineActiveAlarms.Keys)
+                {
+                    if (_alarmDefinitionsCache.TryGetValue(alarmNumber, out var alarmDef))
+                    {
+                        activeAlarms.Add(alarmDef);
+                    }
+                }
+            }
+            // Alarmları önem seviyesine göre sıralayarak döndür
+            return activeAlarms.OrderByDescending(a => a.Severity).ThenBy(a => a.AlarmNumber).ToList();
         }
         public Dictionary<int, IPlcManager> GetPlcManagers()
         {
