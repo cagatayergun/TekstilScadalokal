@@ -2,8 +2,10 @@
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using TekstilScada.Models;
 using TekstilScada.Core; // Bu satırı ekleyin
+using TekstilScada.Core.Models;
+using TekstilScada.Models;
+
 
 namespace TekstilScada.Repositories
 {
@@ -64,7 +66,48 @@ namespace TekstilScada.Repositories
             }
             return definition;
         }
+        public List<Alarm> GetAlarmsByBatchId(string batchId)
+        {
+            var alarms = new List<Alarm>();
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                // alarms tablosunda BatchId'ye göre sorgulama yapıyoruz.
+                // Alarm tanımını (AlarmDefinition) da join ile sorguya ekliyoruz.
+                string query = @"
+            SELECT 
+                a.Id, a.MachineId, a.AlarmDefinitionId, a.BatchId, a.StartTime, a.EndTime, 
+                ad.Code as AlarmCode, ad.Message as AlarmMessage, ad.Severity
+            FROM alarms a
+            JOIN alarm_definitions ad ON a.AlarmDefinitionId = ad.Id
+            WHERE a.BatchId = @BatchId
+            ORDER BY a.StartTime DESC;";
 
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@BatchId", batchId);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        alarms.Add(new Alarm
+                        {
+                            Id = reader.GetInt32("Id"),
+                            MachineId = reader.GetInt32("MachineId"),
+                            AlarmDefinitionId = reader.GetInt32("AlarmDefinitionId"),
+                            BatchId = reader.GetString("BatchId"),
+                            StartTime = reader.GetDateTime("StartTime"),
+                            EndTime = reader.GetDateTime("EndTime"),
+                            // Join'den gelen ek bilgiler
+                            AlarmCode = reader.GetString("AlarmCode"),
+                            AlarmMessage = reader.GetString("AlarmMessage"),
+                            Severity = reader.GetString("Severity")
+                        });
+                    }
+                }
+            }
+            return alarms;
+        }
         public void AddAlarmDefinition(AlarmDefinition definition)
         {
             using (var connection = new MySqlConnection(_connectionString))

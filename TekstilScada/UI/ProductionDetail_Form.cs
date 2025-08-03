@@ -1,12 +1,16 @@
 ﻿// UI/ProductionDetail_Form.cs
+using ScottPlot; // ScottPlot'u kullanmak için
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Security.Claims;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using TekstilScada.Core;
+using TekstilScada.Core.Models;
 using TekstilScada.Models;
 using TekstilScada.Repositories;
-
+using ChartLegend = System.Windows.Forms.DataVisualization.Charting.Legend;
 namespace TekstilScada.UI
 {
     public partial class ProductionDetail_Form : Form
@@ -49,11 +53,86 @@ namespace TekstilScada.UI
 
             // 3. Alarm detaylarını yükle
             dgvAlarms.DataSource = _alarmRepo.GetAlarmDetailsForBatch(_reportItem.BatchId, _reportItem.MachineId);
-
+            dgvStepDetails.CellFormatting += dgvStepDetails_CellFormatting;
             // 4. Zaman çizgisi grafiğini yükle
-            LoadTimelineChart();
+            // 1. Alarm ve Grafik Verilerini Yükle
+        
+            LoadTimelineChart(); // Mevcut zaman çizelgesi grafiğini yükle
+
+            // 2. YENİ: Pasta Grafik Verilerini Hesapla ve Yükle
+            LoadPieChart();
+
+            
+        }
+        private void LoadPieChart()
+        {
+            // 1. HAZIR VERİLERİ AL
+            double totalMachineAlarmSeconds = _reportItem.MachineAlarmDurationSeconds;
+            double totalOperatorPauseSeconds = _reportItem.OperatorPauseDurationSeconds;
+            double totalBatchSeconds = (_reportItem.EndTime - _reportItem.StartTime).TotalSeconds;
+
+            // 2. AKTİF SÜREYİ HESAPLA
+            double activeWorkingSeconds = totalBatchSeconds - totalMachineAlarmSeconds - totalOperatorPauseSeconds;
+            if (activeWorkingSeconds < 0) activeWorkingSeconds = 0;
+
+            // 3. GRAFİĞİ ÇİZ (Bu kod artık doğru ve basit)
+            pieChartControl.Series.Clear();
+            pieChartControl.Legends.Clear();
+
+            Series series = new Series
+            {
+                Name = "Süre Dağılımı",
+                IsVisibleInLegend = true,
+                ChartType = SeriesChartType.Pie,
+                Font = new System.Drawing.Font("Arial", 10f, System.Drawing.FontStyle.Bold),
+                LabelForeColor = System.Drawing.Color.White
+            };
+            pieChartControl.Series.Add(series);
+
+            if (activeWorkingSeconds > 1)
+                series.Points.AddXY("Aktif Çalışma (dk)", Math.Round(activeWorkingSeconds / 60));
+            if (totalMachineAlarmSeconds > 1)
+                series.Points.AddXY("Makine Alarmı (dk)", Math.Round(totalMachineAlarmSeconds / 60));
+            if (totalOperatorPauseSeconds > 1)
+                series.Points.AddXY("Operatör Duraklatma (dk)", Math.Round(totalOperatorPauseSeconds / 60));
+
+            series.IsValueShownAsLabel = true;
+            series.Label = "#PERCENT{P0}";
+
+            System.Windows.Forms.DataVisualization.Charting.Legend legend = new System.Windows.Forms.DataVisualization.Charting.Legend
+            {
+                Name = "Süreler",
+                Docking = Docking.Bottom,
+                Alignment = StringAlignment.Center
+            };
+            pieChartControl.Legends.Add(legend);
+            series.LegendText = "#VALX";
+
+            pieChartControl.Invalidate();
         }
 
+        // FormLoad metodundan LoadPieChart çağrısını parametresiz yap
+     
+
+
+        private void dgvStepDetails_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Sadece "DeflectionTime" veya "Sapma" isimli sütun için çalış
+            if (dgvStepDetails.Columns[e.ColumnIndex].DataPropertyName == "DeflectionTime" && e.Value != null)
+            {
+                string deflectionValue = e.Value.ToString();
+                if (deflectionValue.StartsWith("+"))
+                {
+                    e.CellStyle.BackColor = System.Drawing.Color.FromArgb(255, 204, 203); // Açık Kırmızı
+                    e.CellStyle.ForeColor = System.Drawing.Color.DarkRed;
+                }
+                else if (deflectionValue.StartsWith("-"))
+                {
+                    e.CellStyle.BackColor = System.Drawing.Color.FromArgb(204, 255, 204); // Açık Yeşil
+                    e.CellStyle.ForeColor = System.Drawing.Color.DarkGreen;
+                }
+            }
+        }
         private void LoadTimelineChart()
         {
             var dataPoints = _processLogRepo.GetLogsForBatch(_reportItem.MachineId, _reportItem.BatchId);

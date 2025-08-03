@@ -35,6 +35,7 @@
 		<PackageReference Include="MySql.Data" Version="9.4.0" />
 		<PackageReference Include="ScottPlot" Version="5.0.55" />
 		<PackageReference Include="ScottPlot.WinForms" Version="5.0.55" />
+		<PackageReference Include="WinForms.DataVisualization" Version="1.10.0" />
 		<PackageReference Include="WinSCP" Version="6.5.3" />
 	</ItemGroup>
 

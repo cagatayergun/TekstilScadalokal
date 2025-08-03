@@ -1078,15 +1078,6 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
-        ///   Silme sırasında hata: benzeri yerelleştirilmiş bir dize arar.
-        /// </summary>
-        public static string Silme_sırasında_hata_ {
-            get {
-                return ResourceManager.GetString("Silme sırasında hata:", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Yumuşak Su benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string SoftWater {
@@ -1353,15 +1344,6 @@ namespace TekstilScada.Properties {
         public static string WaterIntake {
             get {
                 return ResourceManager.GetString("WaterIntake", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Yeni kullanıcı için şifre zorunludur. benzeri yerelleştirilmiş bir dize arar.
-        /// </summary>
-        public static string Yeni_kullanıcı_için_şifre_zorunludur_ {
-            get {
-                return ResourceManager.GetString("Yeni kullanıcı için şifre zorunludur.", resourceCulture);
             }
         }
         

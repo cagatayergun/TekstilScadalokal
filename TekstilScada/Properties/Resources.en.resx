@@ -117,4 +117,448 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Alarm" xml:space="preserve">
+    <value>Alarm</value>
+  </data>
+  <data name="AlarmDetails" xml:space="preserve">
+    <value>Alarm Details</value>
+  </data>
+  <data name="AlarmHistory" xml:space="preserve">
+    <value>Alarm History</value>
+  </data>
+  <data name="AlarmNo" xml:space="preserve">
+    <value>Alarm No:</value>
+  </data>
+  <data name="AlarmSettings" xml:space="preserve">
+    <value>Alarm Settings</value>
+  </data>
+  <data name="AlarmText" xml:space="preserve">
+    <value>Alarm Text:</value>
+  </data>
+  <data name="AllMachines" xml:space="preserve">
+    <value>ALL MACHINES</value>
+  </data>
+  <data name="BatchNo" xml:space="preserve">
+    <value>Batch No:</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category:</value>
+  </data>
+  <data name="Chemical" xml:space="preserve">
+    <value>Chemical:</value>
+  </data>
+  <data name="ChemicalConsumption" xml:space="preserve">
+    <value>Chemical Consumption</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Confirm Deletion</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Connection Error</value>
+  </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>Connection Lost</value>
+  </data>
+  <data name="CoolingTime" xml:space="preserve">
+    <value>Cooling Time (min):</value>
+  </data>
+  <data name="CustomerNo" xml:space="preserve">
+    <value>Customer No:</value>
+  </data>
+  <data name="DatabaseError" xml:space="preserve">
+    <value>Database Error</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DirectSteam" xml:space="preserve">
+    <value>Direct Steam</value>
+  </data>
+  <data name="Dosage" xml:space="preserve">
+    <value>DOSAGE</value>
+  </data>
+  <data name="DosageLiter" xml:space="preserve">
+    <value>Dosage Liters:</value>
+  </data>
+  <data name="DosageTime" xml:space="preserve">
+    <value>Chemical Dosage Time:</value>
+  </data>
+  <data name="Drain" xml:space="preserve">
+    <value>DRAIN</value>
+  </data>
+  <data name="DryingRecipeParameters" xml:space="preserve">
+    <value>Drying Recipe Parameters</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration (min):</value>
+  </data>
+  <data name="EndTime" xml:space="preserve">
+    <value>End Time:</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ExportToExcel" xml:space="preserve">
+    <value>Export to Excel</value>
+  </data>
+  <data name="GeneralDashboard" xml:space="preserve">
+    <value>General Facility Dashboard (KPI Screen) (To be developed)</value>
+  </data>
+  <data name="GeneralOverview" xml:space="preserve">
+    <value>General Overview</value>
+  </data>
+  <data name="Heating" xml:space="preserve">
+    <value>HEATING</value>
+  </data>
+  <data name="Humidity" xml:space="preserve">
+    <value>Humidity (%):</value>
+  </data>
+  <data name="IndirectSteam" xml:space="preserve">
+    <value>Indirect Steam</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="InputRequired" xml:space="preserve">
+    <value>Input Required</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Incorrect username or password!</value>
+  </data>
+  <data name="LoginScreen" xml:space="preserve">
+    <value>SCADA System - Login</value>
+  </data>
+  <data name="MachineID" xml:space="preserve">
+    <value>MACHINE ID:</value>
+  </data>
+  <data name="MachineManagement" xml:space="preserve">
+    <value>Machine Management</value>
+  </data>
+  <data name="MachineName" xml:space="preserve">
+    <value>MACHINE NAME:</value>
+  </data>
+  <data name="MachineSelect" xml:space="preserve">
+    <value>Select Machine</value>
+  </data>
+  <data name="MainTankCleanWater" xml:space="preserve">
+    <value>Main Tank Clean Water Intake</value>
+  </data>
+  <data name="MainTankWater" xml:space="preserve">
+    <value>Main Tank Mach. Water Intake</value>
+  </data>
+  <data name="MixingTime" xml:space="preserve">
+    <value>Chemical Mixing Time:</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="NewRecipe" xml:space="preserve">
+    <value>NEW RECIPE</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OeeReport" xml:space="preserve">
+    <value>OEE Report</value>
+  </data>
+  <data name="Operator" xml:space="preserve">
+    <value>OPERATOR:</value>
+  </data>
+  <data name="OrderNo" xml:space="preserve">
+    <value>Order No:</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="PlcOperatorManagement" xml:space="preserve">
+    <value>PLC Operator Management</value>
+  </data>
+  <data name="PleaseSelectMachine" xml:space="preserve">
+    <value>Please select a machine to perform the operation:</value>
+  </data>
+  <data name="ProcessAlarms" xml:space="preserve">
+    <value>Process Alarms</value>
+  </data>
+  <data name="ProcessControl" xml:space="preserve">
+    <value>Process Control</value>
+  </data>
+  <data name="ProcessGraph" xml:space="preserve">
+    <value>Process Graph</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>PROCESSING</value>
+  </data>
+  <data name="ProductionReport" xml:space="preserve">
+    <value>Production Report</value>
+  </data>
+  <data name="ProductionSummary" xml:space="preserve">
+    <value>Production Summary</value>
+  </data>
+  <data name="QuantityLiters" xml:space="preserve">
+    <value>Quantity (Liters):</value>
+  </data>
+  <data name="RecipeName" xml:space="preserve">
+    <value>RECIPE NAME:</value>
+  </data>
+  <data name="RecipeOptimization" xml:space="preserve">
+    <value>Recipe Optimization</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="RightLeftTime" xml:space="preserve">
+    <value>Right-Left Direction Time (SN):</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>RUNNING</value>
+  </data>
+  <data name="RunningSpeed" xml:space="preserve">
+    <value>Running Speed:</value>
+  </data>
+  <data name="RunningTime" xml:space="preserve">
+    <value>Running Time (MIN):</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="ScadaSystem" xml:space="preserve">
+    <value>Textile SCADA System</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Severity" xml:space="preserve">
+    <value>Severity:</value>
+  </data>
+  <data name="SoftWater" xml:space="preserve">
+    <value>Soft Water</value>
+  </data>
+  <data name="Squeezing" xml:space="preserve">
+    <value>SQUEEZING</value>
+  </data>
+  <data name="SqueezingSpeed" xml:space="preserve">
+    <value>Squeezing Speed:</value>
+  </data>
+  <data name="SqueezingTime" xml:space="preserve">
+    <value>Squeezing Time (MIN):</value>
+  </data>
+  <data name="StartTime" xml:space="preserve">
+    <value>Start Time:</value>
+  </data>
+  <data name="Step" xml:space="preserve">
+    <value>STEP:</value>
+  </data>
+  <data name="StepDetails" xml:space="preserve">
+    <value>Step Details</value>
+  </data>
+  <data name="Tank1Dosage" xml:space="preserve">
+    <value>1. Tank Dosage</value>
+  </data>
+  <data name="Tank1Water" xml:space="preserve">
+    <value>1. Tank Water Intake</value>
+  </data>
+  <data name="TankWaterAmount" xml:space="preserve">
+    <value>Tank Water Amount:</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperature (°C):</value>
+  </data>
+  <data name="TemperatureControl" xml:space="preserve">
+    <value>Temperature Control</value>
+  </data>
+  <data name="TotalTime" xml:space="preserve">
+    <value>Total Time:</value>
+  </data>
+  <data name="TrendAnalysis" xml:space="preserve">
+    <value>Trend Analysis</value>
+  </data>
+  <data name="TrendAnalysisReport" xml:space="preserve">
+    <value>Trend Analysis Report (To be developed)</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username:</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="VncConnectionTo" xml:space="preserve">
+    <value>VNC Connection</value>
+  </data>
+  <data name="WaitTime" xml:space="preserve">
+    <value>Wait Time (SN):</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="WaterIntake" xml:space="preserve">
+    <value>WATER INTAKE</value>
+  </data>
+  <data name="CriticalError" xml:space="preserve">
+    <value>Critical Error</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="DatabaseConnectionFailed" xml:space="preserve">
+    <value>Could not connect to the database.</value>
+  </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>You do not have permission to access this area.</value>
+  </data>
+  <data name="ColdWater" xml:space="preserve">
+    <value>Cold Water</value>
+  </data>
+  <data name="DrumStop" xml:space="preserve">
+    <value>Stop Drum</value>
+  </data>
+  <data name="HotWater" xml:space="preserve">
+    <value>Hot Water</value>
+  </data>
+  <data name="Cikiseminmisin" xml:space="preserve">
+    <value>Are you sure you want to log out?</value>
+  </data>
+  <data name="Closeandvnc" xml:space="preserve">
+    <value>Error closing VNCViewer form while exiting the application:</value>
+  </data>
+  <data name="Confirim" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="EksikBilgi" xml:space="preserve">
+    <value>Missing Information</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Kayıt sırasında hata:" xml:space="preserve">
+    <value>Error during registration:</value>
+  </data>
+  <data name="kullanıcısını silmek istediğinizden emin misiniz?" xml:space="preserve">
+    <value>Are you sure you want to delete the user?</value>
+  </data>
+  <data name="Livelogsee" xml:space="preserve">
+    <value>Show Live Event Stream</value>
+  </data>
+  <data name="Loggedin" xml:space="preserve">
+    <value>Logged in as</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="namesurname" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Proseswatching" xml:space="preserve">
+    <value>Process Monitoring</value>
+  </data>
+  <data name="roller" xml:space="preserve">
+    <value>Rules</value>
+  </data>
+  <data name="Session" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="Silme sırasında hata:" xml:space="preserve">
+    <value>Error during deletion:</value>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>Turkish</value>
+  </data>
+  <data name="Useractive" xml:space="preserve">
+    <value>User Active</value>
+  </data>
+  <data name="Userdetail" xml:space="preserve">
+    <value>User Details</value>
+  </data>
+  <data name="usernamehard" xml:space="preserve">
+    <value>Username is required.</value>
+  </data>
+  <data name="Vncconnecterror" xml:space="preserve">
+    <value>An error occurred while opening the VNC window:</value>
+  </data>
+  <data name="Vnccurrentclose" xml:space="preserve">
+    <value>A VNC connection is already active. Please close the existing window.</value>
+  </data>
+  <data name="Vncnomachine" xml:space="preserve">
+    <value>A VNC address has not been defined for this machine.</value>
+  </data>
+  <data name="Yeni kullanıcı için şifre zorunludur." xml:space="preserve">
+    <value>Password is required for a new user.</value>
+  </data>
+  <data name="Yilmak" xml:space="preserve">
+    <value>Yilmak Machine Scada</value>
+  </data>
+  <data name="alarmrapor" xml:space="preserve">
+    <value>Alarm Reports</value>
+  </data>
+  <data name="analizet" xml:space="preserve">
+    <value>Analyze</value>
+  </data>
+  <data name="anarecete" xml:space="preserve">
+    <value>Main Recipe:</value>
+  </data>
+  <data name="Baslangic_tarihi" xml:space="preserve">
+    <value>Start Date:</value>
+  </data>
+  <data name="Bitis_tarihi" xml:space="preserve">
+    <value>End Date:</value>
+  </data>
+  <data name="devir" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="gecmisuretimler" xml:space="preserve">
+    <value>Past Productions</value>
+  </data>
+  <data name="geneltüketim" xml:space="preserve">
+    <value>General Consumption Report</value>
+  </data>
+  <data name="grafigiolustur" xml:space="preserve">
+    <value>Generate Chart</value>
+  </data>
+  <data name="görüntülenecek_veriler" xml:space="preserve">
+    <value>Data to Display</value>
+  </data>
+  <data name="karsilastirilacak" xml:space="preserve">
+    <value>To Compare:</value>
+  </data>
+  <data name="makineler" xml:space="preserve">
+    <value>Machines</value>
+  </data>
+  <data name="manuelrapor" xml:space="preserve">
+    <value>Manual Consumption</value>
+  </data>
+  <data name="ortalamabuhartuketimi" xml:space="preserve">
+    <value>Average Steam Consumption</value>
+  </data>
+  <data name="ortalamacevrimsuresi" xml:space="preserve">
+    <value>Average Cycle Time</value>
+  </data>
+  <data name="ortalamaelektriktuketimi" xml:space="preserve">
+    <value>Average Electricity Consumption</value>
+  </data>
+  <data name="ortalamasutuketimi" xml:space="preserve">
+    <value>Average Water Consumption</value>
+  </data>
+  <data name="suseviyesi" xml:space="preserve">
+    <value>Water Level</value>
+  </data>
+  <data name="üretimraporu" xml:space="preserve">
+    <value>Production Report</value>
+  </data>
+  <data name="Silme_sırasında_hata_" xml:space="preserve">
+    <value>Error during deletion:</value>
+  </data>
+  <data name="Yeni_kullanıcı_için_şifre_zorunludur_" xml:space="preserve">
+    <value>Password is required for a new user.</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
 </root>

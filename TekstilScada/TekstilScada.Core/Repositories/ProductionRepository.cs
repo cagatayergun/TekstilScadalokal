@@ -19,6 +19,8 @@ namespace TekstilScada.Repositories
         public string SiparisNo { get; set; }
         public string MusteriNo { get; set; }
         public string OperatorName { get; set; }
+        public int MachineAlarmDurationSeconds { get; set; }
+        public int OperatorPauseDurationSeconds { get; set; }
     }
     public class ProductionRepository
     {
@@ -44,6 +46,8 @@ namespace TekstilScada.Repositories
                     b.RecipeName,
                     b.OperatorName,
                     b.MusteriNo,
+                    b.MachineAlarmDurationSeconds, 
+                     b.OperatorPauseDurationSeconds,
                     b.SiparisNo
                 FROM production_batches AS b
                 JOIN machines AS m ON b.MachineId = m.Id
@@ -92,7 +96,10 @@ namespace TekstilScada.Repositories
                             RecipeName = reader.IsDBNull(reader.GetOrdinal("RecipeName")) ? "" : reader.GetString("RecipeName"),
                             OperatorName = reader.IsDBNull(reader.GetOrdinal("OperatorName")) ? "" : reader.GetString("OperatorName"),
                             MusteriNo = reader.IsDBNull(reader.GetOrdinal("MusteriNo")) ? "" : reader.GetString("MusteriNo"),
-                            SiparisNo = reader.IsDBNull(reader.GetOrdinal("SiparisNo")) ? "" : reader.GetString("SiparisNo")
+                            SiparisNo = reader.IsDBNull(reader.GetOrdinal("SiparisNo")) ? "" : reader.GetString("SiparisNo"),
+                              MachineAlarmDurationSeconds = reader.IsDBNull(reader.GetOrdinal("MachineAlarmDurationSeconds")) ? 0 : reader.GetInt32("MachineAlarmDurationSeconds"),
+                            OperatorPauseDurationSeconds = reader.IsDBNull(reader.GetOrdinal("OperatorPauseDurationSeconds")) ? 0 : reader.GetInt32("OperatorPauseDurationSeconds")
+
                         });
                     }
                 }
@@ -118,7 +125,7 @@ namespace TekstilScada.Repositories
             }
         }
 
-        public void EndBatch(int machineId, string batchId, FullMachineStatus finalStatus)
+        public void EndBatch(int machineId, string batchId, FullMachineStatus finalStatus, int machineAlarmSeconds, int operatorPauseSeconds)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -130,6 +137,8 @@ namespace TekstilScada.Repositories
                         TotalProductionCount = @TotalProductionCount,
                         DefectiveProductionCount = @DefectiveProductionCount,
                         TotalDownTimeSeconds = @TotalDownTimeSeconds,
+                        MachineAlarmDurationSeconds = @MachineAlarmDuration,
+                        OperatorPauseDurationSeconds = @OperatorPauseDuration
                         StandardCycleTimeMinutes = @StandardCycleTimeMinutes
                     WHERE 
                         MachineId = @MachineId AND BatchId = @BatchId AND EndTime IS NULL;";
@@ -144,6 +153,8 @@ namespace TekstilScada.Repositories
                 cmd.Parameters.AddWithValue("@DefectiveProductionCount", finalStatus.DefectiveProductionCount);
                 cmd.Parameters.AddWithValue("@TotalDownTimeSeconds", finalStatus.TotalDownTimeSeconds);
                 cmd.Parameters.AddWithValue("@StandardCycleTimeMinutes", finalStatus.StandardCycleTimeMinutes);
+                cmd.Parameters.AddWithValue("@MachineAlarmDuration", machineAlarmSeconds);
+                cmd.Parameters.AddWithValue("@OperatorPauseDuration", operatorPauseSeconds);
 
                 cmd.ExecuteNonQuery();
             }
@@ -375,6 +386,32 @@ namespace TekstilScada.Repositories
                 }
             }
             return (null, null);
+        }
+        // ProductionRepository.cs dosyasının içine bu yeni metodu ekleyin
+
+        public void LogSingleStepDetail(ProductionStepDetail stepDetail, int machineId, string batchId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+            INSERT INTO production_step_logs 
+            (MachineId, BatchId, StepNumber, StepName, TheoreticalTime, WorkingTime, StopTime, DeflectionTime, LogTimestamp) 
+            VALUES 
+            (@MachineId, @BatchId, @StepNumber, @StepName, @TheoreticalTime, @WorkingTime, @StopTime, @DeflectionTime, @LogTimestamp);";
+
+                var cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@MachineId", machineId);
+                cmd.Parameters.AddWithValue("@BatchId", batchId);
+                cmd.Parameters.AddWithValue("@StepNumber", stepDetail.StepNumber);
+                cmd.Parameters.AddWithValue("@StepName", stepDetail.StepName);
+                cmd.Parameters.AddWithValue("@TheoreticalTime", stepDetail.TheoreticalTime);
+                cmd.Parameters.AddWithValue("@WorkingTime", stepDetail.WorkingTime);
+                cmd.Parameters.AddWithValue("@StopTime", stepDetail.StopTime);
+                cmd.Parameters.AddWithValue("@DeflectionTime", stepDetail.DeflectionTime);
+                cmd.Parameters.AddWithValue("@LogTimestamp", DateTime.Now);
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }

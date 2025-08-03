@@ -444,9 +444,6 @@
   <data name="kullanıcısını silmek istediğinizden emin misiniz?" xml:space="preserve">
     <value>kullanıcısını silmek istediğinizden emin misiniz?</value>
   </data>
-  <data name="Language" xml:space="preserve">
-    <value>Dil</value>
-  </data>
   <data name="Livelogsee" xml:space="preserve">
     <value>Canlı Olay Akışı Göster</value>
   </data>
@@ -554,5 +551,14 @@
   </data>
   <data name="üretimraporu" xml:space="preserve">
     <value>Üretim Raporu</value>
+  </data>
+  <data name="Silme_sırasında_hata_" xml:space="preserve">
+    <value>Silme sırasında hata:</value>
+  </data>
+  <data name="Yeni_kullanıcı_için_şifre_zorunludur_" xml:space="preserve">
+    <value>Yeni kullanıcı için şifre zorunludur.</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
   </data>
 </root>

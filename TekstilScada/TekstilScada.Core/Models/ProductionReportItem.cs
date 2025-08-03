@@ -22,5 +22,8 @@ namespace TekstilScada.Models
         public int TotalWater { get; set; }
         public int TotalElectricity { get; set; }
         public int TotalSteam { get; set; }
+       
+            public double MachineAlarmDurationSeconds { get; set; }
+        public double OperatorPauseDurationSeconds { get; set; }
     }
 }

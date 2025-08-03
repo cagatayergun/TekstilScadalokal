@@ -48,7 +48,7 @@ namespace TekstilScada
             _processLogRepository = new ProcessLogRepository();
             _alarmRepository = new AlarmRepository();
             _productionRepository = new ProductionRepository();
-            _pollingService = new PlcPollingService(_alarmRepository, _processLogRepository, _productionRepository);
+            _pollingService = new PlcPollingService(_alarmRepository, _processLogRepository, _productionRepository,_recipeRepository);
             _dashboardRepository = new DashboardRepository();
 
             _prosesIzlemeView = new ProsesÝzleme_Control();
@@ -130,15 +130,21 @@ namespace TekstilScada
 
         private void ApplyLocalization()
         {
-            this.Text = Strings.ApplicationTitle;
-            btnGenelBakis.Text = Strings.MainMenu_GeneralOverview;
-            btnProsesIzleme.Text = Strings.MainMenu_ProcessMonitoring;
-            btnProsesKontrol.Text = Strings.MainMenu_ProcessControl;
-            btnRaporlar.Text = Strings.MainMenu_Reports;
-            btnAyarlar.Text = Strings.MainMenu_Settings;
-            dilToolStripMenuItem.Text = Resources.Language;
-            oturumToolStripMenuItem.Text = Resources.Session;
-            çýkýþYapToolStripMenuItem.Text = Resources.Logout;
+            // Ana form baþlýðý ve ana menü butonlarý "Strings" sýnýfýndan geliyor.
+            this.Text = TekstilScada.Localization.Strings.ApplicationTitle;
+            btnGenelBakis.Text = TekstilScada.Localization.Strings.MainMenu_GeneralOverview;
+            btnProsesIzleme.Text = TekstilScada.Localization.Strings.MainMenu_ProcessMonitoring;
+            btnProsesKontrol.Text = TekstilScada.Localization.Strings.MainMenu_ProcessControl;
+            btnRaporlar.Text = TekstilScada.Localization.Strings.MainMenu_Reports;
+            btnAyarlar.Text = TekstilScada.Localization.Strings.MainMenu_Settings;
+
+            // Menü ve durum çubuðu gibi diðer elemanlar "Resources" sýnýfýndan geliyor.
+            dilToolStripMenuItem.Text = TekstilScada.Properties.Resources.Language;
+            oturumToolStripMenuItem.Text = TekstilScada.Properties.Resources.Session;
+            çýkýþYapToolStripMenuItem.Text = TekstilScada.Properties.Resources.Logout;
+
+            // Kullanýcý bilgisi metnini de burada güncelleyebilirsiniz.
+       
         }
 
         private void UpdateUserInfoAndPermissions()

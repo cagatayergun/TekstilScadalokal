@@ -141,40 +141,4 @@
     <value>Ayarlar</value>
     <comment>Ana menüdeki buton metni</comment>
   </data>
-  <data name="String10" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String11" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String12" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String13" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String14" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String15" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String16" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String17" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String6" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String7" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String8" xml:space="preserve">
-    <value />
-  </data>
-  <data name="String9" xml:space="preserve">
-    <value />
-  </data>
 </root>

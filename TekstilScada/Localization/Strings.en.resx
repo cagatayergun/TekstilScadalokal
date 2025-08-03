@@ -119,26 +119,20 @@
   </resheader>
   <data name="ApplicationTitle" xml:space="preserve">
     <value>Textile SCADA System</value>
-    <comment>Uygulamanın ana başlığı</comment>
   </data>
   <data name="MainMenu_GeneralOverview" xml:space="preserve">
-    <value>General Overview</value>
-    <comment>Ana menüdeki buton metni</comment>
+    <value>Dashboard</value>
   </data>
   <data name="MainMenu_ProcessControl" xml:space="preserve">
     <value>Process Control</value>
-    <comment>Ana menüdeki buton metni</comment>
   </data>
   <data name="MainMenu_ProcessMonitoring" xml:space="preserve">
     <value>Process Monitoring</value>
-    <comment>Ana menüdeki buton metni</comment>
   </data>
   <data name="MainMenu_Reports" xml:space="preserve">
     <value>Reports</value>
-    <comment>Ana menüdeki buton metni</comment>
   </data>
   <data name="MainMenu_Settings" xml:space="preserve">
     <value>Settings</value>
-    <comment>Ana menüdeki buton metni</comment>
   </data>
 </root>

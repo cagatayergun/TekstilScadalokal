@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             pnlBottom = new Panel();
             btnExportToExcel = new Button();
             btnClose = new Button();
@@ -60,6 +63,7 @@
             dgvAlarms = new DataGridView();
             tabPageChemicals = new TabPage();
             dgvChemicals = new DataGridView();
+            pieChartControl = new System.Windows.Forms.DataVisualization.Charting.Chart();
             pnlBottom.SuspendLayout();
             gbProductionInfo.SuspendLayout();
             pnlMainContent.SuspendLayout();
@@ -76,6 +80,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvAlarms).BeginInit();
             tabPageChemicals.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvChemicals).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pieChartControl).BeginInit();
             SuspendLayout();
             // 
             // pnlBottom
@@ -117,6 +122,7 @@
             // 
             // gbProductionInfo
             // 
+            gbProductionInfo.Controls.Add(pieChartControl);
             gbProductionInfo.Controls.Add(txtTotalDuration);
             gbProductionInfo.Controls.Add(label6);
             gbProductionInfo.Controls.Add(txtStopTime);
@@ -443,7 +449,7 @@
             tabPageChemicals.Margin = new Padding(3, 2, 3, 2);
             tabPageChemicals.Name = "tabPageChemicals";
             tabPageChemicals.Padding = new Padding(3, 2, 3, 2);
-            tabPageChemicals.Size = new Size(774, 141);
+            tabPageChemicals.Size = new Size(774, 144);
             tabPageChemicals.TabIndex = 1;
             tabPageChemicals.Text = "Kimyasal Tüketimi";
             tabPageChemicals.UseVisualStyleBackColor = true;
@@ -461,8 +467,24 @@
             dgvChemicals.ReadOnly = true;
             dgvChemicals.RowHeadersWidth = 51;
             dgvChemicals.RowTemplate.Height = 29;
-            dgvChemicals.Size = new Size(768, 137);
+            dgvChemicals.Size = new Size(768, 140);
             dgvChemicals.TabIndex = 0;
+            // 
+            // pieChartControl
+            // 
+            chartArea1.Name = "ChartArea1";
+            pieChartControl.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            pieChartControl.Legends.Add(legend1);
+            pieChartControl.Location = new Point(28, 345);
+            pieChartControl.Name = "pieChartControl";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            pieChartControl.Series.Add(series1);
+            pieChartControl.Size = new Size(217, 149);
+            pieChartControl.TabIndex = 16;
+            pieChartControl.Text = "chart1";
             // 
             // ProductionDetail_Form
             // 
@@ -496,6 +518,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvAlarms).EndInit();
             tabPageChemicals.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvChemicals).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pieChartControl).EndInit();
             ResumeLayout(false);
         }
 
@@ -533,6 +556,7 @@
         private ScottPlot.WinForms.FormsPlot formsPlot1;
         private System.Windows.Forms.DataGridView dgvAlarms;
         private System.Windows.Forms.DataGridView dgvChemicals;
+        private System.Windows.Forms.DataVisualization.Charting.Chart pieChartControl;
     }
 }
 
