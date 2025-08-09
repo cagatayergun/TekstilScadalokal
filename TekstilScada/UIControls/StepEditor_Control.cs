@@ -1,8 +1,8 @@
 ﻿// UI/Controls/RecipeStepEditors/StepEditor_Control.cs
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
 using TekstilScada.Models;
@@ -13,14 +13,15 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
     public partial class StepEditor_Control : UserControl
     {
         private ScadaRecipeStep _step;
-        public event EventHandler StepDataChanged;
-        private bool _isUpdating = false; // Programatik değişikliklerde olayların tekrar tetiklenmesini önlemek için
-        private TekstilScada.Models.Machine _machine; // YENİ: Hangi makine için çalıştığını bilmeli
+        private Machine _machine;
+        private bool _isUpdating = false;
         private readonly RecipeConfigurationRepository _configRepo = new RecipeConfigurationRepository();
+        public event EventHandler StepDataChanged;
+
         public StepEditor_Control()
         {
             InitializeComponent();
-            // CheckBox'ların olaylarını bağla
+
             chkSuAlma.CheckedChanged += OnStepTypeChanged;
             chkIsitma.CheckedChanged += OnStepTypeChanged;
             chkCalisma.CheckedChanged += OnStepTypeChanged;
@@ -28,60 +29,122 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
             chkBosaltma.CheckedChanged += OnStepTypeChanged;
             chkSikma.CheckedChanged += OnStepTypeChanged;
 
+            flpParameters.Resize += new EventHandler(flpParameters_Resize);
         }
 
-        public void LoadStep(ScadaRecipeStep step, TekstilScada.Models.Machine machine)
+        public void LoadStep(ScadaRecipeStep step, Machine machine)
         {
             _step = step;
-            _machine = machine; // Makine bilgisini sakla
-            _isUpdating = true; // Yükleme sırasında olayları durdur
+            _machine = machine;
+            _isUpdating = true;
             UpdateCheckboxesFromStepData();
-            _isUpdating = false; // Yükleme bitti, olayları serbest bırak
+            _isUpdating = false;
             UpdateEditorPanels();
+        }
+
+        private void flpParameters_Resize(object sender, EventArgs e)
+        {
+            flpParameters.SuspendLayout();
+            foreach (Control control in flpParameters.Controls)
+            {
+                if (control is Panel)
+                {
+                    control.Width = flpParameters.ClientSize.Width - 25;
+                }
+            }
+            flpParameters.ResumeLayout();
+        }
+
+        public void SetReadOnly(bool isReadOnly)
+        {
+            SetControlsState(this.Controls, !isReadOnly);
+        }
+
+        private void SetControlsState(Control.ControlCollection controls, bool enabled)
+        {
+            foreach (Control control in controls)
+            {
+                if (control is NumericUpDown || control is TextBox || control is CheckBox || control is ComboBox)
+                {
+                    control.Enabled = enabled;
+                }
+                if (control.HasChildren)
+                {
+                    SetControlsState(control.Controls, enabled);
+                }
+            }
         }
 
         private void UpdateCheckboxesFromStepData()
         {
             if (_step == null) return;
-
-            // YENİ MANTIK: Adım tiplerini Word 24'ten oku
             short controlWord = _step.StepDataWords[24];
-            chkSuAlma.Checked = (controlWord & 1) != 0;      // Bit 0
-            chkIsitma.Checked = (controlWord & 2) != 0;      // Bit 1
-            chkCalisma.Checked = (controlWord & 4) != 0;     // Bit 2
-            chkDozaj.Checked = (controlWord & 8) != 0;       // Bit 3
-            chkBosaltma.Checked = (controlWord & 16) != 0;    // Bit 4
-            chkSikma.Checked = (controlWord & 32) != 0;      // Bit 5
+            chkSuAlma.Checked = (controlWord & 1) != 0;
+            chkIsitma.Checked = (controlWord & 2) != 0;
+            chkCalisma.Checked = (controlWord & 4) != 0;
+            chkDozaj.Checked = (controlWord & 8) != 0;
+            chkBosaltma.Checked = (controlWord & 16) != 0;
+            chkSikma.Checked = (controlWord & 32) != 0;
         }
 
         private void OnStepTypeChanged(object sender, EventArgs e)
         {
-            if (_isUpdating) return; // Eğer programatik bir değişiklikse, hiçbir şey yapma
-
+            if (_isUpdating) return;
             var changedCheckbox = sender as CheckBox;
             if (changedCheckbox == null) return;
 
-            // YENİ MANTIK: Maksimum 2 seçim kuralı
-            var checkedBoxes = pnlStepTypes.Controls.OfType<CheckBox>().Count(c => c.Checked);
-            if (checkedBoxes > 2)
+            // Kural kontrol metodunu çağırıyoruz.
+            if (!IsSelectionValid(changedCheckbox))
             {
-                MessageBox.Show("Bir adımda en fazla 2 farklı işlem türü seçebilirsiniz.", "Kural İhlali", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                _isUpdating = true; // Olay döngüsünü kırmak için
-                changedCheckbox.Checked = false; // Yapılan son seçimi geri al
+                // Eğer seçim geçerli değilse, yapılan son değişikliği geri al.
+                _isUpdating = true;
+                changedCheckbox.Checked = false;
                 _isUpdating = false;
-                return;
+                return; // Metottan çık, başka işlem yapma.
             }
 
-            UpdateStepDataFromCheckboxes(changedCheckbox);
+            // Eğer seçim geçerliyse, her zamanki gibi devam et.
+            UpdateStepDataFromCheckboxes();
             UpdateEditorPanels();
             StepDataChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void UpdateStepDataFromCheckboxes(CheckBox chk)
+        // --- HATA DÜZELTMESİ: KURAL KONTROLÜ ARTIK DOĞRU YERDE ÇALIŞIYOR ---
+        private bool IsSelectionValid(CheckBox justChanged)
+        {
+            // Kontrol içindeki tüm CheckBox'ları, ait oldukları panelden (`pnlStepTypes`) alıyoruz.
+            // Eğer panelin adı farklıysa, bu satırdaki "pnlStepTypes" ismini doğru olanla değiştirin.
+            var checkedBoxes = pnlStepTypes.Controls.OfType<CheckBox>().Where(c => c.Checked).ToList();
+
+            // Kural 1: Toplamda 2'den fazla seçim yapılamaz.
+            if (checkedBoxes.Count > 2)
+            {
+                MessageBox.Show("Bir adımda en fazla 2 farklı işlem türü seçebilirsiniz.", "Kural İhlali", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            // Adım gruplarını tanımla
+            var specialSteps = new List<CheckBox> { chkSikma, chkBosaltma };
+            var standardSteps = new List<CheckBox> { chkSuAlma, chkIsitma, chkDozaj, chkCalisma };
+
+            // Seçili olanlar arasında özel veya standart adım var mı?
+            bool isAnySpecialChecked = checkedBoxes.Any(c => specialSteps.Contains(c));
+            bool isAnyStandardChecked = checkedBoxes.Any(c => standardSteps.Contains(c));
+
+            // Kural 2: Özel Grup ve Standart Grup bir arada seçilemez.
+            if (isAnySpecialChecked && isAnyStandardChecked)
+            {
+                MessageBox.Show("Sıkma veya Boşaltma adımları; Su Alma, Isıtma gibi diğer adımlarla birlikte seçilemez.", "Kural İhlali", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            // Eğer buraya kadar geldiyse, seçim geçerlidir.
+            return true;
+        }
+
+        private void UpdateStepDataFromCheckboxes()
         {
             if (_step == null) return;
-
-            // YENİ MANTIK: Seçimlere göre Word 24'ü güncelle
             short controlWord = 0;
             if (chkSuAlma.Checked) controlWord |= 1;
             if (chkIsitma.Checked) controlWord |= 2;
@@ -90,185 +153,148 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
             if (chkBosaltma.Checked) controlWord |= 16;
             if (chkSikma.Checked) controlWord |= 32;
             _step.StepDataWords[24] = controlWord;
-
-            // Eğer bir adım türü seçimi kaldırılıyorsa, ilgili parametre word'lerini sıfırla
-            if (!chk.Checked)
-            {
-                if (chk == chkSuAlma) { _step.StepDataWords[0] = 0; _step.StepDataWords[1] = 0; }
-                if (chk == chkIsitma) { _step.StepDataWords[2] = 0; _step.StepDataWords[3] = 0; _step.StepDataWords[4] = 0; }
-                if (chk == chkCalisma) { _step.StepDataWords[14] = 0; _step.StepDataWords[15] = 0; _step.StepDataWords[16] = 0; _step.StepDataWords[17] = 0; _step.StepDataWords[18] = 0; }
-                if (chk == chkDozaj) { _step.StepDataWords[5] = 0; _step.StepDataWords[6] = 0; _step.StepDataWords[7] = 0; _step.StepDataWords[11] = 0; _step.StepDataWords[20] = 0; _step.StepDataWords[21] = 0; _step.StepDataWords[22] = 0; _step.StepDataWords[23] = 0; }
-                if (chk == chkBosaltma) { _step.StepDataWords[10] = 0; _step.StepDataWords[12] = 0; _step.StepDataWords[13] = 0; _step.StepDataWords[15] = 0; }
-                if (chk == chkSikma) { _step.StepDataWords[8] = 0; _step.StepDataWords[9] = 0; }
-            }
         }
 
         private void UpdateEditorPanels()
         {
-            pnlParameters.Controls.Clear();
-            if (_step == null || _machine == null) return;
+            flpParameters.SuspendLayout();
+            flpParameters.Controls.Clear();
 
-            int? stepTypeId = GetStepTypeIdFromControlWord(_step.StepDataWords[24]);
-            if (!stepTypeId.HasValue) return;
-
-            string layoutJson = _configRepo.GetLayoutJson(_machine.MachineSubType, stepTypeId.Value);
-            if (string.IsNullOrEmpty(layoutJson))
+            if (_step == null || _machine == null)
             {
-                layoutJson = _configRepo.GetLayoutJson("DEFAULT", stepTypeId.Value);
+                flpParameters.ResumeLayout();
+                return;
             }
-            if (string.IsNullOrEmpty(layoutJson)) return;
 
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var controlsData = JsonSerializer.Deserialize<List<ControlMetadata>>(layoutJson, options);
-
-                foreach (var data in controlsData)
+                var stepColorMap = new Dictionary<int, Color>
                 {
-                    Type controlType = Type.GetType(data.ControlType);
-                    if (controlType == null) continue;
+                    { 1, Color.FromArgb(204, 229, 255) }, { 2, Color.FromArgb(255, 204, 204) },
+                    { 3, Color.FromArgb(204, 255, 204) }, { 4, Color.FromArgb(255, 211, 106) },
+                    { 5, Color.FromArgb(173, 216, 230) }, { 6, Color.FromArgb(213, 213, 211) }
+                };
+                var stepIdMap = new Dictionary<CheckBox, int>
+                {
+                    { chkSuAlma, 1 }, { chkIsitma, 2 }, { chkCalisma, 3 },
+                    { chkDozaj, 4 }, { chkBosaltma, 5 }, { chkSikma, 6 }
+                };
 
-                    Control control = (Control)Activator.CreateInstance(controlType);
-
-                    control.Name = data.Name;
-                    control.Text = data.Text;
-                    control.Location = new Point(int.Parse(data.Location.Split(',')[0].Trim()), int.Parse(data.Location.Split(',')[1].Trim()));
-                    control.Size = new Size(int.Parse(data.Size.Split(',')[0].Trim()), int.Parse(data.Size.Split(',')[1].Trim()));
-
-                    if (control is NumericUpDown num) num.Maximum = data.Maximum;
-
-                    control.Tag = new PlcMapping { WordIndex = data.PLC_WordIndex, BitIndex = data.PLC_BitIndex };
-
-                    if (control is NumericUpDown numeric) numeric.ValueChanged += OnDynamicControlValueChanged;
-                    if (control is CheckBox chk) chk.CheckedChanged += OnDynamicControlValueChanged;
-
-                    pnlParameters.Controls.Add(control);
+                foreach (var kvp in stepIdMap)
+                {
+                    if (kvp.Key.Checked)
+                    {
+                        int stepId = kvp.Value;
+                        string stepName = kvp.Key.Text.ToUpper();
+                        var containerPanel = new Panel
+                        {
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Margin = new Padding(10, 5, 10, 5)
+                        };
+                        containerPanel.BackColor = stepColorMap.TryGetValue(stepId, out Color color) ? color : Color.WhiteSmoke;
+                        int currentY = 5;
+                        var header = new Label
+                        {
+                            Text = stepName,
+                            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                            ForeColor = Color.Black,
+                            AutoSize = true,
+                            Location = new Point(5, currentY)
+                        };
+                        containerPanel.Controls.Add(header);
+                        currentY = header.Bottom + 10;
+                        string layoutJson = _configRepo.GetLayoutJson(_machine.MachineSubType, stepId) ?? _configRepo.GetLayoutJson("DEFAULT", stepId);
+                        if (!string.IsNullOrEmpty(layoutJson))
+                        {
+                            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                            var controlsData = JsonSerializer.Deserialize<List<ControlMetadata>>(layoutJson, options);
+                            foreach (var data in controlsData)
+                            {
+                                var control = CreateControlFromMetadata(data);
+                                if (control != null)
+                                {
+                                    control.Location = new Point(15, currentY);
+                                    containerPanel.Controls.Add(control);
+                                    currentY = control.Bottom + 5;
+                                }
+                            }
+                        }
+                        containerPanel.Height = currentY + 5;
+                        flpParameters.Controls.Add(containerPanel);
+                    }
                 }
-                LoadDataToDynamicControls();
             }
-            catch (Exception ex)
+            finally
             {
-                pnlParameters.Controls.Add(new Label { Text = "Arayüz yüklenirken hata.", Dock = DockStyle.Fill });
-                Console.WriteLine($"JSON Parse/UI Oluşturma Hatası: {ex.Message}");
+                flpParameters.ResumeLayout(true);
+                flpParameters_Resize(this, EventArgs.Empty);
             }
         }
-        public void SetReadOnly(bool isReadOnly)
-        {
-            // Bu metot, içindeki tüm alt kontrollere ulaşarak
-            // düzenleme yapılmasını engeller veya izin verir.
-            SetControlsState(this.Controls, !isReadOnly);
-        }
 
-        private void SetControlsState(Control.ControlCollection controls, bool enabled)
+        private Control CreateControlFromMetadata(ControlMetadata data)
         {
-            foreach (Control control in controls)
+            Type controlType = Type.GetType(data.ControlType);
+            if (controlType == null) return null;
+            Control control = (Control)Activator.CreateInstance(controlType);
+            control.Name = data.Name;
+            control.Text = data.Text;
+            var locParts = data.Location.Split(',');
+            control.Location = new Point(int.Parse(locParts[0].Trim()), int.Parse(locParts[1].Trim()));
+            var sizeParts = data.Size.Split(',');
+            control.Size = new Size(int.Parse(sizeParts[0].Trim()), int.Parse(sizeParts[1].Trim()));
+            control.Tag = new PlcMapping { WordIndex = data.PLC_WordIndex, BitIndex = data.PLC_BitIndex };
+            if (control is NumericUpDown num)
             {
-                // Sadece kullanıcı girişi alan kontrolleri hedef alıyoruz.
-                // Butonlar veya labellar etkilenmez.
-                if (control is NumericUpDown || control is TextBox || control is CheckBox || control is ComboBox)
+                num.Maximum = data.Maximum;
+                num.DecimalPlaces = data.DecimalPlaces;
+                if (data.PLC_WordIndex < _step.StepDataWords.Length)
                 {
-                    control.Enabled = enabled;
+                    if (num.DecimalPlaces > 0)
+                        num.Value = _step.StepDataWords[data.PLC_WordIndex] / (decimal)Math.Pow(10, num.DecimalPlaces);
+                    else
+                        num.Value = _step.StepDataWords[data.PLC_WordIndex];
                 }
-
-                // Panel veya GroupBox gibi taşıyıcıların içindeki kontrollere de ulaşmak için
-                // kendini tekrar çağıran (recursive) bir yapı kullanıyoruz.
-                if (control.HasChildren)
-                {
-                    SetControlsState(control.Controls, enabled);
-                }
+                num.ValueChanged += OnDynamicControlValueChanged;
             }
+            else if (control is CheckBox chk)
+            {
+                if (data.PLC_WordIndex < _step.StepDataWords.Length)
+                {
+                    short word = _step.StepDataWords[data.PLC_WordIndex];
+                    int bitMask = 1 << data.PLC_BitIndex;
+                    chk.Checked = (word & bitMask) != 0;
+                }
+                chk.CheckedChanged += OnDynamicControlValueChanged;
+            }
+            return control;
         }
-
 
         private void OnDynamicControlValueChanged(object sender, EventArgs e)
         {
             if (_isUpdating) return;
             Control control = sender as Control;
             if (control?.Tag is not PlcMapping mapping) return;
-
-            if (mapping.WordIndex >= _step.StepDataWords.Length) return;
-
-            if (control is NumericUpDown num)
+            if (mapping.WordIndex < _step.StepDataWords.Length)
             {
-                _step.StepDataWords[mapping.WordIndex] = (short)num.Value;
-            }
-            else if (control is CheckBox chk)
-            {
-                SetBit(_step.StepDataWords, mapping.WordIndex, mapping.BitIndex, chk.Checked);
-            }
-            // YENİ: TextBox değeri değiştiğinde çalışacak mantık
-            else if (control is TextBox txt && mapping.StringWordLength > 0)
-            {
-                // String'i istenen uzunlukta byte dizisine çevir
-                int byteLength = mapping.StringWordLength * 2;
-                byte[] stringBytes = new byte[byteLength];
-                Encoding.ASCII.GetBytes(txt.Text, 0, Math.Min(txt.Text.Length, byteLength), stringBytes, 0);
-
-                // Byte dizisini StepDataWords'e yaz
-                for (int i = 0; i < mapping.StringWordLength; i++)
+                if (control is NumericUpDown num)
                 {
-                    int targetIndex = mapping.WordIndex + i;
-                    if (targetIndex < _step.StepDataWords.Length)
-                    {
-                        _step.StepDataWords[targetIndex] = BitConverter.ToInt16(stringBytes, i * 2);
-                    }
+                    if (num.DecimalPlaces > 0)
+                        _step.StepDataWords[mapping.WordIndex] = (short)(num.Value * (decimal)Math.Pow(10, num.DecimalPlaces));
+                    else
+                        _step.StepDataWords[mapping.WordIndex] = (short)num.Value;
+                }
+                else if (control is CheckBox chk)
+                {
+                    SetBit(_step.StepDataWords, mapping.WordIndex, mapping.BitIndex, chk.Checked);
                 }
             }
             StepDataChanged?.Invoke(this, EventArgs.Empty);
         }
-        private void LoadDataToDynamicControls()
-        {
-            _isUpdating = true;
-            foreach (Control control in pnlParameters.Controls)
-            {
-                if (control?.Tag is not PlcMapping mapping) continue;
-                if (mapping.WordIndex >= _step.StepDataWords.Length) continue;
-
-                if (control is NumericUpDown num)
-                {
-                    num.Value = _step.StepDataWords[mapping.WordIndex];
-                }
-                else if (control is CheckBox chk)
-                {
-                    chk.Checked = GetBit(_step.StepDataWords, mapping.WordIndex, mapping.BitIndex);
-                }
-                // YENİ: TextBox'ı dolduracak mantık
-                else if (control is TextBox txt && mapping.StringWordLength > 0)
-                {
-                    List<byte> allBytes = new List<byte>();
-                    for (int i = 0; i < mapping.StringWordLength; i++)
-                    {
-                        int sourceIndex = mapping.WordIndex + i;
-                        if (sourceIndex < _step.StepDataWords.Length)
-                        {
-                            allBytes.AddRange(BitConverter.GetBytes(_step.StepDataWords[sourceIndex]));
-                        }
-                    }
-                    txt.Text = Encoding.ASCII.GetString(allBytes.ToArray()).Trim('\0');
-                    txt.MaxLength = mapping.StringWordLength * 2;
-                }
-            }
-            _isUpdating = false;
-        }
-
-        private int? GetStepTypeIdFromControlWord(short controlWord)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                if ((controlWord & (1 << i)) != 0) return i + 1;
-            }
-            return null;
-        }
-
-        private bool GetBit(short[] data, int wordIndex, int bitIndex) => (data[wordIndex] & (1 << bitIndex)) != 0;
 
         private void SetBit(short[] data, int wordIndex, int bitIndex, bool value)
         {
             if (value) data[wordIndex] = (short)(data[wordIndex] | (1 << bitIndex));
             else data[wordIndex] = (short)(data[wordIndex] & ~(1 << bitIndex));
         }
-
-
     }
-
 }

@@ -174,14 +174,14 @@ namespace TekstilScada.Repositories
             // Örnek olarak rastgele değerler atayalım:
             totalWater = dataPoints.Count * 5; // Örnek: her log anında 5 litre
             totalElectricity = dataPoints.Count(p => p.Rpm > 0); // Örnek: motorun çalıştığı her an 1kW
-            totalSteam = dataPoints.Count(p => p.Temperature > 40); // Örnek: ısınan her an 1kg
+            totalSteam = dataPoints.Count(p => p.Temperature > 400); // Örnek: ısınan her an 1kg
 
             var summary = new ManualConsumptionSummary
             {
                 Makine = machineName,
                 RaporAraligi = $"{startTime:dd.MM.yy HH:mm} - {endTime:dd.MM.yy HH:mm}",
                 ToplamManuelSure = TimeSpan.FromSeconds(dataPoints.Count * 5).ToString(@"hh\:mm\:ss"), // Her log 5 saniyede bir atılıyor varsayımı
-                OrtalamaSicaklik = dataPoints.Average(p => (double)p.Temperature),
+                OrtalamaSicaklik = dataPoints.Average(p => (double)p.Temperature / 10.0),
                 OrtalamaDevir = dataPoints.Average(p => p.Rpm),
                 ToplamSuTuketimi_Litre = totalWater,
                 ToplamElektrikTuketimi_kW = totalElectricity,

@@ -24,6 +24,10 @@ namespace TekstilScada.Models
         public string Location { get; set; } // "X, Y" formatında
         public string Size { get; set; }     // "Width, Height" formatında
         public decimal Maximum { get; set; } = 1000; // NumericUpDown için
+          // YENİ EKLENEN ALAN
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int DecimalPlaces { get; set; }
+
                                                      // YENİ: TextBox için string uzunluğunu Word cinsinden belirtir.
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int StringWordLength { get; set; }

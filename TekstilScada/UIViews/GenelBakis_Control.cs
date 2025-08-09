@@ -5,11 +5,12 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 using TekstilScada.Services;
 using TekstilScada.UI.Controls;
-using TekstilScada.Repositories; // <-- BU SATIRI EKLEYİN
 namespace TekstilScada.UI.Views
 {
     public partial class GenelBakis_Control : UserControl
@@ -25,9 +26,11 @@ namespace TekstilScada.UI.Views
 
         public GenelBakis_Control()
         {
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             InitializeComponent();
             // Akıcı çizim için Double Buffering
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            ApplyLocalization();
         }
 
         public void InitializeControl(PlcPollingService pollingService, MachineRepository machineRepo, DashboardRepository dashboardRepo, AlarmRepository alarmRepo, ProcessLogRepository logRepo)
@@ -38,7 +41,12 @@ namespace TekstilScada.UI.Views
             _alarmRepository = alarmRepo;
             _logRepository = logRepo;
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+       
         private void GenelBakis_Control_Load(object sender, EventArgs e)
         {
             if (this.DesignMode) return;
@@ -63,7 +71,7 @@ namespace TekstilScada.UI.Views
             var groupedMachines = allMachines
                 .OrderBy(m => m.MachineSubType)
                 .ThenBy(m => m.Id)
-                .GroupBy(m => m.MachineSubType ?? "Diğer");
+                .GroupBy(m => m.MachineSubType ?? $"{Resources.diger}");
 
             foreach (var group in groupedMachines)
             {
@@ -129,10 +137,10 @@ namespace TekstilScada.UI.Views
             var kpiIdle = new KpiCard_Control();
 
             // SetData metodu ile değerlerini ata
-            kpiTotal.SetData("TOPLAM MAKİNE", totalMachines.ToString(), Color.FromArgb(41, 128, 185));
-            kpiRunning.SetData("AKTİF ÜRETİM", runningMachines.ToString(), Color.FromArgb(46, 204, 113));
-            kpiAlarm.SetData("ALARM DURUMU", alarmMachines.ToString(), Color.FromArgb(231, 76, 60));
-            kpiIdle.SetData("BOŞTA BEKLEYEN", idleMachines.ToString(), Color.FromArgb(243, 156, 18));
+            kpiTotal.SetData($"{Resources.AllMachines}", totalMachines.ToString(), Color.FromArgb(41, 128, 185));
+            kpiRunning.SetData($"{Resources.aktifüretim}", runningMachines.ToString(), Color.FromArgb(46, 204, 113));
+            kpiAlarm.SetData($"{Resources.alarmdurum}", alarmMachines.ToString(), Color.FromArgb(231, 76, 60));
+            kpiIdle.SetData($"{Resources.bosbekleyen}", idleMachines.ToString(), Color.FromArgb(243, 156, 18));
 
             // Kontrolleri panele ekle
             flpTopKpis.Controls.Add(kpiTotal);
@@ -153,7 +161,7 @@ namespace TekstilScada.UI.Views
                 var barPlot = formsPlotHourly.Plot.Add.Bars(hours, consumption);
                 barPlot.Color = ScottPlot.Colors.SteelBlue;
             }
-            formsPlotHourly.Plot.Title("Saatlik Elektrik Tüketimi (kW)");
+            formsPlotHourly.Plot.Title($"{Resources.Saatlikelektrik}");
             formsPlotHourly.Plot.Axes.AutoScale();
             formsPlotHourly.Refresh();
 
@@ -174,7 +182,7 @@ namespace TekstilScada.UI.Views
                 formsPlotTopAlarms.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ticks);
                 formsPlotTopAlarms.Plot.Axes.Bottom.TickLabelStyle.Rotation = 45;
             }
-            formsPlotTopAlarms.Plot.Title("En Sık 5 Alarm (Son 24 Saat)");
+            formsPlotTopAlarms.Plot.Title($"{Resources.ensikalarm}");
             formsPlotTopAlarms.Plot.Axes.AutoScale();
             formsPlotTopAlarms.Refresh();
         }
@@ -188,6 +196,18 @@ namespace TekstilScada.UI.Views
             _uiUpdateTimer?.Stop();
             _uiUpdateTimer?.Dispose();
             base.OnHandleDestroyed(e);
+        }
+        public void ApplyLocalization()
+        {
+           
+             gbHourlyConsumption.Text = Resources.saatlik; 
+           
+             gbTopAlarms.Text = Resources.son24topalarm; 
+               
+
+            //btnSave.Text = Resources.Save;
+
+
         }
     }
 }

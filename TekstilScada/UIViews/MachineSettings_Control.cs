@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.PortableExecutable;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -18,14 +20,38 @@ namespace TekstilScada.UI.Views
 
         public MachineSettings_Control()
         {
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             InitializeComponent();
             _repository = new MachineRepository();
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            groupBox1.Text = Resources.makinebilgileri;
+            label1.Text = Resources.MachineID;
+            label2.Text = Resources.MachineName;
+            label3.Text = Resources.ipadres;
+            label5.Text = Resources.vncadres;
+            chkIsEnabled.Text = Resources.izlemeaktif;
+            label6.Text = Resources.makinegrup;
+            label9.Text = Resources.makinetip;
+            label7.Text = Resources.ftpuser;
+            label8.Text = Resources.ftppass;
+            btnDelete.Text = Resources.Delete;
+            btnNew.Text = Resources.New;
+            btnSave.Text = Resources.Save;
+            //btnSave.Text = Resources.Save;
+
+
+        }
         private void MachineSettings_Control_Load(object sender, EventArgs e)
         {
-            cmbMachineType.Items.Add("BYMakinesi");
-            cmbMachineType.Items.Add("Kurutma Makinesi");
+            cmbMachineType.Items.Add($"{Resources.bymakinesi}");
+            cmbMachineType.Items.Add($"{Resources.kurutmamakinesi}");
             cmbMachineType.SelectedIndex = 0;
 
             RefreshMachineList();
@@ -45,7 +71,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Makineler yüklenirken hata oluştu: {ex.Message}", "Veritabanı Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{Resources.makineyüklemehatası} {ex.Message}", $"{Resources.DatabaseError}", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -102,7 +128,7 @@ namespace TekstilScada.UI.Views
         {
             if (string.IsNullOrWhiteSpace(txtMachineId.Text) || string.IsNullOrWhiteSpace(txtIpAddress.Text) || string.IsNullOrWhiteSpace(txtMachineSubType.Text))
             {
-                MessageBox.Show("Makine ID ve IP Adresi alanları zorunludur.", "Eksik Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"{Resources.makineidveipzorunlu}]", $"{Resources.EksikBilgi}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -125,7 +151,7 @@ namespace TekstilScada.UI.Views
                         MachineSubType = txtMachineSubType.Text
                     }; 
                     _repository.AddMachine(newMachine);
-                    MessageBox.Show("Yeni makine başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{Resources.yenimakinebasarili}", $"{Resources.Confirim}", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else // Güncelleme
                 {
@@ -142,7 +168,7 @@ namespace TekstilScada.UI.Views
                     _selectedMachine.MachineSubType = txtMachineSubType.Text;
                     _repository.UpdateMachine(_selectedMachine);
                   
-                    MessageBox.Show("Makine bilgileri başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{Resources.makinebilgilerigüncellendi}", $"{Resources.Confirim}", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 RefreshMachineList();
@@ -151,7 +177,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Kayıt sırasında bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{Resources.kayitsirasihatasi} {ex.Message}", $"{Resources.Error}", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -159,11 +185,11 @@ namespace TekstilScada.UI.Views
         {
             if (_selectedMachine == null)
             {
-                MessageBox.Show("Lütfen silmek için bir makine seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"{Resources.lütfensilmekicinmakinesec}", $"{Resources.Warning}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var result = MessageBox.Show($"'{_selectedMachine.MachineName}' makinesini silmek istediğinizden emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBox.Show($"'{_selectedMachine.MachineName}' ${Resources.makinesilmeeminmisin}", $"{Resources.silmeonayı}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 try
@@ -175,7 +201,7 @@ namespace TekstilScada.UI.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Silme işlemi sırasında bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"{Resources.Silmesırasındahata} {ex.Message}", $"{Resources.Error}", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

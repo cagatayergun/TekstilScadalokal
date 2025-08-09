@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -13,6 +15,7 @@ namespace TekstilScada.UI.Views
 
         public CostSettings_Control()
         {
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             InitializeComponent();
             _repository = new CostRepository();
         }
@@ -21,7 +24,19 @@ namespace TekstilScada.UI.Views
         {
             LoadParameters();
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            btnSave.Text = Resources.Save;
+           
+            //btnSave.Text = Resources.Save;
+
+
+        }
         private void LoadParameters()
         {
             try

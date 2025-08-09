@@ -16,119 +16,130 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         #region Component Designer generated code
         private void InitializeComponent()
         {
-            this.pnlStepTypes = new System.Windows.Forms.Panel();
-            this.chkSikma = new System.Windows.Forms.CheckBox();
-            this.chkBosaltma = new System.Windows.Forms.CheckBox();
-            this.chkDozaj = new System.Windows.Forms.CheckBox();
-            this.chkCalisma = new System.Windows.Forms.CheckBox();
-            this.chkIsitma = new System.Windows.Forms.CheckBox();
-            this.chkSuAlma = new System.Windows.Forms.CheckBox();
-            this.pnlParameters = new System.Windows.Forms.Panel();
-            this.pnlStepTypes.SuspendLayout();
-            this.SuspendLayout();
+            pnlStepTypes = new Panel();
+            chkSikma = new CheckBox();
+            chkBosaltma = new CheckBox();
+            chkDozaj = new CheckBox();
+            chkCalisma = new CheckBox();
+            chkIsitma = new CheckBox();
+            chkSuAlma = new CheckBox();
+            flpParameters = new FlowLayoutPanel();
+            pnlStepTypes.SuspendLayout();
+            SuspendLayout();
             // 
             // pnlStepTypes
             // 
-            this.pnlStepTypes.AutoScroll = true;
-            this.pnlStepTypes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStepTypes.Controls.Add(this.chkSikma);
-            this.pnlStepTypes.Controls.Add(this.chkBosaltma);
-            this.pnlStepTypes.Controls.Add(this.chkDozaj);
-            this.pnlStepTypes.Controls.Add(this.chkCalisma);
-            this.pnlStepTypes.Controls.Add(this.chkIsitma);
-            this.pnlStepTypes.Controls.Add(this.chkSuAlma);
-            this.pnlStepTypes.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlStepTypes.Location = new System.Drawing.Point(0, 0);
-            this.pnlStepTypes.Name = "pnlStepTypes";
-            this.pnlStepTypes.Size = new System.Drawing.Size(150, 450);
-            this.pnlStepTypes.TabIndex = 0;
+            pnlStepTypes.AutoScroll = true;
+            pnlStepTypes.BorderStyle = BorderStyle.FixedSingle;
+            pnlStepTypes.Controls.Add(chkSikma);
+            pnlStepTypes.Controls.Add(chkBosaltma);
+            pnlStepTypes.Controls.Add(chkDozaj);
+            pnlStepTypes.Controls.Add(chkCalisma);
+            pnlStepTypes.Controls.Add(chkIsitma);
+            pnlStepTypes.Controls.Add(chkSuAlma);
+            pnlStepTypes.Dock = DockStyle.Left;
+            pnlStepTypes.Location = new Point(0, 0);
+            pnlStepTypes.Margin = new Padding(3, 2, 3, 2);
+            pnlStepTypes.Name = "pnlStepTypes";
+            pnlStepTypes.Size = new Size(206, 338);
+            pnlStepTypes.TabIndex = 0;
             // 
             // chkSikma
             // 
-            this.chkSikma.AutoSize = true;
-            this.chkSikma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkSikma.Location = new System.Drawing.Point(10, 160);
-            this.chkSikma.Name = "chkSikma";
-            this.chkSikma.Size = new System.Drawing.Size(78, 24);
-            this.chkSikma.TabIndex = 5;
-            this.chkSikma.Text = "SIKMA";
-            this.chkSikma.UseVisualStyleBackColor = true;
+            chkSikma.AutoSize = true;
+            chkSikma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkSikma.Location = new Point(9, 120);
+            chkSikma.Margin = new Padding(3, 2, 3, 2);
+            chkSikma.Name = "chkSikma";
+            chkSikma.Size = new Size(64, 19);
+            chkSikma.TabIndex = 5;
+            chkSikma.Text = "SIKMA";
+            chkSikma.UseVisualStyleBackColor = true;
             // 
             // chkBosaltma
             // 
-            this.chkBosaltma.AutoSize = true;
-            this.chkBosaltma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkBosaltma.Location = new System.Drawing.Point(10, 130);
-            this.chkBosaltma.Name = "chkBosaltma";
-            this.chkBosaltma.Size = new System.Drawing.Size(110, 24);
-            this.chkBosaltma.TabIndex = 4;
-            this.chkBosaltma.Text = "BOŞALTMA";
-            this.chkBosaltma.UseVisualStyleBackColor = true;
+            chkBosaltma.AutoSize = true;
+            chkBosaltma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkBosaltma.Location = new Point(9, 98);
+            chkBosaltma.Margin = new Padding(3, 2, 3, 2);
+            chkBosaltma.Name = "chkBosaltma";
+            chkBosaltma.Size = new Size(89, 19);
+            chkBosaltma.TabIndex = 4;
+            chkBosaltma.Text = "BOŞALTMA";
+            chkBosaltma.UseVisualStyleBackColor = true;
             // 
             // chkDozaj
             // 
-            this.chkDozaj.AutoSize = true;
-            this.chkDozaj.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkDozaj.Location = new System.Drawing.Point(10, 100);
-            this.chkDozaj.Name = "chkDozaj";
-            this.chkDozaj.Size = new System.Drawing.Size(81, 24);
-            this.chkDozaj.TabIndex = 3;
-            this.chkDozaj.Text = "DOZAJ";
-            this.chkDozaj.UseVisualStyleBackColor = true;
+            chkDozaj.AutoSize = true;
+            chkDozaj.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkDozaj.Location = new Point(9, 75);
+            chkDozaj.Margin = new Padding(3, 2, 3, 2);
+            chkDozaj.Name = "chkDozaj";
+            chkDozaj.Size = new Size(64, 19);
+            chkDozaj.TabIndex = 3;
+            chkDozaj.Text = "DOZAJ";
+            chkDozaj.UseVisualStyleBackColor = true;
             // 
             // chkCalisma
             // 
-            this.chkCalisma.AutoSize = true;
-            this.chkCalisma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkCalisma.Location = new System.Drawing.Point(10, 70);
-            this.chkCalisma.Name = "chkCalisma";
-            this.chkCalisma.Size = new System.Drawing.Size(98, 24);
-            this.chkCalisma.TabIndex = 2;
-            this.chkCalisma.Text = "ÇALIŞMA";
-            this.chkCalisma.UseVisualStyleBackColor = true;
+            chkCalisma.AutoSize = true;
+            chkCalisma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkCalisma.Location = new Point(9, 52);
+            chkCalisma.Margin = new Padding(3, 2, 3, 2);
+            chkCalisma.Name = "chkCalisma";
+            chkCalisma.Size = new Size(77, 19);
+            chkCalisma.TabIndex = 2;
+            chkCalisma.Text = "ÇALIŞMA";
+            chkCalisma.UseVisualStyleBackColor = true;
             // 
             // chkIsitma
             // 
-            this.chkIsitma.AutoSize = true;
-            this.chkIsitma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkIsitma.Location = new System.Drawing.Point(10, 40);
-            this.chkIsitma.Name = "chkIsitma";
-            this.chkIsitma.Size = new System.Drawing.Size(82, 24);
-            this.chkIsitma.TabIndex = 1;
-            this.chkIsitma.Text = "ISITMA";
-            this.chkIsitma.UseVisualStyleBackColor = true;
+            chkIsitma.AutoSize = true;
+            chkIsitma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkIsitma.Location = new Point(9, 30);
+            chkIsitma.Margin = new Padding(3, 2, 3, 2);
+            chkIsitma.Name = "chkIsitma";
+            chkIsitma.Size = new Size(67, 19);
+            chkIsitma.TabIndex = 1;
+            chkIsitma.Text = "ISITMA";
+            chkIsitma.UseVisualStyleBackColor = true;
             // 
             // chkSuAlma
             // 
-            this.chkSuAlma.AutoSize = true;
-            this.chkSuAlma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chkSuAlma.Location = new System.Drawing.Point(10, 10);
-            this.chkSuAlma.Name = "chkSuAlma";
-            this.chkSuAlma.Size = new System.Drawing.Size(96, 24);
-            this.chkSuAlma.TabIndex = 0;
-            this.chkSuAlma.Text = "SU ALMA";
-            this.chkSuAlma.UseVisualStyleBackColor = true;
+            chkSuAlma.AutoSize = true;
+            chkSuAlma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkSuAlma.Location = new Point(9, 8);
+            chkSuAlma.Margin = new Padding(3, 2, 3, 2);
+            chkSuAlma.Name = "chkSuAlma";
+            chkSuAlma.Size = new Size(78, 19);
+            chkSuAlma.TabIndex = 0;
+            chkSuAlma.Text = "SU ALMA";
+            chkSuAlma.UseVisualStyleBackColor = true;
             // 
-            // pnlParameters
+            // flpParameters
             // 
-            this.pnlParameters.AutoScroll = true;
-            this.pnlParameters.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlParameters.Location = new System.Drawing.Point(150, 0);
-            this.pnlParameters.Name = "pnlParameters";
-            this.pnlParameters.Size = new System.Drawing.Size(250, 450);
-            this.pnlParameters.TabIndex = 1;
+            flpParameters.AutoScroll = true;
+            flpParameters.Dock = DockStyle.Fill;
+            flpParameters.FlowDirection = FlowDirection.TopDown;
+            flpParameters.Location = new Point(206, 0);
+            flpParameters.Margin = new Padding(3, 2, 3, 2);
+            flpParameters.Name = "flpParameters";
+            flpParameters.Size = new Size(144, 338);
+            flpParameters.TabIndex = 0;
+            flpParameters.WrapContents = false;
             // 
             // StepEditor_Control
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.pnlParameters);
-            this.Controls.Add(this.pnlStepTypes);
-            this.Name = "StepEditor_Control";
-            this.Size = new System.Drawing.Size(400, 450);
-            this.pnlStepTypes.ResumeLayout(false);
-            this.pnlStepTypes.PerformLayout();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(flpParameters);
+            Controls.Add(pnlStepTypes);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "StepEditor_Control";
+            Size = new Size(350, 338);
+            pnlStepTypes.ResumeLayout(false);
+            pnlStepTypes.PerformLayout();
+            ResumeLayout(false);
         }
         #endregion
         private System.Windows.Forms.Panel pnlStepTypes;
@@ -138,6 +149,6 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         private System.Windows.Forms.CheckBox chkDozaj;
         private System.Windows.Forms.CheckBox chkBosaltma;
         private System.Windows.Forms.CheckBox chkSikma;
-        private System.Windows.Forms.Panel pnlParameters;
+        private System.Windows.Forms.FlowLayoutPanel flpParameters;
     }
 }

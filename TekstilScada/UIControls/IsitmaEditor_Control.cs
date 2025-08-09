@@ -25,7 +25,7 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         {
             _params = new IsitmaParams(step.StepDataWords);
 
-            numIsi.Value = _params.Isi;
+            numIsi.Value = _params.Isi / 10.0m;
             numSure.Value = _params.Sure;
             chkDirekBuhar.Checked = _params.DirekBuhar;
             chkDolayliBuhar.Checked = _params.DolayliBuhar;
@@ -37,7 +37,7 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
         {
             if (_params == null) return;
 
-            _params.Isi = (short)numIsi.Value;
+            _params.Isi = (short)(numIsi.Value * 10);
             _params.Sure = (short)numSure.Value;
             _params.DirekBuhar = chkDirekBuhar.Checked;
             _params.DolayliBuhar = chkDolayliBuhar.Checked;

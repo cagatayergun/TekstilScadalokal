@@ -29,7 +29,7 @@ namespace TekstilScada.Core
                 // Adım tipi "Isıtma" ise (Word 24, Bit 1)
                 if ((step.StepDataWords[24] & 2) != 0)
                 {
-                    double targetTemp = step.StepDataWords[3]; // Isı (°C)
+                    double targetTemp = step.StepDataWords[3] / 10.0; // Isı (°C)
                     double durationMinutes = step.StepDataWords[4]; // Süre (DK)
 
                     // Eğer ısıtma adımıysa, rampa hesaplanır.

@@ -122,7 +122,7 @@ namespace TekstilScada.UI.Views
             this.gbHourlyConsumption.Size = new System.Drawing.Size(344, 300);
             this.gbHourlyConsumption.TabIndex = 0;
             this.gbHourlyConsumption.TabStop = false;
-            this.gbHourlyConsumption.Text = "Saatlik Toplam Tüketim (Bugün)";
+            //this.gbHourlyConsumption.Text = "Saatlik Toplam Tüketim (Bugün)";
             // 
             // formsPlotHourly
             // 

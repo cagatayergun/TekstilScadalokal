@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -15,15 +17,33 @@ namespace TekstilScada.UI.Views
 
         public AlarmSettings_Control()
         {
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             InitializeComponent();
             _repository = new AlarmRepository();
+            ApplyLocalization();
         }
 
         private void AlarmSettings_Control_Load(object sender, EventArgs e)
         {
             RefreshList();
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
+            
+        }
+        public void ApplyLocalization()
+        {
+            groupBox1.Text = Resources.AlarmDetails;
+            label2.Text = Resources.AlarmText;
+            label3.Text = Resources.Severity;
+            label4.Text = Resources.Category;
+            btnNew.Text = Resources.New;
+            btnDelete.Text = Resources.Delete;
+            btnSave.Text = Resources.Save;
 
+                
+        }
         private void RefreshList()
         {
             try
@@ -35,7 +55,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Alarm tanımları yüklenirken hata oluştu: {ex.Message}", "Veritabanı Hatası");
+                MessageBox.Show($"{Resources.alarmraporerror} {ex.Message}", $"{Resources.DatabaseError}");
             }
         }
 
@@ -78,7 +98,7 @@ namespace TekstilScada.UI.Views
         {
             if (string.IsNullOrWhiteSpace(txtAlarmText.Text) || numAlarmNo.Value == 0)
             {
-                MessageBox.Show("Alarm Numarası ve Alarm Metni zorunludur.", "Eksik Bilgi");
+                MessageBox.Show($"{Resources.alarmnozorunlu}", $"{Resources.EksikBilgi}");
                 return;
             }
 
@@ -108,7 +128,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Kayıt sırasında hata: {ex.Message}", "Hata");
+                MessageBox.Show($"{Resources.Kayıt_sırasında_hata_} {ex.Message}", $"{Resources.Error}");
             }
         }
 
@@ -116,10 +136,10 @@ namespace TekstilScada.UI.Views
         {
             if (_selectedDefinition == null)
             {
-                MessageBox.Show("Lütfen silmek için bir alarm tanımı seçin.", "Uyarı");
+                MessageBox.Show($"{Resources.lütfendeleteuyarı}", $"{Resources.Warning}");
                 return;
             }
-            var result = MessageBox.Show($"'{_selectedDefinition.AlarmText}' alarm tanımını silmek istediğinizden emin misiniz?", "Onay", MessageBoxButtons.YesNo);
+            var result = MessageBox.Show($"'{_selectedDefinition.AlarmText}' {Resources.alarmtanımısil}", $"{Resources.Confirim}", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
                 try
@@ -130,7 +150,7 @@ namespace TekstilScada.UI.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Silme sırasında hata: {ex.Message}", "Hata");
+                    MessageBox.Show($"{Resources.Silmesırasındahata} {ex.Message}", $"{Resources.Error}");
                 }
             }
         }

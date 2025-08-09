@@ -140,7 +140,9 @@ namespace TekstilScada.UI
             if (dataPoints.Any())
             {
                 double[] timeData = dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray();
-                double[] tempData = dataPoints.Select(p => (double)p.Temperature).ToArray();
+                // DEĞİŞİKLİK: Sıcaklık verisini 10'a böl
+                double[] tempData = dataPoints.Select(p => (double)p.Temperature / 10.0).ToArray();
+
 
                 var tempPlot = formsPlot1.Plot.Add.Scatter(timeData, tempData);
                 tempPlot.Color = ScottPlot.Colors.Red;

@@ -130,9 +130,10 @@ namespace TekstilScada.UI.Views
                 {
                     if (string.IsNullOrWhiteSpace(txtPassword.Text))
                     {
-                        MessageBox.Show($"{Resources.Yeni_kullanıcı_için_şifre_zorunludur_}", $"{Resources.EksikBilgi}");
+                        MessageBox.Show($"{Resources.Yenikullanıcıiçinsifrezorunludur}", $"{Resources.EksikBilgi}");
                         return;
                     }
+                   
                     var newUser = new User { Username = txtUsername.Text, FullName = txtFullName.Text, IsActive = chkIsActive.Checked };
                     _repository.AddUser(newUser, txtPassword.Text, selectedRoleIds);
                 }
@@ -166,7 +167,7 @@ namespace TekstilScada.UI.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"{Resources.Silme_sırasında_hata_} { ex.Message}", "Hata");
+                    MessageBox.Show($"{Resources.Silmesırasındahata} { ex.Message}", "Hata");
                 }
             }
         }

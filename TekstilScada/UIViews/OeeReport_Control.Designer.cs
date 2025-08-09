@@ -17,126 +17,133 @@
 
         private void InitializeComponent()
         {
-            this.pnlFilters = new System.Windows.Forms.Panel();
-            this.btnGenerateReport = new System.Windows.Forms.Button();
-            this.cmbMachines = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.dtpEndTime = new System.Windows.Forms.DateTimePicker();
-            this.label2 = new System.Windows.Forms.Label();
-            this.dtpStartTime = new System.Windows.Forms.DateTimePicker();
-            this.label1 = new System.Windows.Forms.Label();
-            this.dgvOeeReport = new System.Windows.Forms.DataGridView();
-            this.pnlFilters.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvOeeReport)).BeginInit();
-            this.SuspendLayout();
+            pnlFilters = new Panel();
+            btnGenerateReport = new Button();
+            cmbMachines = new ComboBox();
+            label3 = new Label();
+            dtpEndTime = new DateTimePicker();
+            label2 = new Label();
+            dtpStartTime = new DateTimePicker();
+            label1 = new Label();
+            dgvOeeReport = new DataGridView();
+            pnlFilters.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvOeeReport).BeginInit();
+            SuspendLayout();
             // 
             // pnlFilters
             // 
-            this.pnlFilters.Controls.Add(this.btnGenerateReport);
-            this.pnlFilters.Controls.Add(this.cmbMachines);
-            this.pnlFilters.Controls.Add(this.label3);
-            this.pnlFilters.Controls.Add(this.dtpEndTime);
-            this.pnlFilters.Controls.Add(this.label2);
-            this.pnlFilters.Controls.Add(this.dtpStartTime);
-            this.pnlFilters.Controls.Add(this.label1);
-            this.pnlFilters.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlFilters.Location = new System.Drawing.Point(0, 0);
-            this.pnlFilters.Name = "pnlFilters";
-            this.pnlFilters.Size = new System.Drawing.Size(900, 50);
-            this.pnlFilters.TabIndex = 0;
+            pnlFilters.Controls.Add(btnGenerateReport);
+            pnlFilters.Controls.Add(cmbMachines);
+            pnlFilters.Controls.Add(label3);
+            pnlFilters.Controls.Add(dtpEndTime);
+            pnlFilters.Controls.Add(label2);
+            pnlFilters.Controls.Add(dtpStartTime);
+            pnlFilters.Controls.Add(label1);
+            pnlFilters.Dock = DockStyle.Top;
+            pnlFilters.Location = new Point(0, 0);
+            pnlFilters.Margin = new Padding(3, 2, 3, 2);
+            pnlFilters.Name = "pnlFilters";
+            pnlFilters.Size = new Size(788, 38);
+            pnlFilters.TabIndex = 0;
             // 
             // btnGenerateReport
             // 
-            this.btnGenerateReport.Location = new System.Drawing.Point(700, 12);
-            this.btnGenerateReport.Name = "btnGenerateReport";
-            this.btnGenerateReport.Size = new System.Drawing.Size(120, 30);
-            this.btnGenerateReport.TabIndex = 6;
-            this.btnGenerateReport.Text = "Raporla";
-            this.btnGenerateReport.UseVisualStyleBackColor = true;
-            this.btnGenerateReport.Click += new System.EventHandler(this.btnGenerateReport_Click);
+            btnGenerateReport.Location = new Point(661, 9);
+            btnGenerateReport.Margin = new Padding(3, 2, 3, 2);
+            btnGenerateReport.Name = "btnGenerateReport";
+            btnGenerateReport.Size = new Size(105, 22);
+            btnGenerateReport.TabIndex = 6;
+            btnGenerateReport.Text = "Raporla";
+            btnGenerateReport.UseVisualStyleBackColor = true;
+            btnGenerateReport.Click += btnGenerateReport_Click;
             // 
             // cmbMachines
             // 
-            this.cmbMachines.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbMachines.FormattingEnabled = true;
-            this.cmbMachines.Location = new System.Drawing.Point(450, 14);
-            this.cmbMachines.Name = "cmbMachines";
-            this.cmbMachines.Size = new System.Drawing.Size(220, 28);
-            this.cmbMachines.TabIndex = 5;
+            cmbMachines.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMachines.FormattingEnabled = true;
+            cmbMachines.Location = new Point(450, 10);
+            cmbMachines.Margin = new Padding(3, 2, 3, 2);
+            cmbMachines.Name = "cmbMachines";
+            cmbMachines.Size = new Size(193, 23);
+            cmbMachines.TabIndex = 5;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(380, 18);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(60, 20);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Makine:";
+            label3.AutoSize = true;
+            label3.Location = new Point(391, 14);
+            label3.Name = "label3";
+            label3.Size = new Size(49, 15);
+            label3.TabIndex = 4;
+            label3.Text = "Makine:";
             // 
             // dtpEndTime
             // 
-            this.dtpEndTime.CustomFormat = "dd.MM.yyyy HH:mm";
-            this.dtpEndTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEndTime.Location = new System.Drawing.Point(220, 15);
-            this.dtpEndTime.Name = "dtpEndTime";
-            this.dtpEndTime.Size = new System.Drawing.Size(150, 27);
-            this.dtpEndTime.TabIndex = 3;
+            dtpEndTime.CustomFormat = "dd.MM.yyyy HH:mm";
+            dtpEndTime.Format = DateTimePickerFormat.Custom;
+            dtpEndTime.Location = new Point(247, 11);
+            dtpEndTime.Margin = new Padding(3, 2, 3, 2);
+            dtpEndTime.Name = "dtpEndTime";
+            dtpEndTime.Size = new Size(132, 23);
+            dtpEndTime.TabIndex = 3;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(200, 18);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(15, 20);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "-";
+            label2.AutoSize = true;
+            label2.Location = new Point(227, 14);
+            label2.Name = "label2";
+            label2.Size = new Size(12, 15);
+            label2.TabIndex = 2;
+            label2.Text = "-";
             // 
             // dtpStartTime
             // 
-            this.dtpStartTime.CustomFormat = "dd.MM.yyyy HH:mm";
-            this.dtpStartTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStartTime.Location = new System.Drawing.Point(100, 15);
-            this.dtpStartTime.Name = "dtpStartTime";
-            this.dtpStartTime.Size = new System.Drawing.Size(150, 27);
-            this.dtpStartTime.TabIndex = 1;
+            dtpStartTime.CustomFormat = "dd.MM.yyyy HH:mm";
+            dtpStartTime.Format = DateTimePickerFormat.Custom;
+            dtpStartTime.Location = new Point(88, 11);
+            dtpStartTime.Margin = new Padding(3, 2, 3, 2);
+            dtpStartTime.Name = "dtpStartTime";
+            dtpStartTime.Size = new Size(132, 23);
+            dtpStartTime.TabIndex = 1;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Tarih Aralığı:";
+            label1.AutoSize = true;
+            label1.Location = new Point(9, 14);
+            label1.Name = "label1";
+            label1.Size = new Size(72, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Tarih Aralığı:";
             // 
             // dgvOeeReport
             // 
-            this.dgvOeeReport.AllowUserToAddRows = false;
-            this.dgvOeeReport.AllowUserToDeleteRows = false;
-            this.dgvOeeReport.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvOeeReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvOeeReport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvOeeReport.Location = new System.Drawing.Point(0, 50);
-            this.dgvOeeReport.Name = "dgvOeeReport";
-            this.dgvOeeReport.ReadOnly = true;
-            this.dgvOeeReport.RowHeadersWidth = 51;
-            this.dgvOeeReport.RowTemplate.Height = 29;
-            this.dgvOeeReport.Size = new System.Drawing.Size(900, 550);
-            this.dgvOeeReport.TabIndex = 1;
+            dgvOeeReport.AllowUserToAddRows = false;
+            dgvOeeReport.AllowUserToDeleteRows = false;
+            dgvOeeReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvOeeReport.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvOeeReport.Dock = DockStyle.Fill;
+            dgvOeeReport.Location = new Point(0, 38);
+            dgvOeeReport.Margin = new Padding(3, 2, 3, 2);
+            dgvOeeReport.Name = "dgvOeeReport";
+            dgvOeeReport.ReadOnly = true;
+            dgvOeeReport.RowHeadersWidth = 51;
+            dgvOeeReport.RowTemplate.Height = 29;
+            dgvOeeReport.Size = new Size(788, 412);
+            dgvOeeReport.TabIndex = 1;
             // 
             // OeeReport_Control
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.dgvOeeReport);
-            this.Controls.Add(this.pnlFilters);
-            this.Name = "OeeReport_Control";
-            this.Size = new System.Drawing.Size(900, 600);
-            this.Load += new System.EventHandler(this.OeeReport_Control_Load);
-            this.pnlFilters.ResumeLayout(false);
-            this.pnlFilters.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvOeeReport)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(dgvOeeReport);
+            Controls.Add(pnlFilters);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "OeeReport_Control";
+            Size = new Size(788, 450);
+            Load += OeeReport_Control_Load;
+            pnlFilters.ResumeLayout(false);
+            pnlFilters.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvOeeReport).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

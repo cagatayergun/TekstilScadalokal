@@ -1,9 +1,10 @@
 ﻿// UI/Views/Ayarlar_Control.cs
 using System.Collections.Generic;
 using System.Windows.Forms;
+using TekstilScada.Core;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 using TekstilScada.Services;
-
 namespace TekstilScada.UI.Views
 {
     public partial class Ayarlar_Control : UserControl
@@ -19,7 +20,7 @@ namespace TekstilScada.UI.Views
         public Ayarlar_Control()
         {
             InitializeComponent();
-
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             _machineSettings = new MachineSettings_Control();
             _userSettings = new UserSettings_Control();
             _alarmSettings = new AlarmSettings_Control();
@@ -51,6 +52,23 @@ namespace TekstilScada.UI.Views
         public void InitializeControl(MachineRepository machineRepo, Dictionary<int, IPlcManager> plcManagers)
         {
             _plcOperatorSettings.InitializeControl(machineRepo, plcManagers);
+        }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
+
+        }
+        public void ApplyLocalization()
+        {
+            tabPageMachineSettings.Text = Resources.MachineManagement;
+            tabPageUserSettings.Text = Resources.UserManagement;
+            tabPageAlarmSettings.Text = Resources.AlarmSettings;
+            tabPageCostSettings.Text = Resources.cost;
+            tabPagePlcOperators.Text = Resources.PlcOperatorManagement;
+           tabPageRecipeDesigner.Text = Resources.recipedesigner;
+            //btnSave.Text = Resources.Save;
+
+
         }
     }
 }

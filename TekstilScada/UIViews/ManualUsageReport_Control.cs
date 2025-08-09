@@ -3,6 +3,7 @@ using System.Collections.Generic; // List için eklendi
 using System.Windows.Forms;
 using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -15,6 +16,7 @@ namespace TekstilScada.UI.Views
         public ManualUsageReport_Control()
         {
             InitializeComponent();
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
         }
 
         public void InitializeControl(MachineRepository machineRepo, ProcessLogRepository processLogRepo)
@@ -22,7 +24,22 @@ namespace TekstilScada.UI.Views
             _machineRepository = machineRepo;
             _processLogRepository = processLogRepo;
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            label1.Text = Resources.DateRange;
+           // label2.Text = Resources.AlarmText;
+            label3.Text = Resources.Machine;
+            btnGenerateReport.Text = Resources.Reports;
+            btnExportToExcel.Text = Resources.ExportToExcel;
+           
+
+
+        }
         private void ManualUsageReport_Control_Load(object sender, EventArgs e)
         {
             dtpStartTime.Value = DateTime.Today;
@@ -58,7 +75,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Rapor oluşturulurken bir hata oluştu: {ex.Message}", "Hata");
+                MessageBox.Show($"{Resources.raporolusturukenhata} {ex.Message}", $"{Resources.Error}");
             }
             finally
             {
@@ -75,7 +92,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Excell Rapor oluşturulurken bir hata oluştu: {ex.Message}", "Hata");
+                MessageBox.Show($"{Resources.raporolusturukenhata} {ex.Message}", $"{Resources.Error}");
             }
             finally
             {

@@ -70,7 +70,7 @@ namespace TekstilScada.UI.Views
             splitContainer1.Panel2.Controls.Add(pnlEditorArea);
             splitContainer1.Panel2.Controls.Add(panel2);
             splitContainer1.Size = new Size(939, 448);
-            splitContainer1.SplitterDistance = 225;
+            splitContainer1.SplitterDistance = 169;
             splitContainer1.TabIndex = 0;
             // 
             // lstRecipes
@@ -82,7 +82,7 @@ namespace TekstilScada.UI.Views
             lstRecipes.Margin = new Padding(3, 2, 3, 2);
             lstRecipes.Name = "lstRecipes";
             lstRecipes.SelectionMode = SelectionMode.MultiExtended;
-            lstRecipes.Size = new Size(225, 388);
+            lstRecipes.Size = new Size(169, 388);
             lstRecipes.TabIndex = 1;
             // 
             // panel1
@@ -93,7 +93,7 @@ namespace TekstilScada.UI.Views
             panel1.Location = new Point(0, 410);
             panel1.Margin = new Padding(3, 2, 3, 2);
             panel1.Name = "panel1";
-            panel1.Size = new Size(225, 38);
+            panel1.Size = new Size(169, 38);
             panel1.TabIndex = 2;
             // 
             // btnDeleteRecipe
@@ -122,7 +122,7 @@ namespace TekstilScada.UI.Views
             label1.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold);
             label1.Location = new Point(0, 0);
             label1.Name = "label1";
-            label1.Size = new Size(225, 22);
+            label1.Size = new Size(169, 22);
             label1.TabIndex = 0;
             label1.Text = "Kayıtlı Reçeteler";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -133,7 +133,7 @@ namespace TekstilScada.UI.Views
             pnlEditorArea.Location = new Point(0, 100);
             pnlEditorArea.Margin = new Padding(3, 2, 3, 2);
             pnlEditorArea.Name = "pnlEditorArea";
-            pnlEditorArea.Size = new Size(710, 348);
+            pnlEditorArea.Size = new Size(766, 348);
             pnlEditorArea.TabIndex = 1;
             // 
             // panel2
@@ -152,7 +152,7 @@ namespace TekstilScada.UI.Views
             panel2.Location = new Point(0, 0);
             panel2.Margin = new Padding(3, 2, 3, 2);
             panel2.Name = "panel2";
-            panel2.Size = new Size(710, 100);
+            panel2.Size = new Size(766, 100);
             panel2.TabIndex = 0;
             // 
             // btnFtpSync

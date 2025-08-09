@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -13,6 +15,7 @@ namespace TekstilScada.UI.Views
         public OeeReport_Control()
         {
             InitializeComponent();
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
         }
 
         public void InitializeControl(MachineRepository machineRepo, DashboardRepository dashboardRepo)
@@ -20,14 +23,29 @@ namespace TekstilScada.UI.Views
             _machineRepository = machineRepo;
             _dashboardRepository = dashboardRepo;
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            label1.Text = Resources.DateRange;
+            // label2.Text = Resources.AlarmText;
+            label3.Text = Resources.Machine;
+            btnGenerateReport.Text = Resources.Reports;
+            
+
+
+
+        }
         private void OeeReport_Control_Load(object sender, EventArgs e)
         {
             dtpStartTime.Value = DateTime.Today.AddDays(-7);
             dtpEndTime.Value = DateTime.Now;
 
             var machines = _machineRepository.GetAllMachines();
-            machines.Insert(0, new Machine { Id = -1, MachineName = "TÜM MAKİNELER" });
+            machines.Insert(0, new Machine { Id = -1, MachineName = $"{Resources.AllMachines}" });
             cmbMachines.DataSource = machines;
             cmbMachines.DisplayMember = "MachineName";
             cmbMachines.ValueMember = "Id";
@@ -48,7 +66,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Rapor oluşturulurken bir hata oluştu: {ex.Message}", "Hata");
+                MessageBox.Show($"{Resources.raporolusturukenhata} {ex.Message}", $"{Resources.Error}");
             }
             finally
             {

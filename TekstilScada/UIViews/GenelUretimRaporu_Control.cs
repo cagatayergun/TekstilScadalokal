@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 
 namespace TekstilScada.UI.Views
@@ -17,6 +19,7 @@ namespace TekstilScada.UI.Views
 
         public GenelUretimRaporu_Control()
         {
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
             InitializeComponent();
         }
 
@@ -25,7 +28,22 @@ namespace TekstilScada.UI.Views
             _machineRepository = machineRepo;
             _productionRepository = productionRepo;
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            groupBox1.Text = Resources.tüketimtipi;
+            btnRaporOlustur.Text = Resources.Reports;
+            radioElektrik.Text = Resources.elk;
+            radioBuhar.Text = Resources.buhar;
+            radioSu.Text = Resources.su;
+            //btnSave.Text = Resources.Save;
+
+
+        }
         private void GenelUretimRaporu_Control_Load(object sender, EventArgs e)
         {
             dtpStartTime.Value = DateTime.Today;
@@ -77,7 +95,7 @@ namespace TekstilScada.UI.Views
             var selectedMachines = listBoxSeciliMakineler.Items.Cast<Machine>().Select(m => m.MachineName).ToList();
             if (!selectedMachines.Any())
             {
-                MessageBox.Show("Lütfen en az bir makine seçin.", "Uyarı");
+                MessageBox.Show($"{Resources.lütfenbirmakinesec}", $"{Resources.Warning}");
                 return;
             }
 
@@ -90,7 +108,7 @@ namespace TekstilScada.UI.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Rapor oluşturulurken hata: {ex.Message}", "Hata");
+                MessageBox.Show($"{Resources.raporolusturukenhata}: {ex.Message}", $"{Resources.Error}");
             }
             finally
             {

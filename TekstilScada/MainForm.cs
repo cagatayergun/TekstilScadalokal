@@ -11,8 +11,8 @@ using TekstilScada.Services;
 using TekstilScada.UI;
 using TekstilScada.UI.Controls;
 using TekstilScada.UI.Views;
-
 using TekstilScada.Properties;
+
 namespace TekstilScada
 {
     public partial class MainForm : Form
@@ -48,7 +48,7 @@ namespace TekstilScada
             _processLogRepository = new ProcessLogRepository();
             _alarmRepository = new AlarmRepository();
             _productionRepository = new ProductionRepository();
-            _pollingService = new PlcPollingService(_alarmRepository, _processLogRepository, _productionRepository,_recipeRepository);
+            _pollingService = new PlcPollingService(_alarmRepository, _processLogRepository, _productionRepository, _recipeRepository);
             _dashboardRepository = new DashboardRepository();
 
             _prosesIzlemeView = new Proses›zleme_Control();
@@ -94,7 +94,7 @@ namespace TekstilScada
             List<Machine> machines = _machineRepository.GetAllEnabledMachines();
             if (machines == null)
             {
-                MessageBox.Show("Veritaban˝ balant˝s˝ kurulamad˝ veya makine bilgileri al˝namad˝.", "Kritik Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.DatabaseConnectionFailed, Resources.CriticalError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             _pollingService.Start(machines);
@@ -139,12 +139,10 @@ namespace TekstilScada
             btnAyarlar.Text = TekstilScada.Localization.Strings.MainMenu_Settings;
 
             // Men¸ ve durum Áubuu gibi dier elemanlar "Resources" s˝n˝f˝ndan geliyor.
-            dilToolStripMenuItem.Text = TekstilScada.Properties.Resources.Language;
-            oturumToolStripMenuItem.Text = TekstilScada.Properties.Resources.Session;
-            Á˝k˝˛YapToolStripMenuItem.Text = TekstilScada.Properties.Resources.Logout;
-
-            // Kullan˝c˝ bilgisi metnini de burada g¸ncelleyebilirsiniz.
-       
+            dilToolStripMenuItem.Text = Resources.Language;
+            oturumToolStripMenuItem.Text = Resources.Session;
+            Á˝k˝˛YapToolStripMenuItem.Text = Resources.Logout;
+            lblStatusLiveEvents.Text = Resources.Livelogsee;
         }
 
         private void UpdateUserInfoAndPermissions()
@@ -164,17 +162,17 @@ namespace TekstilScada
         private void ShowView(UserControl view)
         {
             if (view is Ayarlar_Control && !PermissionService.CanViewSettings)
-            
-                {
-                MessageBox.Show($"{Resources.NoAccess}.", $"{ Resources.AccessDenied}");
+
+            {
+                MessageBox.Show(Resources.NoAccess, Resources.AccessDenied);
                 return;
             }
             if (view is Raporlar_Control && !PermissionService.CanViewReports)
             {
-                MessageBox.Show($"{Resources.NoAccess}.", $"{Resources.AccessDenied}");
+                MessageBox.Show(Resources.NoAccess, Resources.AccessDenied);
                 return;
             }
-                pnlContent.Controls.Clear();
+            pnlContent.Controls.Clear();
             view.Dock = DockStyle.Fill;
             pnlContent.Controls.Add(view);
         }
@@ -195,7 +193,7 @@ namespace TekstilScada
 
         private void Á˝k˝˛YapToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show($"{Resources.Cikiseminmisin}?", $"{Resources.Confirim}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBox.Show(Resources.Cikiseminmisin, Resources.Confirim, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 this.Hide();
@@ -232,7 +230,7 @@ namespace TekstilScada
             if (_activeVncViewerForm != null && !_activeVncViewerForm.IsDisposed)
             {
                 _activeVncViewerForm.Activate();
-                MessageBox.Show($"{Resources.Vnccurrentclose}", $"{Resources.Warning}", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.Vnccurrentclose, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             var machine = _machineRepository.GetAllMachines().FirstOrDefault(m => m.Id == machineId);
@@ -241,7 +239,7 @@ namespace TekstilScada
                 try
                 {
                     var vncForm = new VncViewer_Form(machine.VncAddress, machine.VncPassword);
-                    vncForm.Text = $"{machine.MachineName} - ${Resources.VncConnectionTo}";
+                    vncForm.Text = $"{machine.MachineName} - {Resources.VncConnectionTo}";
                     vncForm.FormClosed += (s, args) => { _activeVncViewerForm = null; };
                     _activeVncViewerForm = vncForm;
                     vncForm.Show();
@@ -249,12 +247,12 @@ namespace TekstilScada
                 catch (Exception ex)
                 {
                     _activeVncViewerForm = null;
-                    MessageBox.Show($"{Resources.Vncconnecterror} {ex.Message}", $"{Resources.Error}");
+                    MessageBox.Show($"{Resources.Vncconnecterror} {ex.Message}", Resources.Error);
                 }
             }
             else
             {
-                MessageBox.Show($"{Resources.Vncnomachine}", $"{Resources.Information}");
+                MessageBox.Show(Resources.Vncnomachine, Resources.Information);
             }
         }
 
@@ -284,7 +282,7 @@ namespace TekstilScada
                 }
                 else
                 {
-                    lblStatusLiveEvents.Text = $"{Resources.Livelogsee}";
+                   
                     lblStatusLiveEvents.BackColor = System.Drawing.SystemColors.Control;
                     lblStatusLiveEvents.ForeColor = System.Drawing.SystemColors.ControlText;
                 }

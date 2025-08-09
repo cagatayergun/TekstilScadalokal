@@ -226,7 +226,7 @@
             // 
             progressTemp.Location = new Point(39, 17);
             progressTemp.Margin = new Padding(3, 2, 3, 2);
-            progressTemp.Maximum = 150;
+            progressTemp.Maximum = 1500;
             progressTemp.Name = "progressTemp";
             progressTemp.Size = new Size(26, 113);
             progressTemp.Step = 1;

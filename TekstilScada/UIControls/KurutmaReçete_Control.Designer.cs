@@ -52,7 +52,7 @@ namespace TekstilScada.UI.Controls
             this.numSicaklik.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.numSicaklik.Location = new System.Drawing.Point(170, 68);
             this.numSicaklik.Maximum = new decimal(new int[] {
-            200,
+            2000,
             0,
             0,
             0});

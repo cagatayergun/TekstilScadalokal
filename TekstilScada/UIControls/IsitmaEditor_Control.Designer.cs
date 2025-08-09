@@ -53,12 +53,14 @@ namespace TekstilScada.UI.Controls.RecipeStepEditors
             // 
             // numIsi
             // 
-            numIsi.Location = new Point(158, 58);
-            numIsi.Margin = new Padding(3, 2, 3, 2);
-            numIsi.Maximum = new decimal(new int[] { 1500, 0, 0, 0 });
-            numIsi.Name = "numIsi";
-            numIsi.Size = new Size(131, 23);
-            numIsi.TabIndex = 1;
+            this.numIsi.DecimalPlaces = 1; // ONDALIK BASAMAK SAYISINI 1 YAP
+            this.numIsi.Increment = new decimal(new int[] { 1, 0, 0, 65536 }); // ARTIŞ MİKTARINI 0.1 YAP
+            this.numIsi.Location = new System.Drawing.Point(158, 58);
+            this.numIsi.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.numIsi.Maximum = new decimal(new int[] { 1500, 0, 0, 0 }); // BU ZATEN 150.0 DEMEK, DOĞRU
+            this.numIsi.Name = "numIsi";
+            this.numIsi.Size = new System.Drawing.Size(131, 23);
+            this.numIsi.TabIndex = 1;
             // 
             // label2
             // 

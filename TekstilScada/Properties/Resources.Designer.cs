@@ -70,6 +70,24 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Aktif alarm yok . benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string aktifalarmyok {
+            get {
+                return ResourceManager.GetString("aktifalarmyok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Aktif Üretim benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string aktifüretim {
+            get {
+                return ResourceManager.GetString("aktifüretim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Alarm benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Alarm {
@@ -84,6 +102,15 @@ namespace TekstilScada.Properties {
         public static string AlarmDetails {
             get {
                 return ResourceManager.GetString("AlarmDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Alarm Durumu benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string alarmdurum {
+            get {
+                return ResourceManager.GetString("alarmdurum", resourceCulture);
             }
         }
         
@@ -106,6 +133,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Alarm Numarası ve Alarm Metni zorunludur. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string alarmnozorunlu {
+            get {
+                return ResourceManager.GetString("alarmnozorunlu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Geçmil Alarmlar benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string alarmrapor {
@@ -115,11 +151,29 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Alarm raporları oluşturulurken hata oluştu benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string alarmraporerror {
+            get {
+                return ResourceManager.GetString("alarmraporerror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Alarm Tanımlama benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string AlarmSettings {
             get {
                 return ResourceManager.GetString("AlarmSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   alarm tanımını silmek istediğinizden emin misiniz? benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string alarmtanımısil {
+            get {
+                return ResourceManager.GetString("alarmtanımısil", resourceCulture);
             }
         }
         
@@ -160,6 +214,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Bağlantı bekleniyor... benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string baglantibekleniyro {
+            get {
+                return ResourceManager.GetString("baglantibekleniyro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Başlangıç Tarihi: benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Baslangic_tarihi {
@@ -187,11 +250,92 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Boşaltma benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string bosaltma {
+            get {
+                return ResourceManager.GetString("bosaltma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Boşta Bekleyen benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string bosbekleyen {
+            get {
+                return ResourceManager.GetString("bosbekleyen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Buhar benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string buhar {
+            get {
+                return ResourceManager.GetString("buhar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Bu parti için henüz proses verisi kaydedilmemiş. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string bupartihenüzkaydedilmemis {
+            get {
+                return ResourceManager.GetString("bupartihenüzkaydedilmemis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Bu parti için kayıtlı alarm yok. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string bupartiicinalarmyok {
+            get {
+                return ResourceManager.GetString("bupartiicinalarmyok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   BY Makineleri benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string bymakinesi {
+            get {
+                return ResourceManager.GetString("bymakinesi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Çalışma benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string calisma {
+            get {
+                return ResourceManager.GetString("calisma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   İptal benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Canlı veri akışı bekleniyor... benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string canlidata {
+            get {
+                return ResourceManager.GetString("canlidata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Canlı Proses Verileri benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string canliprosesdata {
+            get {
+                return ResourceManager.GetString("canliprosesdata", resourceCulture);
             }
         }
         
@@ -304,6 +448,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Maliyet Parametreleri benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string cost {
+            get {
+                return ResourceManager.GetString("cost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Kritik Hata benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string CriticalError {
@@ -340,6 +493,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Tarih Aralığı benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string DateRange {
+            get {
+                return ResourceManager.GetString("DateRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sil benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Delete {
@@ -354,6 +516,15 @@ namespace TekstilScada.Properties {
         public static string devir {
             get {
                 return ResourceManager.GetString("devir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Diğer benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string diger {
+            get {
+                return ResourceManager.GetString("diger", resourceCulture);
             }
         }
         
@@ -390,6 +561,15 @@ namespace TekstilScada.Properties {
         public static string DosageTime {
             get {
                 return ResourceManager.GetString("DosageTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Dozaj benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string dozaj {
+            get {
+                return ResourceManager.GetString("dozaj", resourceCulture);
             }
         }
         
@@ -439,6 +619,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Elektrik benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string elk {
+            get {
+                return ResourceManager.GetString("elk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Bitiş Tarihi: benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string EndTime {
@@ -457,6 +646,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   En Sık 5 Alarm (Son 24 Saat) benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string ensikalarm {
+            get {
+                return ResourceManager.GetString("ensikalarm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Hata benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Error {
@@ -471,6 +669,24 @@ namespace TekstilScada.Properties {
         public static string ExportToExcel {
             get {
                 return ResourceManager.GetString("ExportToExcel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   FTP Şifre : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string ftppass {
+            get {
+                return ResourceManager.GetString("ftppass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   FTP Kullanıcı : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string ftpuser {
+            get {
+                return ResourceManager.GetString("ftpuser", resourceCulture);
             }
         }
         
@@ -507,6 +723,24 @@ namespace TekstilScada.Properties {
         public static string GeneralOverview {
             get {
                 return ResourceManager.GetString("GeneralOverview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Rapor Oluştur benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string GenerateReport {
+            get {
+                return ResourceManager.GetString("GenerateReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   &lt; GERİ benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string geri {
+            get {
+                return ResourceManager.GetString("geri", resourceCulture);
             }
         }
         
@@ -583,6 +817,33 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   IP Adresi : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string ipadres {
+            get {
+                return ResourceManager.GetString("ipadres", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Isıtma benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string isitma {
+            get {
+                return ResourceManager.GetString("isitma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   İzleme aktif mi ? benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string izlemeaktif {
+            get {
+                return ResourceManager.GetString("izlemeaktif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Karşılaştırılacak : benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string karsilastirilacak {
@@ -601,11 +862,29 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Kayıt sırasında bir hata oluştu: benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string kayitsirasihatasi {
+            get {
+                return ResourceManager.GetString("kayitsirasihatasi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   kullanıcısını silmek istediğinizden emin misiniz? benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string kullanıcısını_silmek_istediğinizden_emin_misiniz_ {
             get {
                 return ResourceManager.GetString("kullanıcısını silmek istediğinizden emin misiniz?", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Kurutma Makinesi benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string kurutmamakinesi {
+            get {
+                return ResourceManager.GetString("kurutmamakinesi", resourceCulture);
             }
         }
         
@@ -673,6 +952,42 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Lütfen en az bir makine seçin. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string lütfenbirmakinesec {
+            get {
+                return ResourceManager.GetString("lütfenbirmakinesec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Lütfen silmek için bir alarm tanımı seçin. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string lütfendeleteuyarı {
+            get {
+                return ResourceManager.GetString("lütfendeleteuyarı", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Lütfen silmek için bir makine seçin. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string lütfensilmekicinmakinesec {
+            get {
+                return ResourceManager.GetString("lütfensilmekicinmakinesec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine: benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string Machine {
+            get {
+                return ResourceManager.GetString("Machine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   MAKİNA ID: benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string MachineID {
@@ -727,11 +1042,83 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Makine bağlantısı bulunamadı. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinebaglantısıbulunamadı {
+            get {
+                return ResourceManager.GetString("makinebaglantısıbulunamadı", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine Bilgileri benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinebilgileri {
+            get {
+                return ResourceManager.GetString("makinebilgileri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine bilgileri başarıyla güncellendi. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinebilgilerigüncellendi {
+            get {
+                return ResourceManager.GetString("makinebilgilerigüncellendi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine Grubu : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinegrup {
+            get {
+                return ResourceManager.GetString("makinegrup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine ID ve IP Adresi alanları zorunludur. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makineidveipzorunlu {
+            get {
+                return ResourceManager.GetString("makineidveipzorunlu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Makineler benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string makineler {
             get {
                 return ResourceManager.GetString("makineler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   makinesini silmek istediğinizden emin misiniz? benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinesilmeeminmisin {
+            get {
+                return ResourceManager.GetString("makinesilmeeminmisin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makine Tipi : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makinetip {
+            get {
+                return ResourceManager.GetString("makinetip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Makineler yüklenirken hata oluştu : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string makineyüklemehatası {
+            get {
+                return ResourceManager.GetString("makineyüklemehatası", resourceCulture);
             }
         }
         
@@ -862,11 +1249,29 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Parti başlangıç zamanı bulunamadı. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string partibaslangıczamanıkayip {
+            get {
+                return ResourceManager.GetString("partibaslangıczamanıkayip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Şifre: benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PLC&apos;den reçete okunamadı: benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string plcdenreceteokunmadı {
+            get {
+                return ResourceManager.GetString("plcdenreceteokunmadı", resourceCulture);
             }
         }
         
@@ -952,11 +1357,47 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Proses Zaman Çizgisi benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string proseszamancizgisi {
+            get {
+                return ResourceManager.GetString("proseszamancizgisi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Miktar (Litre): benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string QuantityLiters {
             get {
                 return ResourceManager.GetString("QuantityLiters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Rapor oluşturulurken bir hata oluştu: benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string raporolusturukenhata {
+            get {
+                return ResourceManager.GetString("raporolusturukenhata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reçete PLC&apos;den okunuyor... benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string receteplcdenokunuyor {
+            get {
+                return ResourceManager.GetString("receteplcdenokunuyor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reçete Adım Tasaramı benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string recipedesigner {
+            get {
+                return ResourceManager.GetString("recipedesigner", resourceCulture);
             }
         }
         
@@ -1033,6 +1474,24 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Saatlik Elektirk Tüketimi benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string saatlik {
+            get {
+                return ResourceManager.GetString("saatlik", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Saatlik Elektrik Tüketimi (kW) benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string Saatlikelektrik {
+            get {
+                return ResourceManager.GetString("Saatlikelektrik", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Kaydet benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Save {
@@ -1078,11 +1537,47 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Sıkma benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string sikma {
+            get {
+                return ResourceManager.GetString("sikma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Silme Onayı benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string silmeonayı {
+            get {
+                return ResourceManager.GetString("silmeonayı", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Silme sırasında hata: benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string Silmesırasındahata {
+            get {
+                return ResourceManager.GetString("Silmesırasındahata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Yumuşak Su benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string SoftWater {
             get {
                 return ResourceManager.GetString("SoftWater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Son 24 Saatin Popüler Alarmları benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string son24topalarm {
+            get {
+                return ResourceManager.GetString("son24topalarm", resourceCulture);
             }
         }
         
@@ -1137,6 +1632,24 @@ namespace TekstilScada.Properties {
         public static string StepDetails {
             get {
                 return ResourceManager.GetString("StepDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Su benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string su {
+            get {
+                return ResourceManager.GetString("su", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Su Alma benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string sualma {
+            get {
+                return ResourceManager.GetString("sualma", resourceCulture);
             }
         }
         
@@ -1222,6 +1735,15 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
+        ///   Tüketim Tipi benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string tüketimtipi {
+            get {
+                return ResourceManager.GetString("tüketimtipi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Türkçe benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
         public static string Turkish {
@@ -1281,6 +1803,15 @@ namespace TekstilScada.Properties {
         public static string usernamehard {
             get {
                 return ResourceManager.GetString("usernamehard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VNC Adresi : benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string vncadres {
+            get {
+                return ResourceManager.GetString("vncadres", resourceCulture);
             }
         }
         
@@ -1348,11 +1879,20 @@ namespace TekstilScada.Properties {
         }
         
         /// <summary>
-        ///   Yilmak Makine Scada benzeri yerelleştirilmiş bir dize arar.
+        ///   Yeni kullanıcı için şifre zorunludur. benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        public static string Yilmak {
+        public static string Yenikullanıcıiçinsifrezorunludur {
             get {
-                return ResourceManager.GetString("Yilmak", resourceCulture);
+                return ResourceManager.GetString("Yenikullanıcıiçinsifrezorunludur", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Yeni makine başarıyla eklendi. benzeri yerelleştirilmiş bir dize arar.
+        /// </summary>
+        public static string yenimakinebasarili {
+            get {
+                return ResourceManager.GetString("yenimakinebasarili", resourceCulture);
             }
         }
     }

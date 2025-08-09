@@ -347,29 +347,56 @@ namespace TekstilScada.UI.Views
 
         private void DgvRecipeSteps_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            // Satır indeksi geçerli değilse veya gerekli nesneler yoksa metottan çık.
             if (e.RowIndex < 0 || _currentRecipe == null || pnlStepDetails == null) return;
 
-            pnlStepDetails.Controls.Clear();
-            pnlStepDetails.Controls.Add(lblStepDetailsTitle);
-
-            int selectedIndex = e.RowIndex;
-            if (selectedIndex < _currentRecipe.Steps.Count)
+            try
             {
-                var selectedStep = _currentRecipe.Steps[selectedIndex];
-                var selectedMachine = cmbTargetMachine.SelectedItem as Machine; // YENİ
+                // --- BU SEFERKİ KESİN ÇÖZÜM BURASI ---
+
+                // 1. Tıklanan satırdaki "Adım Numarası" hücresinin değerini alıyoruz.
+                // NOT: Eğer tablodaki adım numarası kolonunun adı farklıysa, "StepNumber" yazan
+                // yeri o kolonun adıyla değiştirmen gerekir. (Örn: "AdimNoKolonu")
+                var stepNumberCell = dgvRecipeSteps.Rows[e.RowIndex].Cells["StepNumber"].Value;
+
+                if (stepNumberCell == null) return; // Hücre boşsa hata vermemesi için kontrol.
+
+                int stepNumberToFind = Convert.ToInt32(stepNumberCell);
+
+                // 2. Orijinal ve sırasız "_currentRecipe.Steps" listesi içinde,
+                // bu adım numarasına sahip olan adımı buluyoruz. Bu yöntem sıralamadan etkilenmez.
+                var selectedStep = _currentRecipe.Steps.FirstOrDefault(s => s.StepNumber == stepNumberToFind);
+
+                // 3. Aradığımız adım bulunamazsa (normalde olmamalı), güvenli bir şekilde metottan çıkıyoruz.
+                if (selectedStep == null) return;
+
+
+                // --- DÜZELTME BİTTİ, KODUNUN GERİ KALANI ARTIK DOĞRU ÇALIŞACAK ---
+
+                pnlStepDetails.Controls.Clear();
+                pnlStepDetails.Controls.Add(lblStepDetailsTitle);
+
+                var selectedMachine = cmbTargetMachine.SelectedItem as Machine;
                 lblStepDetailsTitle.Text = $"Adım Detayları - Adım No: {selectedStep.StepNumber}";
 
                 var mainEditor = new StepEditor_Control();
                 mainEditor.LoadStep(selectedStep, selectedMachine);
+
                 mainEditor.StepDataChanged += (s, ev) => {
-                    if (dgvRecipeSteps.Rows.Count > selectedIndex)
+                    // Tıklanan görsel satırı güncellemek için e.RowIndex kullanımı burada doğrudur.
+                    if (dgvRecipeSteps.Rows.Count > e.RowIndex)
                     {
-                        dgvRecipeSteps.Rows[selectedIndex].Cells["StepType"].Value = GetStepTypeName(selectedStep);
+                        dgvRecipeSteps.Rows[e.RowIndex].Cells["StepType"].Value = GetStepTypeName(selectedStep);
                     }
                 };
                 mainEditor.Dock = DockStyle.Fill;
                 pnlStepDetails.Controls.Add(mainEditor);
                 mainEditor.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                // Olası bir "kolon adı bulunamadı" veya "tip dönüşümü" hatasını yakalamak için.
+                MessageBox.Show($"Adım detayları yüklenirken bir hata oluştu: {ex.Message}", "Hata");
             }
         }
 

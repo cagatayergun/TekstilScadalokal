@@ -22,7 +22,7 @@ namespace TekstilScada.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace TekstilScada.Localization {
         ///   Bu sınıf tarafından kullanılan, önbelleğe alınmış ResourceManager örneğini döndürür.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TekstilScada.Localization.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace TekstilScada.Localization {
         ///   CurrentUICulture özelliğini tüm kaynak aramaları için geçersiz kılar.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Tekstil SCADA Sistemi benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string ApplicationTitle {
+        public static string ApplicationTitle {
             get {
                 return ResourceManager.GetString("ApplicationTitle", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Genel Bakış benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string MainMenu_GeneralOverview {
+        public static string MainMenu_GeneralOverview {
             get {
                 return ResourceManager.GetString("MainMenu_GeneralOverview", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Proses Kontrol benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string MainMenu_ProcessControl {
+        public static string MainMenu_ProcessControl {
             get {
                 return ResourceManager.GetString("MainMenu_ProcessControl", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Proses İzleme benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string MainMenu_ProcessMonitoring {
+        public static string MainMenu_ProcessMonitoring {
             get {
                 return ResourceManager.GetString("MainMenu_ProcessMonitoring", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Raporlar benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string MainMenu_Reports {
+        public static string MainMenu_Reports {
             get {
                 return ResourceManager.GetString("MainMenu_Reports", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace TekstilScada.Localization {
         /// <summary>
         ///   Ayarlar benzeri yerelleştirilmiş bir dize arar.
         /// </summary>
-        internal static string MainMenu_Settings {
+        public static string MainMenu_Settings {
             get {
                 return ResourceManager.GetString("MainMenu_Settings", resourceCulture);
             }

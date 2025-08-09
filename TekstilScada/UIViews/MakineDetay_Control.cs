@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Resources;
 using System.Windows.Forms;
 using TekstilScada.Core;
 using TekstilScada.Models;
+using TekstilScada.Properties;
 using TekstilScada.Repositories;
 using TekstilScada.Services;
 
@@ -31,10 +33,11 @@ namespace TekstilScada.UI.Views
 
         public MakineDetay_Control()
         {
+            
             InitializeComponent();
             btnGeri.Click += (sender, args) => BackRequested?.Invoke(this, EventArgs.Empty);
             this.progressTemp.Paint += new System.Windows.Forms.PaintEventHandler(this.progressTemp_Paint);
-
+            LanguageManager.LanguageChanged += LanguageManager_LanguageChanged;
         }
 
         public void InitializeControl(Machine machine, PlcPollingService service, ProcessLogRepository logRepo, AlarmRepository alarmRepo, RecipeRepository recipeRepo, ProductionRepository productionRepo)
@@ -67,7 +70,28 @@ namespace TekstilScada.UI.Views
             }
 
         }
+        private void LanguageManager_LanguageChanged(object sender, EventArgs e)
+        {
+            ApplyLocalization();
 
+        }
+        public void ApplyLocalization()
+        {
+            btnGeri.Text = Resources.geri;
+            label1.Text = Resources.makinebilgileri;
+            label2.Text = Resources.RecipeName;
+            label3.Text = Resources.Operator;
+            label4.Text = Resources.CustomerNo;
+            label5.Text = Resources.BatchNo;
+            label6.Text = Resources.OrderNo;
+            lblTempTitle.Text = Resources.Temperature;
+            lstAlarmlar.Text = Resources.baglantibekleniyro;
+
+
+            //btnSave.Text = Resources.Save;
+
+
+        }
         private void OnConnectionStateChanged(int machineId, FullMachineStatus status)
         {
             if (machineId == _machine.Id && this.IsHandleCreated && !this.IsDisposed)
@@ -110,10 +134,15 @@ namespace TekstilScada.UI.Views
                     // Anlık sıcaklık değerini Panel'in Tag özelliğine atıyoruz.
                     // Maksimum değeri (150) burada veya Paint metodunda sabit tutabilirsiniz,
                     // veya onu da Tag'in farklı bir parçası olarak geçirebilirsiniz.
-                    progressTemp.Tag = status.AnlikSicaklik;
+                    // DEĞİŞİKLİK: Anlık sıcaklığı 10'a bölerek ondalıklı hale getir
+                    decimal anlikSicaklikDecimal = status.AnlikSicaklik / 10.0m;
+                    progressTemp.Tag = anlikSicaklikDecimal;
 
-                    lblTempValue.Text = $"{status.AnlikSicaklik} °C";
-                    lblTempValue.ForeColor = GetTemperatureColor(status.AnlikSicaklik);
+                    // DEĞİŞİKLİK: Label'da ondalıklı ve formatlı göster (F1 -> bir ondalık basamak)
+                    lblTempValue.Text = $"{anlikSicaklikDecimal:F1} °C";
+                    lblTempValue.ForeColor = GetTemperatureColor((int)anlikSicaklikDecimal); // Rengi de ondalıklı değere göre al
+
+                 //   lblTempValue.ForeColor = GetTemperatureColor(status.AnlikSicaklik);
                     progressTemp.Invalidate(); // Panel'in Paint olayını tetikler
 
                     waterTankGauge1.Value = status.AnlikSuSeviyesi;
@@ -135,7 +164,7 @@ namespace TekstilScada.UI.Views
             // 2. Bağlantı durumunu kontrol et
             if (status.ConnectionState != ConnectionStatus.Connected)
             {
-                ClearAllFieldsWithMessage("Bağlantı bekleniyor...");
+                ClearAllFieldsWithMessage($"{Resources.baglantibekleniyro}");
                 return;
             }
 
@@ -166,7 +195,7 @@ namespace TekstilScada.UI.Views
 
             // Partiye özel geçmiş alarmları veritabanından yükle
             var alarms = _alarmRepository.GetAlarmDetailsForBatch(status.BatchNumarasi, _machine.Id);
-            var alarmStrings = alarms.Any() ? alarms.Select(a => a.AlarmDescription).ToList() : new List<string> { "Bu parti için kayıtlı alarm yok." };
+            var alarmStrings = alarms.Any() ? alarms.Select(a => a.AlarmDescription).ToList() : new List<string> { $"{Resources.bupartiicinalarmyok}" };
 
             // Geçmiş raporu görüntülerken de mevcut durumu hafızaya al
             _currentlyDisplayedAlarms = alarmStrings;
@@ -189,7 +218,7 @@ namespace TekstilScada.UI.Views
 
         private async void LoadRecipeStepsFromPlcAsync()
         {
-            dgvAdimlar.DataSource = new List<object> { new { Adım = "...", Açıklama = "Reçete PLC'den okunuyor..." } };
+            dgvAdimlar.DataSource = new List<object> { new { Adım = "...", Açıklama = $"{Resources.receteplcdenokunuyor}" } };
 
             if (_pollingService.GetPlcManagers().TryGetValue(_machine.Id, out var plcManager))
             {
@@ -199,7 +228,7 @@ namespace TekstilScada.UI.Views
                     var steps = new List<ScadaRecipeStep>();
                     var rawData = result.Content;
 
-                    if (_machine.MachineType == "Kurutma Makinesi")
+                    if (_machine.MachineType == $"{Resources.kurutmamakinesi}")
                     {
                         var step = new ScadaRecipeStep { StepNumber = 1 };
                         Array.Copy(rawData, 0, step.StepDataWords, 0, Math.Min(rawData.Length, 6));
@@ -222,12 +251,12 @@ namespace TekstilScada.UI.Views
                 }
                 else
                 {
-                    dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = $"PLC'den reçete okunamadı: {result.Message}" } };
+                    dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = $"{Resources.plcdenreceteokunmadı} {result.Message}" } };
                 }
             }
             else
             {
-                dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = "Makine bağlantısı bulunamadı." } };
+                dgvAdimlar.DataSource = new List<object> { new { Adım = "!", Açıklama = $"{Resources.makinebaglantısıbulunamadı}" } };
             }
         }
 
@@ -240,7 +269,7 @@ namespace TekstilScada.UI.Views
 
                 if (!startTime.HasValue)
                 {
-                    formsPlot1.Plot.Title("Parti başlangıç zamanı bulunamadı.");
+                    formsPlot1.Plot.Title($"{Resources.partibaslangıczamanıkayip}");
                     formsPlot1.Refresh();
                     return;
                 }
@@ -250,36 +279,37 @@ namespace TekstilScada.UI.Views
 
                 if (!dataPoints.Any())
                 {
-                    formsPlot1.Plot.Title("Bu parti için henüz proses verisi kaydedilmemiş.");
+                    formsPlot1.Plot.Title($"{Resources.bupartihenüzkaydedilmemis}");
                     formsPlot1.Refresh();
                     return;
                 }
 
-                formsPlot1.Plot.Title($"{_machine.MachineName} - Proses Zaman Çizgisi ({batchId})");
+                formsPlot1.Plot.Title($"{_machine.MachineName} - ${Resources.proseszamancizgisi} ({batchId})");
                 var tempPlot = formsPlot1.Plot.Add.Scatter(
                     dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
-                    dataPoints.Select(p => (double)p.Temperature).ToArray());
+                   dataPoints.Select(p => (double)p.Temperature / 10.0).ToArray());
+
                 tempPlot.Color = ScottPlot.Colors.Red;
-                tempPlot.LegendText = "Sıcaklık";
+                tempPlot.LegendText = $"{Resources.Temperature}";
                 tempPlot.LineWidth = 2;
 
                 var rpmAxis = formsPlot1.Plot.Axes.AddLeftAxis();
-                rpmAxis.Label.Text = "Devir (RPM)";
+                rpmAxis.Label.Text = $"{Resources.devir}";
                 var rpmPlot = formsPlot1.Plot.Add.Scatter(
                     dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
                     dataPoints.Select(p => (double)p.Rpm).ToArray());
                 rpmPlot.Color = ScottPlot.Colors.Blue;
-                rpmPlot.LegendText = "Devir";
+                rpmPlot.LegendText = $"{Resources.devir}";
                 rpmPlot.Axes.YAxis = rpmAxis;
 
                 // YENİ EKLENEN KOD: Su Seviyesi (Water Level) verisini grafiğe ekle
                 var waterLevelAxis = formsPlot1.Plot.Axes.AddRightAxis();
-                waterLevelAxis.Label.Text = "Su Seviyesi (L)";
+                waterLevelAxis.Label.Text = $"{Resources.suseviyesi}";
                 var waterLevelPlot = formsPlot1.Plot.Add.Scatter(
                     dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray(),
                     dataPoints.Select(p => (double)p.WaterLevel).ToArray());
                 waterLevelPlot.Color = ScottPlot.Colors.Green; // Su seviyesi için yeşil renk
-                waterLevelPlot.LegendText = "Su Seviyesi";
+                waterLevelPlot.LegendText = $"{Resources.suseviyesi}";
                 waterLevelPlot.Axes.YAxis = waterLevelAxis;
 
 
@@ -306,13 +336,13 @@ namespace TekstilScada.UI.Views
                 if (!dataPoints.Any())
                 {
                     formsPlot1.Plot.Clear();
-                    formsPlot1.Plot.Title("Canlı veri akışı bekleniyor...");
+                    formsPlot1.Plot.Title($"{Resources.canlidata}");
                     formsPlot1.Refresh();
                     return;
                 }
 
                 double[] timeData = dataPoints.Select(p => p.Timestamp.ToOADate()).ToArray();
-                double[] tempData = dataPoints.Select(p => (double)p.Temperature).ToArray();
+                double[] tempData = dataPoints.Select(p => (double)p.Temperature / 10.0).ToArray(); // DEĞİŞİKLİK
                 double[] rpmData = dataPoints.Select(p => (double)p.Rpm).ToArray();
                 double[] waterLevelData = dataPoints.Select(p => (double)p.WaterLevel).ToArray();
 
@@ -320,25 +350,25 @@ namespace TekstilScada.UI.Views
                 if (_tempPlot == null)
                 {
                     formsPlot1.Plot.Clear(); // İlk oluşturmada her şeyi temizle
-                    formsPlot1.Plot.Title($"{_machine.MachineName} - Canlı Proses Verileri");
+                    formsPlot1.Plot.Title($"{_machine.MachineName} - ${Resources.canliprosesdata}");
                     formsPlot1.Plot.Axes.DateTimeTicksBottom();
                     formsPlot1.Plot.ShowLegend(ScottPlot.Alignment.UpperLeft);
 
                     // Sıcaklık Çizgisi
                     _tempPlot = formsPlot1.Plot.Add.Scatter(timeData, tempData);
                     _tempPlot.Color = ScottPlot.Colors.Red;
-                    _tempPlot.LegendText = "Sıcaklık";
+                    _tempPlot.LegendText = $"{Resources.Temperature}";
                     _tempPlot.LineWidth = 2;
 
                     // Devir Çizgisi
                     _rpmPlot = formsPlot1.Plot.Add.Scatter(timeData, rpmData);
                     _rpmPlot.Color = ScottPlot.Colors.Blue;
-                    _rpmPlot.LegendText = "Devir";
+                    _rpmPlot.LegendText = $"{Resources.devir}";
 
                     // Su Seviyesi Çizgisi
                     _waterLevelPlot = formsPlot1.Plot.Add.Scatter(timeData, waterLevelData);
                     _waterLevelPlot.Color = ScottPlot.Colors.Green;
-                    _waterLevelPlot.LegendText = "Su Seviyesi";
+                    _waterLevelPlot.LegendText = $"{Resources.suseviyesi}";
 
                     // SADECE İLK AÇILIŞTA EKSEN REFERANSLAMASI
                     // X eksenini endTime'a (şu anki zamana) göre ayarla ve geçmiş 5 saati göster
@@ -358,16 +388,16 @@ namespace TekstilScada.UI.Views
                     // Yeni verilerle çizgi grafiklerini yeniden oluştur ve formsPlot1.Plot'a ekle
                     _tempPlot = formsPlot1.Plot.Add.Scatter(timeData, tempData);
                     _tempPlot.Color = ScottPlot.Colors.Red;
-                    _tempPlot.LegendText = "Sıcaklık";
+                    _tempPlot.LegendText = $"{Resources.Temperature}";
                     _tempPlot.LineWidth = 2;
 
                     _rpmPlot = formsPlot1.Plot.Add.Scatter(timeData, rpmData);
                     _rpmPlot.Color = ScottPlot.Colors.Blue;
-                    _rpmPlot.LegendText = "Devir";
+                    _rpmPlot.LegendText = $"{Resources.devir}";
 
                     _waterLevelPlot = formsPlot1.Plot.Add.Scatter(timeData, waterLevelData);
                     _waterLevelPlot.Color = ScottPlot.Colors.Green;
-                    _waterLevelPlot.LegendText = "Su Seviyesi";
+                    _waterLevelPlot.LegendText = $"{Resources.suseviyesi}";
 
                     // Sonraki güncellemelerde eksen limitlerini otomatik olarak değiştirmeyin,
                     // kullanıcının yaptığı zoom ve kaydırmaları koruyun.
@@ -448,12 +478,12 @@ namespace TekstilScada.UI.Views
         {
             var stepTypes = new List<string>();
             short controlWord = step.StepDataWords[24];
-            if ((controlWord & 1) != 0) stepTypes.Add("Su Alma");
-            if ((controlWord & 2) != 0) stepTypes.Add("Isıtma");
-            if ((controlWord & 4) != 0) stepTypes.Add("Çalışma");
-            if ((controlWord & 8) != 0) stepTypes.Add("Dozaj");
-            if ((controlWord & 16) != 0) stepTypes.Add("Boşaltma");
-            if ((controlWord & 32) != 0) stepTypes.Add("Sıkma");
+            if ((controlWord & 1) != 0) stepTypes.Add($"{Resources.sualma}");
+            if ((controlWord & 2) != 0) stepTypes.Add($"{Resources.isitma}");
+            if ((controlWord & 4) != 0) stepTypes.Add($"{Resources.calisma}");
+            if ((controlWord & 8) != 0) stepTypes.Add($"{Resources.dozaj}");
+            if ((controlWord & 16) != 0) stepTypes.Add($"{Resources.bosaltma}");
+            if ((controlWord & 32) != 0) stepTypes.Add($"{Resources.sikma}");
             return string.Join(" + ", stepTypes);
         }
 
@@ -473,7 +503,7 @@ namespace TekstilScada.UI.Views
 
             // Tag'den anlık değeri alıyoruz (eğer short atadıysanız short, int atadıysanız int olarak çekin)
             int currentValue = Convert.ToInt32(barPanel.Tag);
-            int maximumValue = 150; // Max değeri burada sabit tuttuk (önceki gibi 150)
+            int maximumValue = 1500; // Max değeri burada sabit tuttuk (önceki gibi 150)
 
             // Değerin ProgressBar aralığında olduğundan emin olalım
             currentValue = Math.Max(0, Math.Min(maximumValue, currentValue));
@@ -543,7 +573,7 @@ namespace TekstilScada.UI.Views
                 }
                 else
                 {
-                    newAlarmList = new List<string> { "Aktif alarm yok." };
+                    newAlarmList = new List<string> { $"{Resources.aktifalarmyok}" };
                 }
 
                 // Sadece yeni alarm listesi eskisinden farklıysa arayüzü güncelle

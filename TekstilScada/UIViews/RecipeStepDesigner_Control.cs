@@ -109,22 +109,34 @@ namespace TekstilScada.UI.Views
             int stepTypeId = Convert.ToInt32(cmbStepType.SelectedValue);
             string layoutName = $"{machineSubType} - {cmbStepType.Text}";
 
-            // Tasarımı JSON'a çevirme kodu Seviye 2'deki ile aynı...
             var controlsMetadata = new List<ControlMetadata>();
             foreach (Control control in pnlDesignSurface.Controls)
             {
                 var wrapper = new ControlPropertyWrapper(control);
-                controlsMetadata.Add(new ControlMetadata
+
+                // Önce her kontrol için ortak olan meta veriyi oluşturuyoruz.
+                var metadata = new ControlMetadata
                 {
                     ControlType = control.GetType().AssemblyQualifiedName,
                     Name = wrapper.Name,
                     Text = wrapper.Text,
                     Location = $"{wrapper.Location.X}, {wrapper.Location.Y}",
                     Size = $"{wrapper.Size.Width}, {wrapper.Size.Height}",
-                    Maximum = (control is NumericUpDown num) ? num.Maximum : 0,
                     PLC_WordIndex = wrapper.PLC_WordIndex,
                     PLC_BitIndex = wrapper.PLC_BitIndex
-                });
+                    // Not: Maximum ve DecimalPlaces'ı burada hemen atamıyoruz.
+                };
+
+                // --- YENİ EKLENECEK KISIM BURASI ---
+                // Şimdi, eğer kontrol NumericUpDown ise, ona özel özellikleri de ekliyoruz.
+                if (control is NumericUpDown num)
+                {
+                    metadata.Maximum = num.Maximum;
+                    metadata.DecimalPlaces = num.DecimalPlaces; // İşte bu satırı ekliyoruz!
+                }
+                // --- EKLEME BİTTİ ---
+
+                controlsMetadata.Add(metadata);
             }
 
             string jsonLayout = JsonSerializer.Serialize(controlsMetadata, new JsonSerializerOptions { WriteIndented = true });
@@ -163,7 +175,13 @@ namespace TekstilScada.UI.Views
             wrapper.Size = new Size(int.Parse(data.Size.Split(',')[0].Trim()), int.Parse(data.Size.Split(',')[1].Trim()));
             wrapper.PLC_WordIndex = data.PLC_WordIndex;
             wrapper.PLC_BitIndex = data.PLC_BitIndex;
-            if (newControl is NumericUpDown num) num.Maximum = data.Maximum;
+            if (newControl is NumericUpDown num)
+            {
+                num.Maximum = data.Maximum;
+                num.DecimalPlaces = data.DecimalPlaces;
+
+            }
+            
 
             newControl.MouseDown += Control_MouseDown;
             newControl.MouseMove += Control_MouseMove;
@@ -286,6 +304,14 @@ namespace TekstilScada.UI.Views
             // HATA DÜZELTMESİ: Tüm property'lerin get ve set blokları,
             // _control veya _mapping nesnelerinin null olma ihtimaline karşı
             // null-conditional operator (?.) ile güvenli hale getirildi.
+
+            [Category("Tasarım")]
+            [DisplayName("Ondalık Basamak Sayısı")]
+            public int DecimalPlaces
+            {
+                get => (_control as NumericUpDown)?.DecimalPlaces ?? 0;
+                set { if (_control is NumericUpDown num) num.DecimalPlaces = value; }
+            }
             [Category("Tasarım")]
             public string Name
             {

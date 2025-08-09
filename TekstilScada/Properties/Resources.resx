@@ -465,9 +465,6 @@
   <data name="Session" xml:space="preserve">
     <value>Oturum</value>
   </data>
-  <data name="Silme sırasında hata:" xml:space="preserve">
-    <value>Silme sırasında hata:</value>
-  </data>
   <data name="Turkish" xml:space="preserve">
     <value>Türkçe</value>
   </data>
@@ -488,12 +485,6 @@
   </data>
   <data name="Vncnomachine" xml:space="preserve">
     <value>Bu makine için bir VNC adresi tanımlanmamış.</value>
-  </data>
-  <data name="Yeni kullanıcı için şifre zorunludur." xml:space="preserve">
-    <value>Yeni kullanıcı için şifre zorunludur.</value>
-  </data>
-  <data name="Yilmak" xml:space="preserve">
-    <value>Yilmak Makine Scada</value>
   </data>
   <data name="alarmrapor" xml:space="preserve">
     <value>Geçmil Alarmlar</value>
@@ -552,13 +543,190 @@
   <data name="üretimraporu" xml:space="preserve">
     <value>Üretim Raporu</value>
   </data>
-  <data name="Silme_sırasında_hata_" xml:space="preserve">
-    <value>Silme sırasında hata:</value>
-  </data>
-  <data name="Yeni_kullanıcı_için_şifre_zorunludur_" xml:space="preserve">
-    <value>Yeni kullanıcı için şifre zorunludur.</value>
-  </data>
   <data name="Language" xml:space="preserve">
     <value>Dil</value>
+  </data>
+  <data name="Silmesırasındahata" xml:space="preserve">
+    <value>Silme sırasında hata:</value>
+  </data>
+  <data name="Yenikullanıcıiçinsifrezorunludur" xml:space="preserve">
+    <value>Yeni kullanıcı için şifre zorunludur.</value>
+  </data>
+  <data name="DateRange" xml:space="preserve">
+    <value>Tarih Aralığı</value>
+  </data>
+  <data name="GenerateReport" xml:space="preserve">
+    <value>Rapor Oluştur</value>
+  </data>
+  <data name="Machine" xml:space="preserve">
+    <value>Makine:</value>
+  </data>
+  <data name="raporolusturukenhata" xml:space="preserve">
+    <value>Rapor oluşturulurken bir hata oluştu:</value>
+  </data>
+  <data name="alarmraporerror" xml:space="preserve">
+    <value>Alarm raporları oluşturulurken hata oluştu</value>
+  </data>
+  <data name="alarmnozorunlu" xml:space="preserve">
+    <value>Alarm Numarası ve Alarm Metni zorunludur.</value>
+  </data>
+  <data name="lütfendeleteuyarı" xml:space="preserve">
+    <value>Lütfen silmek için bir alarm tanımı seçin.</value>
+  </data>
+  <data name="alarmtanımısil" xml:space="preserve">
+    <value>alarm tanımını silmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="cost" xml:space="preserve">
+    <value>Maliyet Parametreleri</value>
+  </data>
+  <data name="recipedesigner" xml:space="preserve">
+    <value>Reçete Adım Tasaramı</value>
+  </data>
+  <data name="saatlik" xml:space="preserve">
+    <value>Saatlik Elektirk Tüketimi</value>
+  </data>
+  <data name="son24topalarm" xml:space="preserve">
+    <value>Son 24 Saatin Popüler Alarmları</value>
+  </data>
+  <data name="diger" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="aktifüretim" xml:space="preserve">
+    <value>Aktif Üretim</value>
+  </data>
+  <data name="alarmdurum" xml:space="preserve">
+    <value>Alarm Durumu</value>
+  </data>
+  <data name="bosbekleyen" xml:space="preserve">
+    <value>Boşta Bekleyen</value>
+  </data>
+  <data name="Saatlikelektrik" xml:space="preserve">
+    <value>Saatlik Elektrik Tüketimi (kW)</value>
+  </data>
+  <data name="ensikalarm" xml:space="preserve">
+    <value>En Sık 5 Alarm (Son 24 Saat)</value>
+  </data>
+  <data name="tüketimtipi" xml:space="preserve">
+    <value>Tüketim Tipi</value>
+  </data>
+  <data name="lütfenbirmakinesec" xml:space="preserve">
+    <value>Lütfen en az bir makine seçin.</value>
+  </data>
+  <data name="makinebilgileri" xml:space="preserve">
+    <value>Makine Bilgileri</value>
+  </data>
+  <data name="ipadres" xml:space="preserve">
+    <value>IP Adresi :</value>
+  </data>
+  <data name="vncadres" xml:space="preserve">
+    <value>VNC Adresi :</value>
+  </data>
+  <data name="izlemeaktif" xml:space="preserve">
+    <value>İzleme aktif mi ?</value>
+  </data>
+  <data name="makinetip" xml:space="preserve">
+    <value>Makine Tipi :</value>
+  </data>
+  <data name="makinegrup" xml:space="preserve">
+    <value>Makine Grubu :</value>
+  </data>
+  <data name="ftpuser" xml:space="preserve">
+    <value>FTP Kullanıcı :</value>
+  </data>
+  <data name="ftppass" xml:space="preserve">
+    <value>FTP Şifre :</value>
+  </data>
+  <data name="bymakinesi" xml:space="preserve">
+    <value>BY Makineleri</value>
+  </data>
+  <data name="kurutmamakinesi" xml:space="preserve">
+    <value>Kurutma Makinesi</value>
+  </data>
+  <data name="makineyüklemehatası" xml:space="preserve">
+    <value>Makineler yüklenirken hata oluştu :</value>
+  </data>
+  <data name="makineidveipzorunlu" xml:space="preserve">
+    <value>Makine ID ve IP Adresi alanları zorunludur.</value>
+  </data>
+  <data name="yenimakinebasarili" xml:space="preserve">
+    <value>Yeni makine başarıyla eklendi.</value>
+  </data>
+  <data name="makinebilgilerigüncellendi" xml:space="preserve">
+    <value>Makine bilgileri başarıyla güncellendi.</value>
+  </data>
+  <data name="kayitsirasihatasi" xml:space="preserve">
+    <value>Kayıt sırasında bir hata oluştu:</value>
+  </data>
+  <data name="lütfensilmekicinmakinesec" xml:space="preserve">
+    <value>Lütfen silmek için bir makine seçin.</value>
+  </data>
+  <data name="makinesilmeeminmisin" xml:space="preserve">
+    <value>makinesini silmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="silmeonayı" xml:space="preserve">
+    <value>Silme Onayı</value>
+  </data>
+  <data name="geri" xml:space="preserve">
+    <value>&lt; GERİ</value>
+  </data>
+  <data name="baglantibekleniyro" xml:space="preserve">
+    <value>Bağlantı bekleniyor...</value>
+  </data>
+  <data name="bupartiicinalarmyok" xml:space="preserve">
+    <value>Bu parti için kayıtlı alarm yok.</value>
+  </data>
+  <data name="receteplcdenokunuyor" xml:space="preserve">
+    <value>Reçete PLC'den okunuyor...</value>
+  </data>
+  <data name="plcdenreceteokunmadı" xml:space="preserve">
+    <value>PLC'den reçete okunamadı:</value>
+  </data>
+  <data name="makinebaglantısıbulunamadı" xml:space="preserve">
+    <value>Makine bağlantısı bulunamadı.</value>
+  </data>
+  <data name="partibaslangıczamanıkayip" xml:space="preserve">
+    <value>Parti başlangıç zamanı bulunamadı.</value>
+  </data>
+  <data name="bupartihenüzkaydedilmemis" xml:space="preserve">
+    <value>Bu parti için henüz proses verisi kaydedilmemiş.</value>
+  </data>
+  <data name="proseszamancizgisi" xml:space="preserve">
+    <value>Proses Zaman Çizgisi</value>
+  </data>
+  <data name="elk" xml:space="preserve">
+    <value>Elektrik</value>
+  </data>
+  <data name="su" xml:space="preserve">
+    <value>Su</value>
+  </data>
+  <data name="buhar" xml:space="preserve">
+    <value>Buhar</value>
+  </data>
+  <data name="canlidata" xml:space="preserve">
+    <value>Canlı veri akışı bekleniyor...</value>
+  </data>
+  <data name="canliprosesdata" xml:space="preserve">
+    <value>Canlı Proses Verileri</value>
+  </data>
+  <data name="sualma" xml:space="preserve">
+    <value>Su Alma</value>
+  </data>
+  <data name="isitma" xml:space="preserve">
+    <value>Isıtma</value>
+  </data>
+  <data name="calisma" xml:space="preserve">
+    <value>Çalışma</value>
+  </data>
+  <data name="sikma" xml:space="preserve">
+    <value>Sıkma</value>
+  </data>
+  <data name="bosaltma" xml:space="preserve">
+    <value>Boşaltma</value>
+  </data>
+  <data name="dozaj" xml:space="preserve">
+    <value>Dozaj</value>
+  </data>
+  <data name="aktifalarmyok" xml:space="preserve">
+    <value>Aktif alarm yok .</value>
   </data>
 </root>

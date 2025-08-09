@@ -31,7 +31,7 @@ namespace TekstilScada.UI.Controls
                 // Değerleri PLC hafıza haritasına göre kontrollerden oku
                 // Word0 = Sıcaklık, Word1 = Nem, Word2 = Zaman
                 // Word3 = Çalışma Devri, Word4 = Soğutma Zamanı
-                numSicaklik.Value = _recipeStep.StepDataWords[0];
+                numSicaklik.Value = _recipeStep.StepDataWords[0] / 10.0m;
                 numNem.Value = _recipeStep.StepDataWords[1];
                 numZaman.Value = _recipeStep.StepDataWords[2];
                 numCalismaDevri.Value = _recipeStep.StepDataWords[3];
@@ -49,7 +49,7 @@ namespace TekstilScada.UI.Controls
             if (_recipeStep == null) return;
 
             // Değişiklikleri anında _recipeStep nesnesine kaydet
-            _recipeStep.StepDataWords[0] = (short)numSicaklik.Value;
+            _recipeStep.StepDataWords[0] = (short)(numSicaklik.Value * 10);
             _recipeStep.StepDataWords[1] = (short)numNem.Value;
             _recipeStep.StepDataWords[2] = (short)numZaman.Value;
             _recipeStep.StepDataWords[3] = (short)numCalismaDevri.Value;
