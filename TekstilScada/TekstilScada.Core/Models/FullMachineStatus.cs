@@ -49,6 +49,9 @@ namespace TekstilScada.Models
 
         // YENİ
         public int CalismaSuresiDakika { get; set; }
+
+        public int ActualQuantityProduction { get; set; }
+        
     }
 
     public enum ConnectionStatus

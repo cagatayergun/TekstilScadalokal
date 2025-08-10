@@ -41,7 +41,7 @@ namespace TekstilScada.Services
         private const string STANDART_CEVRIM_SURESI_DK = "D6411";
         private const string TOPLAM_URETIM_ADEDI = "D7768";
         private const string HATALI_URETIM_ADEDI = "D7770";
-
+        private const string ActualQuantity = "D7790";
 
 
 
@@ -176,25 +176,30 @@ namespace TekstilScada.Services
                 var downTimeResult = _plcClient.ReadInt32(TOPLAM_DURUS_SURESI_SN);
                 if (!downTimeResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(downTimeResult);
                 // Bu değeri kullanacağınız modeldeki ilgili alana atayın. Örnek:
-                // status.TotalDownTimeSeconds = downTimeResult.Content;
+                status.TotalDownTimeSeconds = downTimeResult.Content;
 
                 // Standart çevrim süresini oku (16-bit)
                 var cycleTimeResult = _plcClient.ReadInt16(STANDART_CEVRIM_SURESI_DK);
                 if (!cycleTimeResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(cycleTimeResult);
                 // Bu değeri kullanacağınız modeldeki ilgili alana atayın. Örnek:
-                // status.StandardCycleTimeMinutes = cycleTimeResult.Content;
+                status.StandardCycleTimeMinutes = cycleTimeResult.Content;
 
                 // Toplam üretim adedini oku (16-bit)
                 var totalProdResult = _plcClient.ReadInt16(TOPLAM_URETIM_ADEDI);
                 if (!totalProdResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(totalProdResult);
                 // Bu değeri kullanacağınız modeldeki ilgili alana atayın. Örnek:
-                // status.TotalProductionCount = totalProdResult.Content;
+                 status.TotalProductionCount = totalProdResult.Content;
 
                 // Hatalı üretim adedini oku (16-bit)
                 var defectiveProdResult = _plcClient.ReadInt16(HATALI_URETIM_ADEDI);
                 if (!defectiveProdResult.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(defectiveProdResult);
                 // Bu değeri kullanacağınız modeldeki ilgili alana atayın. Örnek:
-                // status.DefectiveProductionCount = defectiveProdResult.Content;
+                 status.DefectiveProductionCount = defectiveProdResult.Content;
+                // Hatalı üretim adedini oku (16-bit)
+                var readActualQuantity = _plcClient.ReadInt16(ActualQuantity);
+                if (!readActualQuantity.IsSuccess) return OperateResult.CreateFailedResult<FullMachineStatus>(readActualQuantity);
+                status.ActualQuantityProduction = readActualQuantity.Content;
+
 
                 if (errorMessages.Any())
                 {

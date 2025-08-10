@@ -125,7 +125,7 @@ namespace TekstilScada.Repositories
             }
         }
 
-        public void EndBatch(int machineId, string batchId, FullMachineStatus finalStatus, int machineAlarmSeconds, int operatorPauseSeconds)
+        public void EndBatch(int machineId, string batchId, FullMachineStatus finalStatus, int machineAlarmSeconds, int operatorPauseSeconds, int actualProducedQuantity)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -139,7 +139,7 @@ namespace TekstilScada.Repositories
                         TotalDownTimeSeconds = @TotalDownTimeSeconds,
                         MachineAlarmDurationSeconds = @MachineAlarmDuration,
                         OperatorPauseDurationSeconds = @OperatorPauseDuration
-                        StandardCycleTimeMinutes = @StandardCycleTimeMinutes
+                        actual_produced_quantity = @actual_produced_quantity
                     WHERE 
                         MachineId = @MachineId AND BatchId = @BatchId AND EndTime IS NULL;";
 
@@ -152,7 +152,7 @@ namespace TekstilScada.Repositories
                 cmd.Parameters.AddWithValue("@TotalProductionCount", finalStatus.TotalProductionCount);
                 cmd.Parameters.AddWithValue("@DefectiveProductionCount", finalStatus.DefectiveProductionCount);
                 cmd.Parameters.AddWithValue("@TotalDownTimeSeconds", finalStatus.TotalDownTimeSeconds);
-                cmd.Parameters.AddWithValue("@StandardCycleTimeMinutes", finalStatus.StandardCycleTimeMinutes);
+                cmd.Parameters.AddWithValue("@actual_produced_quantity", actualProducedQuantity);
                 cmd.Parameters.AddWithValue("@MachineAlarmDuration", machineAlarmSeconds);
                 cmd.Parameters.AddWithValue("@OperatorPauseDuration", operatorPauseSeconds);
 

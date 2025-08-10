@@ -1,9 +1,11 @@
 ﻿// Dosya: TekstilScada.Core/Services/PlcPollingService.cs
 
+using Org.BouncyCastle.Crypto.IO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Threading;
 using System.Threading.Tasks;
 using TekstilScada.Core.Services;
@@ -163,7 +165,7 @@ namespace TekstilScada.Services
         // Sadece yukarıdaki iki metodu güncellediğinizden emin olun.
 
         // Diğer metotlarınızın tam listesi (değişiklik yok)
-        public void Start(List<Machine> machines)
+        public void Start(List<Models.Machine> machines)
         {
             Stop();
             LoadAlarmDefinitionsCache();
@@ -303,15 +305,26 @@ namespace TekstilScada.Services
             }
             else if (!currentStatus.IsInRecipeMode && lastBatchId != null)
             {
+                
+                     int actualProducedQuantity = 0;
+               
+                    actualProducedQuantity = currentStatus.ActualQuantityProduction;
+                
+
                 // YENİ: Sayaçlardaki son veriyi al
                 _liveAlarmCounters.TryGetValue(machineId, out var finalCounters);
 
                 // DÜZENLEME: EndBatch metoduna yeni parametreleri gönder
-                _productionRepository.EndBatch(machineId, lastBatchId, currentStatus, finalCounters.machineAlarmSeconds, finalCounters.operatorPauseSeconds);
+                _productionRepository.EndBatch(machineId, lastBatchId, currentStatus, finalCounters.machineAlarmSeconds, finalCounters.operatorPauseSeconds, actualProducedQuantity);
                 
                 _currentBatches[machineId] = null;
 
                 _liveAnalyzers.TryRemove(machineId, out _);
+
+
+             
+
+
                 if (_plcManagers.TryGetValue(machineId, out var plcManager))
                 {
                     Task.Run(async () => {
